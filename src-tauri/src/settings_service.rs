@@ -43,6 +43,12 @@ pub(crate) async fn update_app_settings_internal(
         if let Some(value) = patch.sync_opencode_openai_auth {
             store.settings.sync_opencode_openai_auth = value;
         }
+        if let Some(value) = patch.restart_editors_on_switch {
+            store.settings.restart_editors_on_switch = value;
+        }
+        if let Some(value) = patch.restart_editor_targets {
+            store.settings.restart_editor_targets = value;
+        }
 
         let settings = store.settings.clone();
         save_store(app, &store)?;

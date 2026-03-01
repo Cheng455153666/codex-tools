@@ -1,7 +1,13 @@
 import { useEffect } from "react";
+import { EditorMultiSelect } from "./EditorMultiSelect";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { SwitchField } from "./SwitchField";
-import type { AppSettings, ThemeMode } from "../types/app";
+import type {
+  AppSettings,
+  InstalledEditorApp,
+  ThemeMode,
+  UpdateSettingsOptions,
+} from "../types/app";
 
 type SettingsPanelProps = {
   open: boolean;
@@ -9,8 +15,9 @@ type SettingsPanelProps = {
   themeMode: ThemeMode;
   onToggleTheme: () => void;
   settings: AppSettings;
+  installedEditorApps: InstalledEditorApp[];
   savingSettings: boolean;
-  onUpdateSettings: (patch: Partial<AppSettings>) => void;
+  onUpdateSettings: (patch: Partial<AppSettings>, options?: UpdateSettingsOptions) => void;
 };
 
 export function SettingsPanel({
@@ -19,6 +26,7 @@ export function SettingsPanel({
   themeMode,
   onToggleTheme,
   settings,
+  installedEditorApps,
   savingSettings,
   onUpdateSettings,
 }: SettingsPanelProps) {
@@ -93,6 +101,46 @@ export function SettingsPanel({
           uncheckedText="不同步"
           disabled={savingSettings}
         />
+
+        <SwitchField
+          checked={settings.restartEditorsOnSwitch}
+          onChange={(checked) => {
+            if (checked && settings.restartEditorTargets.length === 0 && installedEditorApps.length > 0) {
+              onUpdateSettings({
+                restartEditorsOnSwitch: true,
+                restartEditorTargets: [installedEditorApps[0].id],
+              });
+              return;
+            }
+            onUpdateSettings({ restartEditorsOnSwitch: checked });
+          }}
+          label="切换时重启编辑器(兼容codex 编辑器插件)"
+          description="默认关闭。开启后切换账号会强制关闭并重启你选中的编辑器。"
+          checkedText="重启"
+          uncheckedText="不重启"
+          disabled={savingSettings}
+        />
+
+        <div className="settingRow">
+          <div className="settingMeta">
+            <strong>重启目标编辑器（单选）</strong>
+            <p>后台自动检测已安装的 VSCode/VSCode Insiders/Cursor/Antigravity/Kiro/Trae/Qoder。</p>
+          </div>
+          <EditorMultiSelect
+            options={installedEditorApps}
+            value={settings.restartEditorTargets[0] ?? null}
+            disabled={installedEditorApps.length === 0}
+            onChange={(selected) =>
+              onUpdateSettings(
+                { restartEditorTargets: [selected] },
+                { silent: true, keepInteractive: true },
+              )
+            }
+          />
+        </div>
+        {installedEditorApps.length === 0 && (
+          <p className="hint">当前未检测到支持重启的编辑器。</p>
+        )}
 
         <div className="settingRow">
           <div className="settingMeta">

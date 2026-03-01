@@ -9,6 +9,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use crate::auth::extract_codex_oauth_tokens;
+use crate::auth::CodexOAuthTokens;
 use crate::utils::set_private_permissions;
 
 const FALLBACK_EXPIRES_IN_MS: i64 = 55 * 60 * 1000;
@@ -21,15 +22,42 @@ const FALLBACK_EXPIRES_IN_MS: i64 = 55 * 60 * 1000;
 pub(crate) fn sync_openai_auth_from_codex_auth(auth_json: &Value) -> Result<(), String> {
     let tokens = extract_codex_oauth_tokens(auth_json)?;
     let install_path = detect_opencode_install_path();
-    let auth_path = detect_opencode_auth_path();
+    let auth_paths = detect_opencode_auth_paths();
 
-    if install_path.is_none() && auth_path.is_none() {
+    if install_path.is_none() && auth_paths.is_empty() {
         return Err("未检测到 opencode 安装位置或认证文件".to_string());
     }
 
-    let auth_path = auth_path.ok_or_else(|| "未能定位 opencode 认证文件路径".to_string())?;
-    let mut root = read_or_init_json_object(&auth_path)?;
+    if auth_paths.is_empty() {
+        return Err("未能定位 opencode 认证文件路径".to_string());
+    }
 
+    let mut success_paths = Vec::<String>::new();
+    let mut errors = Vec::<String>::new();
+
+    for auth_path in auth_paths {
+        match sync_openai_auth_to_path(&auth_path, &tokens) {
+            Ok(()) => success_paths.push(auth_path.display().to_string()),
+            Err(err) => errors.push(format!("{}: {}", auth_path.display(), err)),
+        }
+    }
+
+    if success_paths.is_empty() {
+        return Err(errors.join(" | "));
+    }
+
+    log::info!(
+        "Opencode OpenAI 认证已同步到: {}",
+        success_paths.join(" | ")
+    );
+    if !errors.is_empty() {
+        log::warn!("部分 opencode 认证文件同步失败: {}", errors.join(" | "));
+    }
+    Ok(())
+}
+
+fn sync_openai_auth_to_path(auth_path: &Path, tokens: &CodexOAuthTokens) -> Result<(), String> {
+    let mut root = read_or_init_json_object(auth_path)?;
     let expires_ms = tokens
         .expires_at_ms
         .unwrap_or_else(|| now_unix_millis().saturating_add(FALLBACK_EXPIRES_IN_MS));
@@ -46,19 +74,27 @@ pub(crate) fn sync_openai_auth_from_codex_auth(auth_json: &Value) -> Result<(), 
         .unwrap_or("oauth")
         .to_string();
     openai.insert("type".to_string(), Value::String(auth_type));
-    openai.insert("access".to_string(), Value::String(tokens.access_token));
-    openai.insert("refresh".to_string(), Value::String(tokens.refresh_token));
+    openai.insert(
+        "access".to_string(),
+        Value::String(tokens.access_token.clone()),
+    );
+    openai.insert(
+        "refresh".to_string(),
+        Value::String(tokens.refresh_token.clone()),
+    );
     openai.insert(
         "expires".to_string(),
         Value::Number(Number::from(expires_ms)),
     );
-    if let Some(account_id) = tokens.account_id {
-        openai.insert("accountId".to_string(), Value::String(account_id));
+    if let Some(account_id) = tokens.account_id.as_ref() {
+        openai.insert(
+            "accountId".to_string(),
+            Value::String(account_id.to_string()),
+        );
     }
 
     root.insert("openai".to_string(), Value::Object(openai));
-    write_json_object(&auth_path, &root)?;
-    Ok(())
+    write_json_object(auth_path, &root)
 }
 
 fn detect_opencode_install_path() -> Option<PathBuf> {
@@ -94,43 +130,95 @@ fn detect_opencode_install_path() -> Option<PathBuf> {
     candidates.into_iter().find(|path| is_executable_file(path))
 }
 
-fn detect_opencode_auth_path() -> Option<PathBuf> {
+fn detect_opencode_auth_paths() -> Vec<PathBuf> {
     if let Some(custom) = env::var_os("OPENCODE_AUTH_PATH").map(PathBuf::from) {
-        return Some(custom);
+        return vec![custom];
     }
 
+    let candidates = build_opencode_auth_candidates();
+    let mut existing = Vec::<PathBuf>::new();
+    for path in &candidates {
+        if path.exists() {
+            push_unique_path(&mut existing, path.clone());
+        }
+    }
+    if !existing.is_empty() {
+        return existing;
+    }
+
+    candidates
+        .into_iter()
+        .next()
+        .map(|path| vec![path])
+        .unwrap_or_default()
+}
+
+fn build_opencode_auth_candidates() -> Vec<PathBuf> {
     let mut candidates = Vec::<PathBuf>::new();
 
-    if let Some(xdg_data_home) = env::var_os("XDG_DATA_HOME").map(PathBuf::from) {
-        candidates.push(xdg_data_home.join("opencode").join("auth.json"));
+    // 优先读取配置目录，兼容 Windows 用户常见路径 `~/.config/opencode/auth.json`。
+    if let Some(opencode_config_home) = env::var_os("OPENCODE_CONFIG_HOME").map(PathBuf::from) {
+        push_unique_path(&mut candidates, opencode_config_home.join("auth.json"));
     }
-    #[cfg(windows)]
-    if let Some(app_data) = env::var_os("APPDATA").map(PathBuf::from) {
-        candidates.push(app_data.join("opencode").join("auth.json"));
+    if let Some(xdg_config_home) = env::var_os("XDG_CONFIG_HOME").map(PathBuf::from) {
+        push_unique_path(
+            &mut candidates,
+            xdg_config_home.join("opencode").join("auth.json"),
+        );
     }
 
     if let Some(home) = dirs::home_dir() {
-        candidates.push(
+        push_unique_path(
+            &mut candidates,
+            home.join(".config").join("opencode").join("auth.json"),
+        );
+    }
+
+    #[cfg(windows)]
+    {
+        if let Some(app_data) = env::var_os("APPDATA").map(PathBuf::from) {
+            push_unique_path(&mut candidates, app_data.join("opencode").join("auth.json"));
+        }
+        if let Some(local_app_data) = env::var_os("LOCALAPPDATA").map(PathBuf::from) {
+            push_unique_path(
+                &mut candidates,
+                local_app_data.join("opencode").join("auth.json"),
+            );
+        }
+    }
+
+    if let Some(xdg_data_home) = env::var_os("XDG_DATA_HOME").map(PathBuf::from) {
+        push_unique_path(
+            &mut candidates,
+            xdg_data_home.join("opencode").join("auth.json"),
+        );
+    }
+
+    if let Some(home) = dirs::home_dir() {
+        push_unique_path(
+            &mut candidates,
             home.join(".local")
                 .join("share")
                 .join("opencode")
                 .join("auth.json"),
         );
-        candidates.push(
+        push_unique_path(
+            &mut candidates,
             home.join("Library")
                 .join("Application Support")
                 .join("opencode")
                 .join("auth.json"),
         );
-        candidates.push(home.join(".config").join("opencode").join("auth.json"));
-        candidates.push(home.join(".opencode").join("auth.json"));
+        push_unique_path(&mut candidates, home.join(".opencode").join("auth.json"));
     }
 
-    if let Some(found) = candidates.iter().find(|path| path.exists()) {
-        return Some(found.clone());
-    }
+    candidates
+}
 
-    candidates.into_iter().next()
+fn push_unique_path(paths: &mut Vec<PathBuf>, candidate: PathBuf) {
+    if !paths.iter().any(|existing| existing == &candidate) {
+        paths.push(candidate);
+    }
 }
 
 fn read_or_init_json_object(path: &Path) -> Result<Map<String, Value>, String> {

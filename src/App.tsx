@@ -27,6 +27,7 @@ function App() {
     updateDialogOpen,
     notice,
     settings,
+    installedEditorApps,
     savingSettings,
     currentCount,
     refreshUsage,
@@ -61,8 +62,9 @@ function App() {
           themeMode={themeMode}
           onToggleTheme={toggleTheme}
           settings={settings}
+          installedEditorApps={installedEditorApps}
           savingSettings={savingSettings}
-          onUpdateSettings={(patch) => void updateSettings(patch)}
+          onUpdateSettings={(patch, options) => void updateSettings(patch, options)}
         />
 
         <MetaStrip accountCount={accounts.length} currentCount={currentCount} />

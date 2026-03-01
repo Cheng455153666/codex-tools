@@ -1,6 +1,7 @@
 mod account_service;
 mod auth;
 mod cli;
+mod editor_apps;
 mod models;
 mod opencode;
 mod settings_service;
@@ -22,6 +23,8 @@ use models::AccountSummary;
 use models::AppSettings;
 use models::AppSettingsPatch;
 use models::CurrentAuthStatus;
+use models::EditorAppId;
+use models::InstalledEditorApp;
 use models::SwitchAccountResult;
 use state::AppState;
 
@@ -93,6 +96,11 @@ async fn update_app_settings(
 #[tauri::command]
 fn detect_codex_app() -> Result<Option<String>, String> {
     Ok(cli::find_codex_app_path().map(|path| path.to_string_lossy().to_string()))
+}
+
+#[tauri::command]
+fn list_installed_editor_apps() -> Result<Vec<InstalledEditorApp>, String> {
+    Ok(editor_apps::list_installed_editor_apps())
 }
 
 #[tauri::command]
@@ -182,6 +190,8 @@ async fn switch_account_and_launch(
     id: String,
     workspace_path: Option<String>,
     launch_codex: Option<bool>,
+    restart_editors_on_switch: Option<bool>,
+    restart_editor_targets: Option<Vec<EditorAppId>>,
 ) -> Result<SwitchAccountResult, String> {
     let store = {
         let _guard = state.store_lock.lock().await;
@@ -196,6 +206,10 @@ async fn switch_account_and_launch(
         .ok_or_else(|| "找不到要切换的账号".to_string())?;
 
     let should_sync_opencode = store.settings.sync_opencode_openai_auth;
+    let should_restart_editors =
+        restart_editors_on_switch.unwrap_or(store.settings.restart_editors_on_switch);
+    let effective_restart_targets =
+        restart_editor_targets.unwrap_or_else(|| store.settings.restart_editor_targets.clone());
     auth::write_active_codex_auth(&account.auth_json)?;
     let _ = tray::refresh_macos_tray_snapshot(&app);
 
@@ -213,6 +227,12 @@ async fn switch_account_and_launch(
         }
     }
 
+    let (restarted_editor_apps, editor_restart_error) = if should_restart_editors {
+        editor_apps::restart_selected_editor_apps(&effective_restart_targets)
+    } else {
+        (Vec::new(), None)
+    };
+
     // 向后兼容：旧前端未传参数时仍按“切换并启动”处理。
     let should_launch_codex = launch_codex.unwrap_or(true);
     if !should_launch_codex {
@@ -222,6 +242,8 @@ async fn switch_account_and_launch(
             used_fallback_cli: false,
             opencode_synced,
             opencode_sync_error,
+            restarted_editor_apps,
+            editor_restart_error,
         });
     }
 
@@ -247,6 +269,8 @@ async fn switch_account_and_launch(
             used_fallback_cli: false,
             opencode_synced,
             opencode_sync_error,
+            restarted_editor_apps,
+            editor_restart_error,
         });
     }
 
@@ -264,6 +288,8 @@ async fn switch_account_and_launch(
         used_fallback_cli: true,
         opencode_synced,
         opencode_sync_error,
+        restarted_editor_apps,
+        editor_restart_error,
     })
 }
 
@@ -330,6 +356,7 @@ pub fn run() {
             get_app_settings,
             update_app_settings,
             detect_codex_app,
+            list_installed_editor_apps,
             open_external_url,
             get_current_auth_status,
             launch_codex_login,

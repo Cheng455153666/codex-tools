@@ -37,6 +37,8 @@ export type SwitchAccountResult = {
   usedFallbackCli: boolean;
   opencodeSynced: boolean;
   opencodeSyncError: string | null;
+  restartedEditorApps: EditorAppId[];
+  editorRestartError: string | null;
 };
 
 export type CurrentAuthStatus = {
@@ -70,9 +72,30 @@ export type ThemeMode = "light" | "dark";
 
 export type TrayUsageDisplayMode = "remaining" | "used";
 
+export type EditorAppId =
+  | "vscode"
+  | "vscodeInsiders"
+  | "cursor"
+  | "antigravity"
+  | "kiro"
+  | "trae"
+  | "qoder";
+
+export type InstalledEditorApp = {
+  id: EditorAppId;
+  label: string;
+};
+
 export type AppSettings = {
   launchAtStartup: boolean;
   trayUsageDisplayMode: TrayUsageDisplayMode;
   launchCodexAfterSwitch: boolean;
   syncOpencodeOpenaiAuth: boolean;
+  restartEditorsOnSwitch: boolean;
+  restartEditorTargets: EditorAppId[];
+};
+
+export type UpdateSettingsOptions = {
+  silent?: boolean;
+  keepInteractive?: boolean;
 };

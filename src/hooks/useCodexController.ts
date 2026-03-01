@@ -7,20 +7,34 @@ import type {
   AppSettings,
   AddFlow,
   CurrentAuthStatus,
+  InstalledEditorApp,
   Notice,
   PendingUpdateInfo,
   SwitchAccountResult,
+  UpdateSettingsOptions,
 } from "../types/app";
 
 const REFRESH_MS = 30_000;
+const EDITOR_SCAN_MS = 60_000;
 const ADD_FLOW_TIMEOUT_MS = 10 * 60_000;
 const ADD_FLOW_POLL_MS = 2_500;
 const MANUAL_DOWNLOAD_URL = "https://github.com/170-carry/codex-tools/releases/latest";
+const EDITOR_LABEL_MAP: Record<string, string> = {
+  vscode: "VS Code",
+  vscodeInsiders: "Visual Studio Code - Insiders",
+  cursor: "Cursor",
+  antigravity: "Antigravity",
+  kiro: "Kiro",
+  trae: "Trae",
+  qoder: "Qoder",
+};
 const DEFAULT_SETTINGS: AppSettings = {
   launchAtStartup: false,
   trayUsageDisplayMode: "remaining",
   launchCodexAfterSwitch: true,
   syncOpencodeOpenaiAuth: false,
+  restartEditorsOnSwitch: false,
+  restartEditorTargets: [],
 };
 
 export function useCodexController() {
@@ -38,7 +52,9 @@ export function useCodexController() {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [savingSettings, setSavingSettings] = useState(false);
+  const [installedEditorApps, setInstalledEditorApps] = useState<InstalledEditorApp[]>([]);
   const installingUpdateRef = useRef(false);
+  const settingsUpdateQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   const currentCount = useMemo(
     () => accounts.filter((account) => account.isCurrent).length,
@@ -55,18 +71,47 @@ export function useCodexController() {
     setSettings(data);
   }, []);
 
-  const updateSettings = useCallback(async (patch: Partial<AppSettings>) => {
-    setSavingSettings(true);
+  const loadInstalledEditorApps = useCallback(async () => {
     try {
-      const data = await invoke<AppSettings>("update_app_settings", { patch });
-      setSettings(data);
-      setNotice({ type: "ok", message: "设置已更新" });
-    } catch (error) {
-      setNotice({ type: "error", message: `更新设置失败：${String(error)}` });
-    } finally {
-      setSavingSettings(false);
+      const data = await invoke<InstalledEditorApp[]>("list_installed_editor_apps");
+      setInstalledEditorApps(data);
+    } catch {
+      setInstalledEditorApps([]);
     }
   }, []);
+
+  const updateSettings = useCallback(
+    async (patch: Partial<AppSettings>, options?: UpdateSettingsOptions) => {
+      const shouldLockUi = !options?.keepInteractive;
+      const task = async () => {
+        if (shouldLockUi) {
+          setSavingSettings(true);
+        }
+
+        try {
+          const data = await invoke<AppSettings>("update_app_settings", { patch });
+          setSettings(data);
+          if (!options?.silent) {
+            setNotice({ type: "ok", message: "设置已更新" });
+          }
+        } catch (error) {
+          setNotice({ type: "error", message: `更新设置失败：${String(error)}` });
+        } finally {
+          if (shouldLockUi) {
+            setSavingSettings(false);
+          }
+        }
+      };
+
+      const run = settingsUpdateQueueRef.current.then(task, task);
+      settingsUpdateQueueRef.current = run.then(
+        () => undefined,
+        () => undefined,
+      );
+      return run;
+    },
+    [],
+  );
 
   const refreshUsage = useCallback(async (quiet = false) => {
     try {
@@ -212,6 +257,7 @@ export function useCodexController() {
 
     const bootstrap = async () => {
       try {
+        await loadInstalledEditorApps();
         await loadSettings();
         await loadAccounts();
         await refreshUsage(true);
@@ -225,15 +271,20 @@ export function useCodexController() {
 
     void bootstrap();
 
-    const timer = setInterval(() => {
+    const usageTimer = setInterval(() => {
       void refreshUsage(true);
     }, REFRESH_MS);
 
+    const editorTimer = setInterval(() => {
+      void loadInstalledEditorApps();
+    }, EDITOR_SCAN_MS);
+
     return () => {
       cancelled = true;
-      clearInterval(timer);
+      clearInterval(usageTimer);
+      clearInterval(editorTimer);
     };
-  }, [checkForAppUpdate, loadAccounts, loadSettings, refreshUsage]);
+  }, [checkForAppUpdate, loadAccounts, loadInstalledEditorApps, loadSettings, refreshUsage]);
 
   useEffect(() => {
     if (!addFlow) {
@@ -351,6 +402,8 @@ export function useCodexController() {
           id: account.id,
           workspacePath: null,
           launchCodex: settings.launchCodexAfterSwitch,
+          restartEditorsOnSwitch: settings.restartEditorsOnSwitch,
+          restartEditorTargets: settings.restartEditorTargets,
         });
         await loadAccounts();
 
@@ -380,6 +433,28 @@ export function useCodexController() {
           }
         }
 
+        if (settings.restartEditorsOnSwitch) {
+          if (result.editorRestartError) {
+            baseNotice = {
+              type: "error",
+              message: `${baseNotice.message} 编辑器重启失败：${result.editorRestartError}`,
+            };
+          } else if (result.restartedEditorApps.length > 0) {
+            const restartedLabels = result.restartedEditorApps
+              .map((id) => EDITOR_LABEL_MAP[id] ?? id)
+              .join(" / ");
+            baseNotice = {
+              ...baseNotice,
+              message: `${baseNotice.message} 已重启编辑器：${restartedLabels}`,
+            };
+          } else {
+            baseNotice = {
+              ...baseNotice,
+              message: `${baseNotice.message} 未检测到可重启的已安装编辑器。`,
+            };
+          }
+        }
+
         setNotice(baseNotice);
       } catch (error) {
         setNotice({ type: "error", message: `切换失败：${String(error)}` });
@@ -387,7 +462,13 @@ export function useCodexController() {
         setSwitchingId(null);
       }
     },
-    [loadAccounts, settings.launchCodexAfterSwitch, settings.syncOpencodeOpenaiAuth],
+    [
+      loadAccounts,
+      settings.launchCodexAfterSwitch,
+      settings.syncOpencodeOpenaiAuth,
+      settings.restartEditorsOnSwitch,
+      settings.restartEditorTargets,
+    ],
   );
 
   return {
@@ -405,6 +486,7 @@ export function useCodexController() {
     notice,
     settings,
     savingSettings,
+    installedEditorApps,
     currentCount,
     refreshUsage,
     checkForAppUpdate,

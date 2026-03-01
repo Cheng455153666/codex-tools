@@ -90,6 +90,8 @@ pub(crate) struct SwitchAccountResult {
     pub(crate) used_fallback_cli: bool,
     pub(crate) opencode_synced: bool,
     pub(crate) opencode_sync_error: Option<String>,
+    pub(crate) restarted_editor_apps: Vec<EditorAppId>,
+    pub(crate) editor_restart_error: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -121,6 +123,25 @@ pub(crate) enum TrayUsageDisplayMode {
     Remaining,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[serde(rename_all = "camelCase")]
+pub(crate) enum EditorAppId {
+    Vscode,
+    VscodeInsiders,
+    Cursor,
+    Antigravity,
+    Kiro,
+    Trae,
+    Qoder,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct InstalledEditorApp {
+    pub(crate) id: EditorAppId,
+    pub(crate) label: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub(crate) struct AppSettings {
@@ -128,6 +149,8 @@ pub(crate) struct AppSettings {
     pub(crate) tray_usage_display_mode: TrayUsageDisplayMode,
     pub(crate) launch_codex_after_switch: bool,
     pub(crate) sync_opencode_openai_auth: bool,
+    pub(crate) restart_editors_on_switch: bool,
+    pub(crate) restart_editor_targets: Vec<EditorAppId>,
 }
 
 impl Default for AppSettings {
@@ -137,6 +160,8 @@ impl Default for AppSettings {
             tray_usage_display_mode: TrayUsageDisplayMode::Remaining,
             launch_codex_after_switch: true,
             sync_opencode_openai_auth: false,
+            restart_editors_on_switch: false,
+            restart_editor_targets: Vec::new(),
         }
     }
 }
@@ -148,6 +173,8 @@ pub(crate) struct AppSettingsPatch {
     pub(crate) tray_usage_display_mode: Option<TrayUsageDisplayMode>,
     pub(crate) launch_codex_after_switch: Option<bool>,
     pub(crate) sync_opencode_openai_auth: Option<bool>,
+    pub(crate) restart_editors_on_switch: Option<bool>,
+    pub(crate) restart_editor_targets: Option<Vec<EditorAppId>>,
 }
 
 impl StoredAccount {
