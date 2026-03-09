@@ -626,20 +626,14 @@ async fn run_task_with_models(
                 .max(0) as u64;
             let (success, message) = match result {
                 Ok(resp) => {
-                    // 唤醒成功说明 Token 有效，清除 disabled 和 quota_error
+                    // 唤醒成功，账号可正常发起请求，解除所有类型的禁用
                     if let Ok(mut acc) = modules::load_account(&account.id) {
-                        let mut changed = false;
                         if acc.disabled {
                             modules::logger::log_info(&format!(
                                 "[WakeupScheduler] 唤醒成功，自动解除禁用状态: {}",
                                 acc.email
                             ));
-                            acc.disabled = false;
-                            acc.disabled_reason = None;
-                            acc.disabled_at = None;
-                            changed = true;
-                        }
-                        if changed {
+                            acc.clear_disabled();
                             acc.quota_error = None;
                             let _ = modules::save_account(&acc);
                         }

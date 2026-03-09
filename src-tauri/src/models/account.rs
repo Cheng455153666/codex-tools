@@ -66,6 +66,22 @@ impl Account {
     pub fn update_quota(&mut self, quota: QuotaData) {
         self.quota = Some(quota);
     }
+
+    /// Token 失效（invalid_grant）导致的禁用，刷新成功后可自动解除
+    pub fn is_invalid_grant_disabled(&self) -> bool {
+        self.disabled
+            && self
+                .disabled_reason
+                .as_deref()
+                .is_some_and(|r| r.starts_with("invalid_grant"))
+    }
+
+    /// 清除禁用状态（三个字段一起重置）
+    pub fn clear_disabled(&mut self) {
+        self.disabled = false;
+        self.disabled_reason = None;
+        self.disabled_at = None;
+    }
 }
 
 /// 配额错误信息

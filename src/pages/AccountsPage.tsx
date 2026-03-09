@@ -32,7 +32,8 @@ import {
   EyeOff,
   Tag,
   BookOpen,
-  FileUp
+  FileUp,
+  ExternalLink
 } from 'lucide-react'
 import { useTranslation, Trans } from 'react-i18next'
 import { useAccountStore } from '../stores/useAccountStore'
@@ -46,7 +47,9 @@ import {
   getSubscriptionTier,
 } from '../utils/account'
 import { listen, UnlistenFn } from '@tauri-apps/api/event'
+import { invoke } from '@tauri-apps/api/core'
 import { open as openFileDialog } from '@tauri-apps/plugin-dialog'
+import { openUrl } from '@tauri-apps/plugin-opener'
 import { GroupSettingsModal } from '../components/GroupSettingsModal'
 import { TagEditModal } from '../components/TagEditModal'
 import { ExportJsonModal } from '../components/ExportJsonModal'
@@ -86,7 +89,53 @@ interface AccountsPageProps {
 }
 
 type ViewMode = 'grid' | 'list' | 'compact'
-type FilterType = 'all' | 'PRO' | 'ULTRA' | 'FREE' | 'UNKNOWN'
+type FilterType = 'all' | 'PRO' | 'ULTRA' | 'FREE' | 'UNKNOWN' | 'VERIFICATION_REQUIRED' | 'TOS_VIOLATION'
+
+interface VerificationDetailRecord {
+  status: string
+  lastMessage?: string | null
+  lastErrorCode?: number | null
+  validationUrl?: string | null
+  appealUrl?: string | null
+}
+
+interface VerificationHistoryRecord {
+  accountId: string
+  status: string
+  lastMessage?: string | null
+  lastErrorCode?: number | null
+  validationUrl?: string | null
+  appealUrl?: string | null
+}
+
+interface VerificationHistoryBatch {
+  batchId: string
+  verifiedAt: number
+  records?: VerificationHistoryRecord[]
+}
+
+const buildVerificationHistoryMaps = (batches: VerificationHistoryBatch[] = []) => {
+  const sorted = [...batches].sort((a, b) => b.verifiedAt - a.verifiedAt)
+  const statusMap: Record<string, string> = {}
+  const detailMap: Record<string, VerificationDetailRecord> = {}
+
+  for (const batch of sorted) {
+    for (const record of batch.records || []) {
+      if (!(record.accountId in statusMap)) {
+        statusMap[record.accountId] = record.status
+        detailMap[record.accountId] = {
+          status: record.status,
+          lastMessage: record.lastMessage,
+          lastErrorCode: record.lastErrorCode,
+          validationUrl: record.validationUrl,
+          appealUrl: record.appealUrl,
+        }
+      }
+    }
+  }
+
+  return { statusMap, detailMap }
+}
 
 interface ExtensionImportProgressPayload {
   phase?: string
@@ -119,6 +168,43 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
     switchAccount,
     updateAccountTags
   } = useAccountStore()
+
+  // ─── 验证状态标记 ────────────────────────────────────────────────────
+  // 优先读 disabled_reason（新版后端写入），没有则回退到验证历史（向后兼容）
+  const [verificationStatusMap, setVerificationStatusMap] = useState<Record<string, string>>({})
+  const [verificationDetailMap, setVerificationDetailMap] = useState<Record<string, VerificationDetailRecord>>({})
+
+  const loadVerificationHistory = useCallback(async () => {
+    const requestId = verificationHistoryRequestIdRef.current + 1
+    verificationHistoryRequestIdRef.current = requestId
+
+    try {
+      const batches = await invoke<VerificationHistoryBatch[]>('wakeup_verification_load_history')
+      if (verificationHistoryRequestIdRef.current !== requestId) {
+        return
+      }
+      const { statusMap, detailMap } = buildVerificationHistoryMaps(batches || [])
+      setVerificationStatusMap(statusMap)
+      setVerificationDetailMap(detailMap)
+    } catch (error) {
+      if (verificationHistoryRequestIdRef.current !== requestId) {
+        return
+      }
+      console.error('Failed to load verification history:', error)
+    }
+  }, [])
+
+  const getVerificationBadge = useCallback((account: Account) => {
+    // 优先从 disabled_reason 读（新版），回退到验证历史（旧数据兼容）
+    const reason = account.disabled_reason || verificationStatusMap[account.id]
+    if (reason === 'verification_required') {
+      return { label: t('wakeup.errorUi.verificationRequiredTitle', 'Need Verify'), className: 'is-warning' }
+    }
+    if (reason === 'tos_violation') {
+      return { label: t('wakeup.errorUi.tosViolationTitle', 'TOS'), className: 'is-tos-violation' }
+    }
+    return null
+  }, [verificationStatusMap, t])
 
   // 文件损坏错误状态
   const [fileCorruptedError, setFileCorruptedError] = useState<FileCorruptedError | null>(null)
@@ -173,13 +259,14 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [showAddModal, setShowAddModal] = useState(false)
   const [addTab, setAddTab] = useState<'oauth' | 'token' | 'import'>('oauth')
-  const [refreshing, setRefreshing] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState<Set<string>>(new Set())
   const [refreshingAll, setRefreshingAll] = useState(false)
   const [switching, setSwitching] = useState<string | null>(null)
   const [importing, setImporting] = useState(false)
   const [refreshWarnings, setRefreshWarnings] = useState<
     Record<string, { kind: 'auth' | 'error'; message: string }>
   >({})
+  const [refreshResult, setRefreshResult] = useState<Record<string, 'success' | 'error'>>({})
   const [message, setMessage] = useState<{
     text: string
     tone?: 'error'
@@ -224,6 +311,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
   // Quota Detail Modal
   const [showQuotaModal, setShowQuotaModal] = useState<string | null>(null)
   const [showErrorModal, setShowErrorModal] = useState<string | null>(null)
+  const [showVerificationErrorModal, setShowVerificationErrorModal] = useState<string | null>(null)
 
   // 标签编辑弹窗
   const [showTagModal, setShowTagModal] = useState<string | null>(null)
@@ -270,6 +358,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
   const addTabRef = useRef(addTab)
   const oauthUrlRef = useRef(oauthUrl)
   const addStatusRef = useRef(addStatus)
+  const verificationHistoryRequestIdRef = useRef(0)
   const colorPickerRef = useRef<HTMLDivElement>(null)
   const tagFilterRef = useRef<HTMLDivElement | null>(null)
 
@@ -390,9 +479,19 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
 
     // 类型过滤
     if (filterType !== 'all') {
-      result = result.filter(
-        (acc) => getSubscriptionTier(acc.quota) === filterType
-      )
+      if (filterType === 'VERIFICATION_REQUIRED') {
+        result = result.filter((acc) =>
+          (acc.disabled_reason || verificationStatusMap[acc.id]) === 'verification_required'
+        )
+      } else if (filterType === 'TOS_VIOLATION') {
+        result = result.filter((acc) =>
+          (acc.disabled_reason || verificationStatusMap[acc.id]) === 'tos_violation'
+        )
+      } else {
+        result = result.filter(
+          (acc) => getSubscriptionTier(acc.quota) === filterType
+        )
+      }
     }
 
     // 标签过滤
@@ -411,6 +510,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
     filterType,
     tagFilter,
     accountSortComparator,
+    verificationStatusMap,
   ])
 
   const groupedAccounts = useMemo(() => {
@@ -446,16 +546,19 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
 
   // 统计数量
   const tierCounts = useMemo(() => {
-    const counts = { all: accounts.length, PRO: 0, ULTRA: 0, FREE: 0, UNKNOWN: 0 }
+    const counts = { all: accounts.length, PRO: 0, ULTRA: 0, FREE: 0, UNKNOWN: 0, VERIFICATION_REQUIRED: 0, TOS_VIOLATION: 0 }
     accounts.forEach((acc) => {
       const tier = getSubscriptionTier(acc.quota)
       if (tier === 'PRO') counts.PRO++
       else if (tier === 'ULTRA') counts.ULTRA++
       else if (tier === 'FREE') counts.FREE++
       else counts.UNKNOWN++
+      const vStatus = acc.disabled_reason || verificationStatusMap[acc.id]
+      if (vStatus === 'verification_required') counts.VERIFICATION_REQUIRED++
+      else if (vStatus === 'tos_violation') counts.TOS_VIOLATION++
     })
     return counts
-  }, [accounts])
+  }, [accounts, verificationStatusMap])
 
   const loadFingerprints = async () => {
     try {
@@ -618,6 +721,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
     fetchCurrentAccount()
     loadFingerprints()
     loadDisplayGroups()
+    loadVerificationHistory()
 
     let unlisten: UnlistenFn | undefined
     let unlistenGroups: UnlistenFn | undefined
@@ -635,6 +739,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
         )
         await fetchAccounts()
       }
+      await loadVerificationHistory()
     }).then((fn) => {
       unlisten = fn
     })
@@ -650,7 +755,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
       if (unlisten) unlisten()
       if (unlistenGroups) unlistenGroups()
     }
-  }, [fetchAccounts, fetchCurrentAccount, refreshQuota])
+  }, [fetchAccounts, fetchCurrentAccount, loadVerificationHistory, refreshQuota])
 
   // Click outside to close color picker
   useEffect(() => {
@@ -749,33 +854,18 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
   }, [showAddModal, addTab, oauthUrl])
 
   const handleRefresh = async (accountId: string) => {
-    setRefreshing(accountId)
+    setRefreshing((prev) => new Set(prev).add(accountId))
     try {
       await refreshQuota(accountId)
-      const target = accounts.find((acc) => acc.id === accountId)
-      if (target) {
-        setRefreshWarnings((prev) => {
-          if (!prev[target.email]) return prev
-          const next = { ...prev }
-          delete next[target.email]
-          return next
-        })
-      }
+      setRefreshResult((prev) => ({ ...prev, [accountId]: 'success' }))
+      setTimeout(() => setRefreshResult((prev) => { const next = { ...prev }; delete next[accountId]; return next }), 2000)
     } catch (e) {
       console.error(e)
-      const target = accounts.find((acc) => acc.id === accountId)
-      if (target) {
-        const reason = normalizeWarningMessage(String(e))
-        setRefreshWarnings((prev) => ({
-          ...prev,
-          [target.email]: {
-            kind: isAuthFailure(reason) ? 'auth' : 'error',
-            message: reason
-          }
-        }))
-      }
+      setRefreshResult((prev) => ({ ...prev, [accountId]: 'error' }))
+      setTimeout(() => setRefreshResult((prev) => { const next = { ...prev }; delete next[accountId]; return next }), 2000)
     } finally {
-      setRefreshing(null)
+      await loadVerificationHistory()
+      setRefreshing((prev) => { const next = new Set(prev); next.delete(accountId); return next })
     }
   }
 
@@ -787,6 +877,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
     } catch (e) {
       console.error(e)
     } finally {
+      await loadVerificationHistory()
       setRefreshingAll(false)
     }
   }
@@ -1406,6 +1497,8 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
       const disabledTitle = isDisabled
         ? `${t('accounts.status.disabled')}${account.disabled_reason ? `: ${account.disabled_reason}` : ''}`
         : ''
+      const verificationReason = account.disabled_reason || verificationStatusMap[account.id]
+      const hasVerificationIssue = verificationReason === 'verification_required' || verificationReason === 'tos_violation'
 
       if (quotaDisplayItems.length === 0) {
         console.log('[AccountsPage] 账号无配额数据:', {
@@ -1460,6 +1553,14 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
             <span className={`tier-badge ${tierBadge.className}`}>
               {tierBadge.label}
             </span>
+            {(() => {
+              const vBadge = getVerificationBadge(account)
+              return vBadge ? (
+                <span className={`verification-status-pill ${vBadge.className}`} title={vBadge.label}>
+                  {vBadge.label}
+                </span>
+              ) : null
+            })()}
           </div>
 
           {accountTags.length > 0 && (
@@ -1515,6 +1616,19 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
           <div className="card-footer">
             <span className="card-date">{formatDate(account.created_at)}</span>
             <div className="card-actions">
+              {(hasQuotaError || hasVerificationIssue) && (
+                <button
+                  className="card-action-btn is-danger"
+                  onClick={() =>
+                    hasVerificationIssue
+                      ? setShowVerificationErrorModal(account.id)
+                      : setShowErrorModal(account.id)
+                  }
+                  title={t('accounts.actions.viewError')}
+                >
+                  <AlertTriangle size={14} />
+                </button>
+              )}
               <button
                 className="card-action-btn"
                 onClick={() => setShowQuotaModal(account.id)}
@@ -1522,15 +1636,6 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
               >
                 <CircleAlert size={14} />
               </button>
-              {hasQuotaError && (
-                <button
-                  className="card-action-btn"
-                  onClick={() => setShowErrorModal(account.id)}
-                  title={t('accounts.actions.viewError')}
-                >
-                  <AlertTriangle size={14} />
-                </button>
-              )}
               <button
                 className="card-action-btn"
                 onClick={() => openFpSelectModal(account.id)}
@@ -1562,17 +1667,20 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
                 )}
               </button>
               <button
-                className="card-action-btn"
+                className={`card-action-btn${refreshResult[account.id] === 'success' ? ' is-success' : refreshResult[account.id] === 'error' ? ' is-danger' : ''}`}
                 onClick={() => handleRefresh(account.id)}
-                disabled={refreshing === account.id}
+                disabled={refreshing.has(account.id)}
                 title={t('accounts.refreshQuota')}
               >
-                <RotateCw
-                  size={14}
-                  className={
-                    refreshing === account.id ? 'loading-spinner' : ''
-                  }
-                />
+                {refreshing.has(account.id) ? (
+                  <RotateCw size={14} className="loading-spinner" />
+                ) : refreshResult[account.id] === 'success' ? (
+                  <Check size={16} className="text-success" />
+                ) : refreshResult[account.id] === 'error' ? (
+                  <X size={16} className="text-danger" />
+                ) : (
+                  <RotateCw size={14} />
+                )}
               </button>
               <button
                 className="card-action-btn export-btn"
@@ -1926,6 +2034,8 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
       const disabledTitle = account.disabled
         ? `${t('accounts.status.disabled')}${account.disabled_reason ? `: ${account.disabled_reason}` : ''}`
         : ''
+      const verificationReason = account.disabled_reason || verificationStatusMap[account.id]
+      const hasVerificationIssue = verificationReason === 'verification_required' || verificationReason === 'tos_violation'
 
       return (
         <tr
@@ -1955,6 +2065,14 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
                 <span className={`tier-badge ${tierBadge.className}`}>
                   {tierBadge.label}
                 </span>
+                {(() => {
+                  const vBadge = getVerificationBadge(account)
+                  return vBadge ? (
+                    <span className={`verification-status-pill ${vBadge.className}`} title={vBadge.label}>
+                      {vBadge.label}
+                    </span>
+                  ) : null
+                })()}
                 {warning && (
                   <span className="status-pill warning" title={warningTitle}>
                     <CircleAlert size={12} />
@@ -2032,6 +2150,19 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
           </td>
           <td className="sticky-action-cell table-action-cell">
             <div className="action-buttons">
+              {(hasQuotaError || hasVerificationIssue) && (
+                <button
+                  className="action-btn is-danger"
+                  onClick={() =>
+                    hasVerificationIssue
+                      ? setShowVerificationErrorModal(account.id)
+                      : setShowErrorModal(account.id)
+                  }
+                  title={t('accounts.actions.viewError')}
+                >
+                  <AlertTriangle size={16} />
+                </button>
+              )}
               <button
                 className="action-btn"
                 onClick={() => setShowQuotaModal(account.id)}
@@ -2039,15 +2170,6 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
               >
                 <CircleAlert size={16} />
               </button>
-              {hasQuotaError && (
-                <button
-                  className="action-btn"
-                  onClick={() => setShowErrorModal(account.id)}
-                  title={t('accounts.actions.viewError')}
-                >
-                  <AlertTriangle size={16} />
-                </button>
-              )}
               <button
                 className="action-btn"
                 onClick={() => openTagModal(account.id)}
@@ -2072,15 +2194,20 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
                 )}
               </button>
               <button
-                className="action-btn"
+                className={`action-btn${refreshResult[account.id] === 'success' ? ' is-success' : refreshResult[account.id] === 'error' ? ' is-danger' : ''}`}
                 onClick={() => handleRefresh(account.id)}
-                disabled={refreshing === account.id}
+                disabled={refreshing.has(account.id)}
                 title={t('accounts.refreshQuota')}
               >
-                <RotateCw
-                  size={16}
-                  className={refreshing === account.id ? 'loading-spinner' : ''}
-                />
+                {refreshing.has(account.id) ? (
+                  <RotateCw size={16} className="loading-spinner" />
+                ) : refreshResult[account.id] === 'success' ? (
+                  <Check size={18} className="text-success" />
+                ) : refreshResult[account.id] === 'error' ? (
+                  <X size={18} className="text-danger" />
+                ) : (
+                  <RotateCw size={16} />
+                )}
               </button>
               <button
                 className="action-btn"
@@ -2207,6 +2334,8 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
                 <option value="PRO">{`PRO (${tierCounts.PRO})`}</option>
                 <option value="ULTRA">{`ULTRA (${tierCounts.ULTRA})`}</option>
                 <option value="FREE">{`FREE (${tierCounts.FREE})`}</option>
+                <option value="VERIFICATION_REQUIRED">{`${t('wakeup.errorUi.verificationRequiredTitle')} (${tierCounts.VERIFICATION_REQUIRED})`}</option>
+                <option value="TOS_VIOLATION">{`${t('wakeup.errorUi.tosViolationTitle')} (${tierCounts.TOS_VIOLATION})`}</option>
                 <option value="UNKNOWN">{`UNKNOWN (${tierCounts.UNKNOWN})`}</option>
               </select>
             </div>
@@ -2981,7 +3110,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
                         handleRefresh(account.id)
                       }}
                     >
-                      {refreshing === account.id ? (
+                      {refreshing.has(account.id) ? (
                         <div className="loading-spinner small" />
                       ) : (
                         <RefreshCw size={16} />
@@ -3053,6 +3182,123 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
                     <button
                       className="btn btn-secondary"
                       onClick={() => setShowErrorModal(null)}
+                    >
+                      {t('common.close')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
+      {/* Verification Error Modal (verification_required / tos_violation) */}
+      {showVerificationErrorModal &&
+        (() => {
+          const account = accounts.find((a) => a.id === showVerificationErrorModal)
+          if (!account) return null
+          const vReason = account.disabled_reason || verificationStatusMap[account.id]
+          const vDetail = verificationDetailMap[account.id]
+          const isTos = vReason === 'tos_violation'
+          const title = isTos
+            ? t('wakeup.errorUi.tosViolationTitle', 'TOS 违规')
+            : t('wakeup.errorUi.verificationRequiredTitle', '需要验证')
+
+          const openLink = async (url: string) => {
+            try {
+              await openUrl(url)
+            } catch {
+              window.open(url, '_blank', 'noopener,noreferrer')
+            }
+          }
+
+          const copyLink = async (url: string) => {
+            try {
+              await navigator.clipboard.writeText(url)
+            } catch (e) {
+              console.error('复制失败', e)
+            }
+          }
+
+          return (
+            <div
+              className="modal-overlay"
+              onClick={() => setShowVerificationErrorModal(null)}
+            >
+              <div
+                className="modal modal-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="modal-header">
+                  <h2>{title}</h2>
+                  <button
+                    className="close-btn"
+                    onClick={() => setShowVerificationErrorModal(null)}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <div className="error-detail">
+                    <div className="error-detail-meta">
+                      <span>{t('modals.errors.account')}: {maskAccountText(account.email)}</span>
+                      {vDetail?.lastErrorCode && (
+                        <span>{t('wakeup.errorUi.errorCode', { code: vDetail.lastErrorCode })}</span>
+                      )}
+                    </div>
+                    {vDetail?.lastMessage && (
+                      <div className="error-detail-message" style={{ marginTop: 12 }}>
+                        {vDetail.lastMessage}
+                      </div>
+                    )}
+                  </div>
+                  {!vDetail && (
+                    <div className="empty-state-small" style={{ marginTop: 12 }}>
+                      {t('modals.errors.empty', '暂无验证详情')}
+                    </div>
+                  )}
+
+                  {/* Action buttons based on error type */}
+                  <div className="modal-actions" style={{ marginTop: 20, gap: 8, flexWrap: 'wrap' }}>
+                    {!isTos && vDetail?.validationUrl && (
+                      <>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => openLink(vDetail.validationUrl!)}
+                        >
+                          <ExternalLink size={14} />
+                          {t('wakeup.errorUi.completeVerification', '立即验证')}
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          onClick={() => copyLink(vDetail.validationUrl!)}
+                        >
+                          <Copy size={14} />
+                          {t('wakeup.errorUi.copyValidationUrl', '复制验证地址')}
+                        </button>
+                      </>
+                    )}
+                    {isTos && vDetail?.appealUrl && (
+                      <>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => openLink(vDetail.appealUrl!)}
+                        >
+                          <ExternalLink size={14} />
+                          {t('wakeup.errorUi.submitAppeal', '立即提交保证书')}
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          onClick={() => copyLink(vDetail.appealUrl!)}
+                        >
+                          <Copy size={14} />
+                          {t('wakeup.errorUi.copyAppealUrl', '复制链接')}
+                        </button>
+                      </>
+                    )}
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setShowVerificationErrorModal(null)}
                     >
                       {t('common.close')}
                     </button>

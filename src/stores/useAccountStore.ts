@@ -157,8 +157,40 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     },
 
     refreshQuota: async (accountId: string) => {
-        await accountService.fetchAccountQuota(accountId);
-        await get().fetchAccounts();
+        try {
+            const updatedAccount = await accountService.fetchAccountQuota(accountId);
+            // 成功：后端已更新该账号并返回最新状态（包含 quota_error），局部更新该账号，保持滚动位置不变
+            set((state) => ({
+                accounts: state.accounts.map((acc) =>
+                    acc.id === accountId ? updatedAccount : acc
+                ),
+            }));
+            
+            // 如果刷新的是当前账号，需要同时更新 currentAccount
+            const { currentAccount } = get();
+            if (currentAccount?.id === accountId) {
+                set({ currentAccount: updatedAccount });
+            }
+
+            // 如果后端返回了配额错误信息，需要抛出异常让 UI 捕获并显示为失败（红叉）
+            if (updatedAccount.quota_error) {
+                throw new Error(updatedAccount.quota_error.message);
+            }
+            if (updatedAccount.quota?.is_forbidden) {
+                throw new Error("403 Forbidden");
+            }
+        } catch (e) {
+            // Token 级别失败（如 invalid_grant 会改变 disabled 状态）：全量刷新确保数据正确
+            // 如果是我们自己 throw 的配额错误，因为状态已经局部更新，不再需要全量刷新
+            const isQuotaError = e instanceof Error && (
+                get().accounts.find(a => a.id === accountId)?.quota_error?.message === e.message ||
+                e.message === "403 Forbidden"
+            );
+            if (!isQuotaError) {
+                await get().fetchAccounts();
+            }
+            throw e;
+        }
     },
 
     refreshAllQuotas: async () => {

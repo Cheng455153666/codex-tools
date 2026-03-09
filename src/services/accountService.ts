@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { Account, QuotaData, DeviceProfile, DeviceProfiles, RefreshStats, Fingerprint, FingerprintWithStats } from '../types/account';
+import { Account, DeviceProfile, DeviceProfiles, RefreshStats, Fingerprint, FingerprintWithStats } from '../types/account';
 
 export interface PreviewCurrentProfileResult {
     profile: DeviceProfile;
@@ -38,7 +38,7 @@ export async function setCurrentAccount(accountId: string): Promise<void> {
     return await invoke('set_current_account', { accountId });
 }
 
-export async function fetchAccountQuota(accountId: string): Promise<QuotaData> {
+export async function fetchAccountQuota(accountId: string): Promise<Account> {
     return await invoke('fetch_account_quota', { accountId });
 }
 

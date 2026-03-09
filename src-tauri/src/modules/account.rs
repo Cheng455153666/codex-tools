@@ -1316,15 +1316,14 @@ pub async fn fetch_quota_with_retry(
         modules::quota::fetch_quota_for_token(&account.token, &account.email, skip_cache).await;
     match result {
         Ok(payload) => {
-            // 配额获取成功，说明 Token 有效，清除之前可能存在的 disabled 状态
-            if account.disabled {
+            // 配额获取成功，Token 有效
+            // 只解除 invalid_grant 类禁用，其他（verification_required / tos_violation / unknown）不解除
+            if account.is_invalid_grant_disabled() {
                 modules::logger::log_info(&format!(
                     "账号配额获取成功，自动解除禁用状态: {}",
                     account.email
                 ));
-                account.disabled = false;
-                account.disabled_reason = None;
-                account.disabled_at = None;
+                account.clear_disabled();
             }
             account.quota_error = payload.error.map(|err| QuotaErrorInfo {
                 code: err.code,

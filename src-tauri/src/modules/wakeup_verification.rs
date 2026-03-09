@@ -453,27 +453,40 @@ pub async fn run_batch(
         match item.status.as_str() {
             STATUS_SUCCESS => {
                 success_count += 1;
-                // 唤醒成功说明 Token 有效，清除 disabled 和 quota_error
+                // 账号检测成功，账号完全可用，解除所有类型的禁用
+                // （包括 verification_required / tos_violation / invalid_grant）
                 if let Ok(mut account) = modules::load_account(&item.account_id) {
-                    let mut changed = false;
                     if account.disabled {
                         modules::logger::log_info(&format!(
-                            "[WakeupVerification] 唤醒成功，自动解除禁用状态: {}",
+                            "[WakeupVerification] 验证成功，自动解除禁用状态: {}",
                             account.email
                         ));
-                        account.disabled = false;
-                        account.disabled_reason = None;
-                        account.disabled_at = None;
-                        changed = true;
-                    }
-                    if changed {
+                        account.clear_disabled();
                         account.quota_error = None;
                         let _ = modules::save_account(&account);
                     }
                 }
             }
-            STATUS_VERIFICATION_REQUIRED => verification_required_count += 1,
-            STATUS_TOS_VIOLATION => tos_violation_count += 1,
+            STATUS_VERIFICATION_REQUIRED => {
+                verification_required_count += 1;
+                // 身份验证失败，禁用账号
+                if let Ok(mut account) = modules::load_account(&item.account_id) {
+                    account.disabled = true;
+                    account.disabled_reason = Some("verification_required".to_string());
+                    account.disabled_at = Some(chrono::Utc::now().timestamp());
+                    let _ = modules::save_account(&account);
+                }
+            }
+            STATUS_TOS_VIOLATION => {
+                tos_violation_count += 1;
+                // TOS 违规，禁用账号
+                if let Ok(mut account) = modules::load_account(&item.account_id) {
+                    account.disabled = true;
+                    account.disabled_reason = Some("tos_violation".to_string());
+                    account.disabled_at = Some(chrono::Utc::now().timestamp());
+                    let _ = modules::save_account(&account);
+                }
+            }
             STATUS_AUTH_EXPIRED | STATUS_FAILED => failed_count += 1,
             _ => failed_count += 1,
         }

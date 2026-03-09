@@ -495,8 +495,12 @@ export function CodexAccountsPage() {
   );
 
   const tierCounts = useMemo(() => {
-    const counts = { all: accounts.length, FREE: 0, PLUS: 0, PRO: 0, TEAM: 0, ENTERPRISE: 0 };
-    accounts.forEach((a) => { const tier = resolvePlanKey(a); if (tier in counts) counts[tier as keyof typeof counts] += 1; });
+    const counts = { all: accounts.length, FREE: 0, PLUS: 0, PRO: 0, TEAM: 0, ENTERPRISE: 0, ERROR: 0 };
+    accounts.forEach((a) => {
+      const tier = resolvePlanKey(a);
+      if (tier in counts) counts[tier as keyof typeof counts] += 1;
+      if (a.quota_error) counts.ERROR += 1;
+    });
     return counts;
   }, [accounts, resolvePlanKey]);
 
@@ -530,7 +534,11 @@ export function CodexAccountsPage() {
       const query = searchQuery.toLowerCase();
       result = result.filter((a) => resolvePresentation(a).displayName.toLowerCase().includes(query));
     }
-    if (filterType !== 'all') result = result.filter((a) => resolvePlanKey(a) === filterType);
+    if (filterType === 'ERROR') {
+      result = result.filter((a) => !!a.quota_error);
+    } else if (filterType !== 'all') {
+      result = result.filter((a) => resolvePlanKey(a) === filterType);
+    }
     if (tagFilter.length > 0) {
       const selectedTags = new Set(tagFilter.map(normalizeTag));
       result = result.filter((a) => (a.tags || []).map(normalizeTag).some((tag) => selectedTags.has(tag)));
@@ -720,6 +728,7 @@ export function CodexAccountsPage() {
                 <option value="PRO">{`PRO (${tierCounts.PRO})`}</option>
                 <option value="TEAM">{`TEAM (${tierCounts.TEAM})`}</option>
                 <option value="ENTERPRISE">{`ENTERPRISE (${tierCounts.ENTERPRISE})`}</option>
+                <option value="ERROR">{`ERROR (${tierCounts.ERROR})`}</option>
               </select>
             </div>
             <div className="tag-filter" ref={tagFilterRef}>

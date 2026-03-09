@@ -928,7 +928,7 @@ export function WakeupVerificationPage({ onNavigate }: WakeupVerificationPagePro
                     <span className="verification-count-badge is-warning">{batch.verificationRequiredCount}</span>
                   </td>
                   <td>
-                    <span className="verification-count-badge is-failed">{batch.tosViolationCount ?? 0}</span>
+                    <span className="verification-count-badge is-tos-violation">{batch.tosViolationCount ?? 0}</span>
                   </td>
                   <td>
                     <span className="verification-count-badge is-failed">{batch.failedCount}</span>
@@ -1101,7 +1101,7 @@ export function WakeupVerificationPage({ onNavigate }: WakeupVerificationPagePro
                 </button>
                 <button
                   type="button"
-                  className={`pill pill-danger verification-filter-pill ${detailFilter === 'tos_violation' ? 'active' : ''}`}
+                  className={`pill pill-warning verification-filter-pill ${detailFilter === 'tos_violation' ? 'active' : ''}`}
                   onClick={() => setDetailFilter('tos_violation')}
                 >
                   {t('wakeup.errorUi.tosViolationTitle')} {detailCounts.tosViolation}

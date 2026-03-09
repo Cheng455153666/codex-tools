@@ -57,9 +57,9 @@
 }
 
 .wakeup-verification-page .verification-notice.is-warning {
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.12);
-  color: #b45309;
+  border-color: rgba(37, 99, 235, 0.35);
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
 }
 
 .wakeup-verification-page .verification-notice.is-error {
@@ -144,15 +144,23 @@
   border-color: rgba(239, 68, 68, 0.4);
 }
 
+.verification-count-badge.is-tos-violation {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
 .verification-status-pill {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 24px;
   padding: 2px 10px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .verification-status-pill.is-idle {
@@ -174,9 +182,9 @@
 }
 
 .verification-status-pill.is-warning {
-  color: #b45309;
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.28);
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.28);
 }
 
 .verification-status-pill.is-failed {
@@ -186,9 +194,9 @@
 }
 
 .verification-status-pill.is-tos-violation {
-  color: #dc2626;
-  background: rgba(220, 38, 38, 0.12);
-  border-color: rgba(220, 38, 38, 0.35);
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.28);
 }
 
 .verification-empty-cell {
@@ -221,19 +229,6 @@
 
 .verification-select-wrap {
   position: relative;
-}
-
-.verification-select-wrap::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid var(--text-secondary);
-  border-bottom: 2px solid var(--text-secondary);
-  transform: translateY(-60%) rotate(45deg);
-  pointer-events: none;
 }
 
 .verification-select {

@@ -264,6 +264,12 @@
   border-color: rgba(239, 68, 68, 0.3);
 }
 
+.pill-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
 @keyframes floatIn {
   from {
     opacity: 0;
@@ -698,7 +704,8 @@
 .account-sub-line {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 /* Badges & Tags */
@@ -878,12 +885,20 @@
   color: var(--text-secondary);
 }
 
-.action-btn.danger:hover {
+.action-btn.is-danger {
+  color: var(--danger);
+}
+
+.action-btn.is-danger:hover {
   background: rgba(239, 68, 68, 0.1);
   color: var(--danger);
 }
 
-.action-btn.success:hover {
+.action-btn.is-success {
+  color: var(--success);
+}
+
+.action-btn.is-success:hover {
   background: rgba(34, 197, 94, 0.1);
   color: var(--success);
 }
@@ -958,7 +973,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 
+  box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.35),
     0 0 15px rgba(0, 0, 0, 0.1);
   animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
