@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use tauri::AppHandle;
-use tauri::Emitter;
 use tauri::Manager;
 
 use crate::account_service::refresh_all_usage_internal;
@@ -17,10 +16,6 @@ const REFRESH_INTERVAL_SECONDS: u64 = 30;
 
 #[cfg(target_os = "macos")]
 const TRAY_ID: &str = "codex_tools_status_bar";
-#[cfg(target_os = "macos")]
-pub(crate) const APP_MENU_CHECK_UPDATE_ID: &str = "app_check_update";
-#[cfg(target_os = "macos")]
-pub(crate) const APP_MENU_OPEN_SETTINGS_ID: &str = "app_open_settings";
 #[cfg(target_os = "macos")]
 const TRAY_MENU_REFRESH_ID: &str = "tray_refresh_usage";
 #[cfg(target_os = "macos")]
@@ -382,20 +377,6 @@ pub(crate) fn handle_status_bar_menu_event(app: &AppHandle, event: tauri::menu::
     #[cfg(target_os = "macos")]
     {
         let id = event.id().as_ref();
-        if id == APP_MENU_OPEN_SETTINGS_ID {
-            if let Err(err) = app.emit("app-menu-open-settings", ()) {
-                log::warn!("发送菜单打开设置事件失败: {err}");
-            }
-            return;
-        }
-
-        if id == APP_MENU_CHECK_UPDATE_ID {
-            if let Err(err) = app.emit("app-menu-check-update", ()) {
-                log::warn!("发送菜单检查更新事件失败: {err}");
-            }
-            return;
-        }
-
         if id == TRAY_MENU_QUIT_ID {
             app.exit(0);
             return;

@@ -125,8 +125,6 @@ async fn update_app_settings(
     let settings =
         settings_service::update_app_settings_internal(&app, state.inner(), patch).await?;
     let _ = tray::refresh_macos_tray_snapshot(&app);
-    #[cfg(target_os = "macos")]
-    let _ = setup_macos_app_menu(&app);
     Ok(settings)
 }
 
@@ -510,48 +508,6 @@ async fn auto_start_api_proxy_if_enabled(app: AppHandle) {
     }
 }
 
-#[cfg(target_os = "macos")]
-fn setup_macos_app_menu(app: &AppHandle) -> Result<(), String> {
-    use tauri::menu::Menu;
-    use tauri::menu::MenuItem;
-
-    let locale = i18n::app_locale(app);
-    let menu = Menu::default(app).map_err(|e| format!("创建默认应用菜单失败: {e}"))?;
-    let check_update = MenuItem::with_id(
-        app,
-        tray::APP_MENU_CHECK_UPDATE_ID,
-        i18n::app_menu_check_update(locale),
-        true,
-        None::<&str>,
-    )
-    .map_err(|e| format!("创建检查更新菜单失败: {e}"))?;
-    let open_settings = MenuItem::with_id(
-        app,
-        tray::APP_MENU_OPEN_SETTINGS_ID,
-        i18n::app_menu_settings(locale),
-        true,
-        None::<&str>,
-    )
-    .map_err(|e| format!("创建设置菜单失败: {e}"))?;
-
-    let app_submenu = menu
-        .items()
-        .map_err(|e| format!("读取应用菜单项失败: {e}"))?
-        .into_iter()
-        .find_map(|item| item.as_submenu().cloned())
-        .ok_or_else(|| "未找到 macOS 应用菜单".to_string())?;
-    app_submenu
-        .insert(&open_settings, 1)
-        .map_err(|e| format!("插入设置菜单失败: {e}"))?;
-    app_submenu
-        .insert(&check_update, 2)
-        .map_err(|e| format!("插入检查更新菜单失败: {e}"))?;
-    app.set_menu(menu)
-        .map_err(|e| format!("设置应用菜单失败: {e}"))?;
-
-    Ok(())
-}
-
 // ===== App Bootstrap =====
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -577,10 +533,6 @@ pub fn run() {
 
             if let Err(err) = settings_service::sync_autostart_from_store(app.handle()) {
                 log::warn!("启动时同步开机启动状态失败: {err}");
-            }
-            #[cfg(target_os = "macos")]
-            if let Err(err) = setup_macos_app_menu(app.handle()) {
-                log::warn!("初始化 macOS 菜单栏失败: {err}");
             }
             // 启动阶段先同步当前本机登录账号，再初始化状态栏，保证首次展示即一致。
             store::sync_current_auth_account_on_startup(app.handle())?;

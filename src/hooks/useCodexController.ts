@@ -659,30 +659,6 @@ export function useCodexController() {
     let disposed = false;
     let unlisten: UnlistenFn | null = null;
 
-    void listen("app-menu-check-update", () => {
-      void checkForAppUpdate(false);
-    })
-      .then((fn) => {
-        if (disposed) {
-          void fn();
-          return;
-        }
-        unlisten = fn;
-      })
-      .catch(() => {});
-
-    return () => {
-      disposed = true;
-      if (unlisten) {
-        void unlisten();
-      }
-    };
-  }, [checkForAppUpdate]);
-
-  useEffect(() => {
-    let disposed = false;
-    let unlisten: UnlistenFn | null = null;
-
     void listen<RemoteDeployProgress>("remote-deploy-progress", (event) => {
       if (!disposed) {
         setRemoteDeployProgress(event.payload);

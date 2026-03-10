@@ -127,14 +127,6 @@ pub(crate) fn app_locale(app: &AppHandle) -> AppLocale {
         .unwrap_or_else(|_| detect_system_locale())
 }
 
-pub(crate) fn app_menu_check_update(locale: AppLocale) -> String {
-    format!("{}…", text(locale, &["topBar", "checkUpdate"]))
-}
-
-pub(crate) fn app_menu_settings(locale: AppLocale) -> String {
-    format!("{}…", text(locale, &["settings", "title"]))
-}
-
 pub(crate) fn tray_usage_mode_label(locale: AppLocale, mode: TrayUsageDisplayMode) -> &'static str {
     match mode {
         TrayUsageDisplayMode::Used => text(locale, &["settings", "trayUsageDisplay", "used"]),

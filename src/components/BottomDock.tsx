@@ -1,12 +1,10 @@
 import { useI18n } from "../i18n/I18nProvider";
 
-type AppTab = "accounts" | "proxy";
+type AppTab = "accounts" | "proxy" | "settings";
 
 type BottomDockProps = {
   activeTab: AppTab;
-  settingsOpen: boolean;
   onSelectTab: (tab: AppTab) => void;
-  onToggleSettings: () => void;
 };
 
 function AccountsIcon() {
@@ -43,13 +41,12 @@ function SettingsIcon() {
 
 export function BottomDock({
   activeTab,
-  settingsOpen,
   onSelectTab,
-  onToggleSettings,
 }: BottomDockProps) {
   const { copy } = useI18n();
-  const accountActive = activeTab === "accounts" && !settingsOpen;
-  const proxyActive = activeTab === "proxy" && !settingsOpen;
+  const accountActive = activeTab === "accounts";
+  const proxyActive = activeTab === "proxy";
+  const settingsActive = activeTab === "settings";
 
   return (
     <nav className="bottomDock" aria-label={copy.bottomDock.ariaLabel}>
@@ -70,8 +67,8 @@ export function BottomDock({
         <ProxyIcon />
       </button>
       <button
-        className={`bottomDockButton${settingsOpen ? " isActive" : ""}`}
-        onClick={onToggleSettings}
+        className={`bottomDockButton${settingsActive ? " isActive" : ""}`}
+        onClick={() => onSelectTab("settings")}
         aria-label={copy.bottomDock.settings}
         title={copy.bottomDock.settings}
       >

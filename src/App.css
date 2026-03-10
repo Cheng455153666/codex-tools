@@ -224,9 +224,42 @@
 
 .brandLine {
   margin-top: 6px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  position: static;
+  isolation: auto;
+  overflow: visible;
+  transform: none;
+  filter: none;
+  transition: none;
+}
+
+.brandLine::before {
+  content: none;
+}
+
+.brandLine:hover {
+  transform: none;
+  filter: none;
+  background: transparent;
+}
+
+.brandLine:hover::before {
+  opacity: 0;
+  transform: none;
+}
+
+.brandLine:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .brandLine h1 {
@@ -238,8 +271,8 @@
   height: 40px;
   border-radius: 10px;
   object-fit: cover;
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 16px rgba(20, 38, 66, 0.18);
+  border: 0;
+  box-shadow: none;
 }
 
 .topActions {
@@ -325,6 +358,16 @@
   padding: 16px;
   box-shadow: var(--panel-shadow);
   animation: riseIn 220ms ease both;
+}
+
+.settingsPage {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--import-bg);
+  padding: 20px;
+  box-shadow: var(--panel-shadow);
+  display: grid;
+  gap: 14px;
 }
 
 .addAuthDialog {
@@ -2238,6 +2281,11 @@ button.bottomDockButton.isActive:focus-visible {
     max-height: calc(100vh - 24px);
     border-radius: 14px;
     padding: 14px;
+  }
+
+  .settingsPage {
+    border-radius: 16px;
+    padding: 16px;
   }
 
   .updateOverlay {
