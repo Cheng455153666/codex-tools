@@ -14,8 +14,9 @@ pub const PLATFORM_WINDSURF: &str = "windsurf";
 pub const PLATFORM_KIRO: &str = "kiro";
 pub const PLATFORM_CURSOR: &str = "cursor";
 pub const PLATFORM_GEMINI: &str = "gemini";
+pub const PLATFORM_CODEBUDDY: &str = "codebuddy";
 
-pub const SUPPORTED_PLATFORM_IDS: [&str; 7] = [
+pub const SUPPORTED_PLATFORM_IDS: [&str; 8] = [
     PLATFORM_ANTIGRAVITY,
     PLATFORM_CODEX,
     PLATFORM_GITHUB_COPILOT,
@@ -23,6 +24,7 @@ pub const SUPPORTED_PLATFORM_IDS: [&str; 7] = [
     PLATFORM_KIRO,
     PLATFORM_CURSOR,
     PLATFORM_GEMINI,
+    PLATFORM_CODEBUDDY,
 ];
 
 pub const SORT_MODE_AUTO: &str = "auto";

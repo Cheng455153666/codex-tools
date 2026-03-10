@@ -7,6 +7,24 @@ All notable changes to Cockpit Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
+## [0.12.0] - 2026-03-10
+
+### Added
+- **CodeBuddy platform full integration across backend and frontend**: Added CodeBuddy models, commands, modules, OAuth flow, account pages, services, stores, icons, navigation, dashboard wiring, and shared platform metadata.
+- **CodeBuddy account lifecycle support**: Added OAuth login, Token/JSON import, quota query and binding, cycle/resource/extra-credit presentation, tag editing, bulk actions, account export, and local credential injection for account switching.
+- **CodeBuddy multi-instance management**: Added CodeBuddy instance store and commands with isolated user-data directories, account binding, instance create/update/delete, start/stop, open-window, and close-all controls.
+- **CodeBuddy WebView-guided authorization and quota capture flow**: Added dedicated OAuth/quota WebView windows and step-based UI feedback so users can complete login and bind the required session cookies for quota refresh inside Cockpit.
+
+### Changed
+- **CodeBuddy is now integrated into shared runtime surfaces**: Added CodeBuddy app-path detection, auto-refresh interval, quota-alert settings, Quick Settings, tray summaries, and global refresh scheduling.
+- **Cursor switch now attempts to launch the default instance after injection**: switching a Cursor account now updates the default-instance binding and tries to start Cursor immediately, while still emitting unified path-missing guidance when the app path is unavailable.
+- **Codex quota presentation is now consolidated into one flexible column**: the Accounts table now renders all quota windows in a single area, and Code Review quota visibility can be toggled from preferences.
+
+### Fixed
+- **Secondary windows no longer inherit main-window close interception**: non-main windows now close directly instead of being incorrectly blocked by the tray/minimize confirmation flow.
+- **Windsurf safe-storage key lookup is now provider-specific**: macOS and Linux credential handling no longer falls back to generic VS Code safe-storage entries, reducing wrong-key reads during injection.
+
+---
 ## [0.11.3] - 2026-03-10
 
 ### Fixed

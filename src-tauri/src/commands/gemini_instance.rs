@@ -170,15 +170,16 @@ pub async fn gemini_create_instance(
     copy_source_instance_id: Option<String>,
     init_mode: Option<String>,
 ) -> Result<InstanceProfileView, String> {
-    let instance =
-        modules::gemini_instance::create_instance(modules::gemini_instance::CreateInstanceParams {
+    let instance = modules::gemini_instance::create_instance(
+        modules::gemini_instance::CreateInstanceParams {
             name,
             user_data_dir,
             extra_args: extra_args.unwrap_or_default(),
             bind_account_id,
             copy_source_instance_id,
             init_mode,
-        })?;
+        },
+    )?;
 
     let initialized = is_profile_initialized(&instance.user_data_dir);
     Ok(InstanceProfileView::from_profile(
@@ -237,13 +238,14 @@ pub async fn gemini_update_instance(
         }
     }
 
-    let instance =
-        modules::gemini_instance::update_instance(modules::gemini_instance::UpdateInstanceParams {
+    let instance = modules::gemini_instance::update_instance(
+        modules::gemini_instance::UpdateInstanceParams {
             instance_id,
             name,
             extra_args,
             bind_account_id,
-        })?;
+        },
+    )?;
     let initialized = is_profile_initialized(&instance.user_data_dir);
     Ok(InstanceProfileView::from_profile(
         instance,
@@ -294,7 +296,10 @@ pub async fn gemini_start_instance(instance_id: String) -> Result<InstanceProfil
         .ok_or("实例不存在")?;
 
     if let Some(ref account_id) = instance.bind_account_id {
-        modules::gemini_account::inject_to_gemini_home(account_id, Some(Path::new(&instance.user_data_dir)))?;
+        modules::gemini_account::inject_to_gemini_home(
+            account_id,
+            Some(Path::new(&instance.user_data_dir)),
+        )?;
     }
 
     let updated = modules::gemini_instance::update_instance_last_launched(&instance.id)?;

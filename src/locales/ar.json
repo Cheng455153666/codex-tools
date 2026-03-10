@@ -161,7 +161,8 @@
       "update": "تحديث",
       "restart": "إعادة التشغيل"
     },
-    "gemini": "حسابات Gemini"
+    "gemini": "حسابات Gemini",
+    "codebuddy": "حسابات CodeBuddy"
   },
   "platformLayout": {
     "title": "تخطيط المنصات",
@@ -459,7 +460,15 @@
       "autoUpdateOn": "تشغيل (تحديث صامت)",
       "opencodeAuthOverwrite": "استبدال تسجيل دخول OpenCode عند تبديل Codex",
       "opencodeAuthOverwriteDesc": "عند التعطيل، يتم تبديل Codex فقط ويحتفظ OpenCode بحالة تسجيل الدخول الحالية",
-      "opencodeRestartRequiresOverwrite": "فعّل أولاً \"استبدال تسجيل دخول OpenCode عند تبديل Codex\""
+      "opencodeRestartRequiresOverwrite": "فعّل أولاً \"استبدال تسجيل دخول OpenCode عند تبديل Codex\"",
+      "codebuddySettingsTitle": "إعدادات CodeBuddy",
+      "codebuddyAutoRefresh": "التحديث التلقائي لحصة CodeBuddy",
+      "codebuddyAutoRefreshDesc": "فاصل التحديث التلقائي في الخلفية",
+      "codebuddyAppPath": "مسار تشغيل CodeBuddy",
+      "codebuddyAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "codebuddyAppPathPlaceholder": "المسار الافتراضي",
+      "codebuddyPathSelect": "اختيار",
+      "codebuddyPathReset": "إعادة إلى الافتراضي"
     },
     "network": {
       "apiTitle": "واجهة برمجة تطبيقات قمرة القيادة المضادة للجاذبية",
@@ -1150,6 +1159,9 @@
       "team": "TEAM",
       "enterprise": "ENTERPRISE"
     },
+    "list": {
+      "showCodeReviewQuota": "إظهار حصة Code Review"
+    },
     "time": {
       "today": "اليوم {{time}}",
       "tomorrow": "غدًا {{time}}",
@@ -1343,7 +1355,11 @@
       "title": "إعدادات Gemini",
       "appPath": "مسار Gemini"
     },
-    "geminiRefreshInterval": "تحديث الحصة تلقائيًا"
+    "geminiRefreshInterval": "تحديث الحصة تلقائيًا",
+    "codebuddy": {
+      "title": "إعدادات CodeBuddy",
+      "appPath": "مسار CodeBuddy"
+    }
   },
   "quotaAlert": {
     "bannerText": "تنبيه حصة للحساب {{email}} (العتبة {{threshold}}%، الأدنى {{lowest}}%، النماذج: {{models}})",
@@ -1896,6 +1912,173 @@
       "desc": "إدارة حسابات Gemini عن طريق الاستيراد من تثبيت Gemini المحلي أو لصق رموز JWT. تتم معالجة البيانات محليًا فقط.",
       "reason": "نطاق الأذونات: قراءة وكتابة oauth_creds.json وgoogle_accounts.json وsettings.json ضمن ~/.gemini الافتراضي أو مسار المثيل (GEMINI_CLI_HOME/.gemini) لاستيراد الحسابات وحقن بيانات الاعتماد محليًا (تبديل الحساب).",
       "storage": "نطاق الشبكة: عمليات OAuth وتحديث الحصة تستدعي واجهات Google/Gemini الرسمية (مثل oauth2.googleapis.com وgoogleapis.com). يتم إرسال حقول المصادقة/الحصة الضرورية فقط؛ ولا تُرفع الملفات المحلية إلى خوادم طرف ثالث."
+    }
+  },
+  "codebuddy": {
+    "title": "إدارة حسابات CodeBuddy",
+    "noAccounts": "لا توجد حسابات CodeBuddy",
+    "addAccount": "إضافة حساب CodeBuddy",
+    "flowNotice": {
+      "title": "معلومات إدارة حسابات CodeBuddy (انقر للتوسيع/الطي)",
+      "desc": "يتطلب تبديل الحسابات قراءة تخزين مصادقة CodeBuddy المحلي واستدعاء خدمات بيانات الاعتماد في النظام لفك التشفير/إعادة التشفير. تتم معالجة البيانات محليًا فقط.",
+      "permission": "نطاق الأذونات: قراءة قاعدة بيانات مصادقة CodeBuddy (state.vscdb)، واستدعاء قدرات بيانات الاعتماد بالنظام (macOS Keychain / Windows DPAPI / Linux Secret Service) لفك التشفير/إعادة الكتابة.",
+      "network": "نطاق الشبكة: تسجيل دخول OAuth وتحديث الرمز يتطلبان طلبات شبكة إلى codebuddy.ai؛ واستعلامات الحصة تستدعي واجهات فوترة API. لا يتم رفع أي مفاتيح أو بيانات اعتماد محلية."
+    },
+    "nickname": "الاسم المستعار",
+    "enterprise": "المؤسسة",
+    "usage": "حالة الاستخدام",
+    "usageNormal": "طبيعي",
+    "oauthWaiting": "بانتظار التفويض...",
+    "oauthDesc": "انقر الزر أدناه لفتح صفحة تفويض CodeBuddy في متصفحك.",
+    "oauthDescWebview": "انقر الزر أدناه لفتح صفحة تفويض CodeBuddy في WebView المدمج.",
+    "oauthFeature": {
+      "webview": {
+        "title": "موصى به: أكمل تفويض IDE وربط الحصة في مسار واحد",
+        "item1": "بعد تسجيل الدخول عبر WebView المدمج المتخفي، سيتم ربط بيانات دخول IDE تلقائيًا.",
+        "item2": "سيتم التقاط معلمات استعلام الحصة وربطها تلقائيًا في الوقت نفسه.",
+        "item3": "الأفضل لإعداد الحساب لأول مرة، مع توفر عرض/تحديث الحصة فورًا."
+      },
+      "oauth": {
+        "title": "تسجيل دخول IDE فقط",
+        "item1": "أضف الحساب بعد إكمال OAuth في المتصفح، ثم استخدمه للتبديل داخل IDE.",
+        "item2": "لا يتم ربط معلمات استعلام الحصة تلقائيًا.",
+        "item3": "إذا احتجت عرض الحصة، شغّل \"استعلام الحصة\" يدويًا من بطاقة الحساب."
+      }
+    },
+    "oauthWebviewTab": "OAuth عبر WebView",
+    "oauthOpenWebview": "فتح في WebView",
+    "oauthOpenWebviewIncognito": "فتح في WebView المتخفي",
+    "oauthOpenWebviewFailed": "فشل فتح WebView: {{error}}",
+    "oauthOpenBrowserFallback": "فتح في المتصفح (بديل)",
+    "oauthOpenBrowserFailed": "فشل فتح المتصفح: {{error}}",
+    "oauthWebviewProgressHint": "يتم عرض شريط خطوات أفقي أعلى WebView لتحديد المرحلة المتوقفة.",
+    "oauthFlow": {
+      "prepare": "تحضير رابط OAuth",
+      "quota": "التقاط Cookie في WebView وربط استعلام الحصة",
+      "authorize": "فتح رابط التفويض وتأكيده",
+      "bind": "استطلاع نتيجة التفويض وربط الحساب",
+      "retryPrepare": "إعادة إنشاء رابط OAuth",
+      "retryQuota": "إعادة التقاط Cookie واستعلام الحصة",
+      "retryAuthorize": "طلب رابط التفويض مرة أخرى",
+      "retryBind": "إعادة محاولة استطلاع التفويض",
+      "error": "خطأ في المسار: {{error}}"
+    },
+    "tokenDesc": "ألصق رمز الوصول الخاص بـ CodeBuddy:",
+    "jsonDesc": "اختر ملف JSON يحتوي على حسابات CodeBuddy:",
+    "import": {
+      "localDesc": "استيراد بيانات الحساب من عميل CodeBuddy المحلي أو من ملف JSON.",
+      "localClient": "استيراد من CodeBuddy المحلي"
+    },
+    "search": "ابحث في حسابات CodeBuddy...",
+    "quotaQuery": {
+      "title": "استعلام الحصة",
+      "desc": "ألصق ترويسة Cookie أو أمر cURL كامل. سنستخرج session/session_2 ونربطه بهذا الحساب.",
+      "button": "استعلام الحصة",
+      "submit": "ربط واستعلام",
+      "clearBinding": "مسح الربط",
+      "clearBindingConfirm": "هل تريد مسح ربط استعلام الحصة لهذا الحساب؟ سيتوقف التحديث التلقائي للحصة بعد المسح.",
+      "clearBindingSuccess": "تم مسح ربط استعلام الحصة.",
+      "clearBindingFailed": "فشل مسح ربط الحصة: {{error}}",
+      "success": "تم استعلام الحصة بنجاح. تم حفظ الربط.",
+      "failed": "فشل استعلام الحصة: {{error}}",
+      "failedCompact": "فشل الاستعلام",
+      "failedRefreshCompact": "فشل تحديث الحصة",
+      "failedReasonLabel": "السبب: {{reason}}",
+      "failedReasonAt": "وقت الفشل: {{time}}",
+      "sectionTitle": "استعلام الحصة",
+      "empty": "لا توجد معلومات ربط لاستعلام الحصة بعد",
+      "packageUnknown": "باقة غير معروفة",
+      "quotaLabel": "الحصة المتبقية",
+      "updatedAt": "آخر استعلام: {{time}}",
+      "cycleRange": "الدورة: {{start}} - {{end}}",
+      "cycleUnknown": "معلومات الدورة غير متاحة",
+      "expireAt": "ينتهي في: {{time}}",
+      "expireUnknown": "وقت الانتهاء: غير متاح",
+      "noQuota": "لم يتم الاستعلام",
+      "bindTarget": "الحساب المرتبط: {{email}}",
+      "coreHint": "تستخدم المعلمات الأخرى القيم الافتراضية: ProductCode=p_tcaca، Status=0,3، والنطاق الزمني=من الآن إلى +100 سنة.",
+      "webview": {
+        "tab": "تسجيل الدخول عبر WebView",
+        "desc": "سجّل الدخول إلى CodeBuddy في المتصفح المدمج. سيتم جلب معلومات الحصة تلقائيًا بعد تسجيل الدخول.",
+        "open": "فتح في WebView",
+        "openIncognito": "فتح في WebView المتخفي",
+        "waiting": "بانتظار تسجيل الدخول في المتصفح...",
+        "hint": "يرجى تسجيل الدخول إلى CodeBuddy في نافذة المتصفح المنبثقة. سيتم جلب الحصة وإغلاق النافذة تلقائيًا.",
+        "success": "نجح استعلام الحصة عبر WebView",
+        "failed": "فشل استعلام WebView: {{error}}"
+      },
+      "webviewFlow": {
+        "open": "فتح WebView",
+        "login": "تسجيل الدخول إلى CodeBuddy",
+        "fetch": "جلب بيانات الحصة",
+        "bind": "ربط النتيجة بالحساب",
+        "retryOpen": "إعادة فتح WebView",
+        "retryLogin": "إعادة محاولة تسجيل الدخول",
+        "retryFetch": "إعادة جلب الحصة",
+        "retryBind": "إعادة محاولة الربط",
+        "error": "خطأ في المسار: {{error}}"
+      },
+      "manual": {
+        "tab": "لصق يدوي",
+        "step1": "افتح الرابط أدناه في متصفحك ثم سجّل الدخول",
+        "step2": "اضغط F12 لفتح أدوات المطور ثم انتقل إلى تبويب Network",
+        "step3": "حدّث الصفحة وابحث عن طلب get-user-resource",
+        "step4": "انقر بزر الفأرة الأيمن على الطلب → Copy → Copy as cURL",
+        "step5": "ألصقه في مربع الإدخال أدناه"
+      },
+      "fields": {
+        "cookieHeader": "ترويسة Cookie / cURL",
+        "productCode": "رمز المنتج",
+        "status": "الحالة",
+        "beginTime": "وقت البدء",
+        "endTime": "وقت الانتهاء",
+        "pageNumber": "رقم الصفحة",
+        "pageSize": "حجم الصفحة"
+      },
+      "placeholders": {
+        "cookieHeader": "ألصق أمر cURL الخاص بـ get-user-resource"
+      },
+      "errors": {
+        "cookieRequired": "يرجى إدخال Cookie header أو cURL أولاً.",
+        "accountMismatch": "ملف تعريف الارتباط الخاص بالحصة يخص حسابًا مختلفًا (UIN الحالي: {{expectedUin}}، UIN المرجع: {{resourceUin}}، payerUin: {{payerUin}}). يرجى التبديل إلى الحساب الصحيح ونسخ Cookie مرة أخرى.",
+        "statusInvalid": "تنسيق Status غير صالح. استخدم أرقامًا مفصولة بفواصل.",
+        "pageInvalid": "قيم التقسيم إلى صفحات غير صالحة. أدخل أرقامًا أكبر من 0."
+      }
+    },
+    "extraCredit": {
+      "title": "باقة الرصيد"
+    },
+    "oauthUrlInputPlaceholder": "يمكنك إدخال رابط التفويض يدويًا",
+    "oauthInvalidUrl": "رابط تفويض غير صالح. يرجى إدخال رابط كامل.",
+    "oauthGotoWebview": "توجيه WebView المفتوح إلى الرابط المُدخل",
+    "oauthGotoWebviewSuccess": "تم طلب توجيه WebView إلى الرابط المُدخل.",
+    "oauthGotoWebviewFailed": "فشل توجيه WebView: {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "أدخل رابطًا للتنقل داخل WebView هذا",
+    "oauthWebviewInlineGo": "انتقال",
+    "oauthQuotaFailurePrompt": "فشل ربط الحصة.\nانقر موافق لإعادة محاولة التقاط Cookie وتحديث الحصة؛ وانقر إلغاء للتخطي (الحساب فقط).",
+    "oauthQuotaFailureTitle": "فشل ربط الحصة",
+    "oauthQuotaFailureRetry": "إعادة المحاولة",
+    "oauthQuotaFailureSkip": "تخطي",
+    "oauthSuccessClosePrompt": "تمت إضافة الحساب بنجاح. هل تريد إغلاق WebView الآن؟\nاختر \"إغلاق WebView\" للإغلاق الآن، أو \"لاحقًا\" للإبقاء عليه مفتوحًا.",
+    "oauthSuccessCloseTitle": "تمت إضافة الحساب",
+    "oauthSuccessCloseNowLabel": "إغلاق WebView",
+    "oauthSuccessCloseLaterLabel": "لاحقًا",
+    "oauthSuccessCloseNowStatus": "✅ تمت إضافة الحساب. جارٍ إغلاق النافذة...",
+    "oauthSuccessCloseLaterStatus": "✅ تمت إضافة الحساب. سيبقى WebView مفتوحًا.",
+    "oauthWebviewOverlay": {
+      "steps": {
+        "quotaAuthorize": "1 سجّل الدخول إلى CodeBuddy",
+        "quotaBind": "2 التقاط Cookie في WebView وربط استعلام الحصة",
+        "quotaComplete": "3 تم (إغلاق يدوي)",
+        "prepare": "1 تحضير رابط OAuth",
+        "authorize": "2 فتح رابط التفويض وتأكيده",
+        "bind": "3 استطلاع نتيجة التفويض وربط الحساب",
+        "quota": "4 التقاط Cookie في WebView وربط استعلام الحصة",
+        "complete": "5 تم (إغلاق يدوي)"
+      },
+      "status": {
+        "loginConfirm": "يرجى إكمال تسجيل الدخول والتفويض في هذه الصفحة."
+      }
     }
   }
 }

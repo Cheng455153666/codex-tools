@@ -60,6 +60,9 @@ const CursorAccountsPage = lazy(() =>
 const GeminiAccountsPage = lazy(() =>
   import('./pages/GeminiAccountsPage').then((module) => ({ default: module.GeminiAccountsPage })),
 );
+const CodebuddyAccountsPage = lazy(() =>
+  import('./pages/CodebuddyAccountsPage').then((module) => ({ default: module.CodebuddyAccountsPage })),
+);
 const FingerprintsPage = lazy(() =>
   import('./pages/FingerprintsPage').then((module) => ({ default: module.FingerprintsPage })),
 );
@@ -110,10 +113,11 @@ interface GeneralConfig extends GeneralConfigTheme {
   windsurf_app_path: string;
   kiro_app_path: string;
   cursor_app_path: string;
+  codebuddy_app_path: string;
 }
 
 type AppPathMissingDetail = {
-  app: 'antigravity' | 'codex' | 'vscode' | 'windsurf' | 'kiro' | 'cursor';
+  app: 'antigravity' | 'codex' | 'vscode' | 'windsurf' | 'kiro' | 'cursor' | 'codebuddy';
   retry?:
     | { kind: 'default' }
     | { kind: 'instance'; instanceId?: string }
@@ -156,7 +160,7 @@ type QuotaAlertPayload = {
   triggered_at: number;
 };
 
-type QuotaAlertPlatform = 'antigravity' | 'codex' | 'github_copilot' | 'windsurf' | 'kiro' | 'cursor' | 'gemini';
+type QuotaAlertPlatform = 'antigravity' | 'codex' | 'github_copilot' | 'windsurf' | 'kiro' | 'cursor' | 'gemini' | 'codebuddy';
 type UpdateCheckSource = 'auto' | 'manual';
 type UpdateActionState = 'hidden' | 'available' | 'downloading' | 'ready';
 
@@ -181,6 +185,8 @@ function normalizeQuotaAlertPlatform(platform: string | undefined): QuotaAlertPl
       return 'cursor';
     case 'gemini':
       return 'gemini';
+    case 'codebuddy':
+      return 'codebuddy';
     default:
       return 'antigravity';
   }
@@ -203,6 +209,8 @@ function getQuotaAlertPlatformLabel(
       return 'Cursor';
     case 'gemini':
       return t('nav.gemini', 'Gemini');
+    case 'codebuddy':
+      return 'CodeBuddy';
     default:
       return t('nav.overview', 'Antigravity');
   }
@@ -222,6 +230,8 @@ function getQuotaAlertTargetPage(platform: QuotaAlertPlatform): Page {
       return 'cursor';
     case 'gemini':
       return 'gemini';
+    case 'codebuddy':
+      return 'codebuddy';
     default:
       return 'overview';
   }
@@ -241,6 +251,8 @@ function getQuotaAlertQuickSettingsType(platform: QuotaAlertPlatform): QuickSett
       return 'cursor';
     case 'gemini':
       return 'gemini';
+    case 'codebuddy':
+      return 'codebuddy';
     default:
       return 'antigravity';
   }
@@ -1271,6 +1283,10 @@ function App() {
         command: 'refresh_all_gemini_tokens',
         errorMessage: 'Failed to refresh Gemini:',
       },
+      {
+        command: 'refresh_all_codebuddy_tokens',
+        errorMessage: 'Failed to refresh CodeBuddy:',
+      },
     ] as const;
 
     listen('tray:refresh_quota', async () => {
@@ -1360,6 +1376,8 @@ function App() {
                 ? config.kiro_app_path
               : appPathMissing.app === 'cursor'
                 ? config.cursor_app_path
+              : appPathMissing.app === 'codebuddy'
+                ? config.codebuddy_app_path
               : config.antigravity_app_path;
         if (active) {
           setAppPathDraft(currentPath || '');
@@ -1417,6 +1435,8 @@ function App() {
           await invoke('kiro_start_instance', { instanceId: retry.instanceId });
         } else if (app === 'cursor') {
           await invoke('cursor_start_instance', { instanceId: retry.instanceId });
+        } else if (app === 'codebuddy') {
+          await invoke('codebuddy_start_instance', { instanceId: retry.instanceId });
         } else {
           await invoke('start_instance', { instanceId: retry.instanceId });
         }
@@ -1431,6 +1451,8 @@ function App() {
           await invoke('kiro_start_instance', { instanceId: '__default__' });
         } else if (app === 'cursor') {
           await invoke('cursor_start_instance', { instanceId: '__default__' });
+        } else if (app === 'codebuddy') {
+          await invoke('codebuddy_start_instance', { instanceId: '__default__' });
         } else {
           await invoke('start_instance', { instanceId: '__default__' });
         }
@@ -1489,6 +1511,7 @@ function App() {
             case 'kiro':
             case 'cursor':
             case 'gemini':
+            case 'codebuddy':
             case 'manual':
             case 'settings':
               setPage(target as Page);
@@ -1539,6 +1562,8 @@ function App() {
             ? 'Kiro'
             : appPathMissing.app === 'cursor'
               ? 'Cursor'
+              : appPathMissing.app === 'codebuddy'
+                ? 'CodeBuddy'
               : 'Antigravity'
     : '';
 
@@ -1553,6 +1578,8 @@ function App() {
             ? t('quickSettings.kiro.appPath', 'Kiro 路径')
             : appPathMissing.app === 'cursor'
               ? t('quickSettings.cursor.appPath', 'Cursor 路径')
+              : appPathMissing.app === 'codebuddy'
+                ? t('quickSettings.codebuddy.appPath', 'CodeBuddy 路径')
               : t('quickSettings.antigravity.appPath', '启动路径')
     : t('quickSettings.antigravity.appPath', '启动路径');
 
@@ -1710,6 +1737,8 @@ function App() {
                                   ? t('settings.general.kiroPathReset', '重置默认')
                                   : appPathMissing.app === 'cursor'
                                     ? t('settings.general.cursorPathReset', '重置默认')
+                                    : appPathMissing.app === 'codebuddy'
+                                      ? t('settings.general.codebuddyPathReset', '重置默认')
                                     : t('settings.general.codexPathReset', '重置默认')
                           )
                       }
@@ -1787,6 +1816,7 @@ function App() {
           {page === 'kiro' && <KiroAccountsPage />}
           {page === 'cursor' && <CursorAccountsPage />}
           {page === 'gemini' && <GeminiAccountsPage />}
+          {page === 'codebuddy' && <CodebuddyAccountsPage />}
           {page === 'instances' && <InstancesPage onNavigate={setPage} />}
           {page === 'fingerprints' && <FingerprintsPage onNavigate={setPage} />}
           {page === 'wakeup' && <WakeupTasksPage onNavigate={setPage} />}

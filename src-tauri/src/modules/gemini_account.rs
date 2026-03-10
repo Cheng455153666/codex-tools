@@ -913,10 +913,6 @@ async fn load_code_assist_status(access_token: &str) -> Result<LoadCodeAssistSta
         .text()
         .await
         .map_err(|e| format!("读取 Gemini loadCodeAssist 响应失败: {}", e))?;
-    logger::log_info(&format!(
-        "[Gemini loadCodeAssist][raw-json] {}",
-        raw_body
-    ));
 
     let value = serde_json::from_str::<Value>(&raw_body)
         .map_err(|e| format!("解析 Gemini loadCodeAssist 响应失败: {}", e))?;
@@ -961,9 +957,11 @@ async fn load_code_assist_status(access_token: &str) -> Result<LoadCodeAssistSta
         .get("allowedTiers")
         .and_then(|v| v.as_array())
         .and_then(|tiers| {
-            tiers
-                .iter()
-                .find(|tier| tier.get("isDefault").and_then(|v| v.as_bool()).unwrap_or(false))
+            tiers.iter().find(|tier| {
+                tier.get("isDefault")
+                    .and_then(|v| v.as_bool())
+                    .unwrap_or(false)
+            })
         })
         .and_then(|tier| normalize_non_empty(tier.get("id").and_then(|v| v.as_str())));
     let allowed_tier_ids = value

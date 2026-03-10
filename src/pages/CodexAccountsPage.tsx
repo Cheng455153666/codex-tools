@@ -45,6 +45,10 @@ import { CodexInstancesContent } from './CodexInstancesPage';
 import { QuickSettingsPopover } from '../components/QuickSettingsPopover';
 import { useProviderAccountsPage } from '../hooks/useProviderAccountsPage';
 import type { CodexAccount } from '../types/codex';
+import {
+  CODEX_CODE_REVIEW_QUOTA_VISIBILITY_CHANGED_EVENT,
+  isCodexCodeReviewQuotaVisibleByDefault,
+} from '../utils/codexPreferences';
 
 const CODEX_TOKEN_SINGLE_EXAMPLE = `{
   "tokens": {
@@ -127,6 +131,9 @@ export function CodexAccountsPage() {
   const [oauthPortInUse, setOauthPortInUse] = useState<number | null>(null);
   const [oauthTimeoutInfo, setOauthTimeoutInfo] = useState<{ loginId?: string; callbackUrl?: string; timeoutSeconds?: number } | null>(null);
   const [switching, setSwitching] = useState<string | null>(null);
+  const [showCodeReviewQuota, setShowCodeReviewQuota] = useState<boolean>(
+    isCodexCodeReviewQuotaVisibleByDefault,
+  );
 
   const showAddModalRef = useRef(showAddModal);
   const addTabRef = useRef(addTab);
@@ -151,6 +158,23 @@ export function CodexAccountsPage() {
     fetchAccounts();
     fetchCurrentAccount();
   }, [fetchAccounts, fetchCurrentAccount]);
+
+  useEffect(() => {
+    const syncCodeReviewVisibility = () => {
+      setShowCodeReviewQuota(isCodexCodeReviewQuotaVisibleByDefault());
+    };
+
+    window.addEventListener(
+      CODEX_CODE_REVIEW_QUOTA_VISIBILITY_CHANGED_EVENT,
+      syncCodeReviewVisibility as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        CODEX_CODE_REVIEW_QUOTA_VISIBILITY_CHANGED_EVENT,
+        syncCodeReviewVisibility as EventListener,
+      );
+    };
+  }, []);
 
   // Hook provides setAddStatus/setAddMessage but we need refs to page's versions
   const { setAddStatus, setAddMessage, resetAddModalState, setShowAddModal } = page;
@@ -560,22 +584,6 @@ export function CodexAccountsPage() {
     return Array.from(groups.entries()).sort(([a], [b]) => { if (a === untaggedKey) return 1; if (b === untaggedKey) return -1; return a.localeCompare(b); });
   }, [filteredAccounts, groupByTag, normalizeTag, tagFilter, untaggedKey]);
 
-  const quotaColumnLabels = useMemo(() => {
-    const source = filteredAccounts.length > 0 ? filteredAccounts : accounts;
-    const allItems = source.map((a) => resolvePresentation(a).quotaItems);
-    const firstWithWindows = allItems.find((items) => items.length > 0) ?? [];
-    const firstWithSecondary = allItems.find((items) => items.length > 1) ?? [];
-    const firstWithCodeReview = allItems.find((items) =>
-      items.some((item) => item.key === 'code_review'),
-    );
-    const codeReview = firstWithCodeReview?.find((item) => item.key === 'code_review');
-    return {
-      primary: firstWithWindows[0]?.label ?? '5h',
-      secondary: firstWithSecondary[1]?.label ?? (firstWithWindows.length > 0 ? '—' : 'Weekly'),
-      codeReview: codeReview?.label ?? 'Code Review',
-    };
-  }, [accounts, filteredAccounts, resolvePresentation]);
-
   const resolveGroupLabel = (groupKey: string) => groupKey === untaggedKey ? t('accounts.defaultGroup', '默认分组') : groupKey;
 
   // ─── Render helpers ──────────────────────────────────────────────────
@@ -587,7 +595,9 @@ export function CodexAccountsPage() {
       const isCurrent = currentAccount?.id === account.id;
       const planClass = presentation.planClass || 'unknown';
       const isSelected = selected.has(account.id);
-      const quotaItems = presentation.quotaItems;
+      const quotaItems = showCodeReviewQuota
+        ? presentation.quotaItems
+        : presentation.quotaItems.filter((item) => item.key !== 'code_review');
       const quotaErrorMeta = resolveQuotaErrorMeta(account.quota_error);
       const hasQuotaError = Boolean(quotaErrorMeta.rawMessage);
       const accountIdText =
@@ -653,9 +663,9 @@ export function CodexAccountsPage() {
       const meta = resolveAccountMeta(account);
       const isCurrent = currentAccount?.id === account.id;
       const planClass = presentation.planClass || 'unknown';
-      const primaryWindow = presentation.quotaItems.find((item) => item.key === 'primary') ?? presentation.quotaItems[0];
-      const secondaryWindow = presentation.quotaItems.find((item) => item.key === 'secondary') ?? presentation.quotaItems[1];
-      const codeReviewWindow = presentation.quotaItems.find((item) => item.key === 'code_review');
+      const quotaItems = showCodeReviewQuota
+        ? presentation.quotaItems
+        : presentation.quotaItems.filter((item) => item.key !== 'code_review');
       const quotaErrorMeta = resolveQuotaErrorMeta(account.quota_error);
       const hasQuotaError = Boolean(quotaErrorMeta.rawMessage);
       const accountIdText =
@@ -675,16 +685,23 @@ export function CodexAccountsPage() {
             </div>
             {hasQuotaError && (<div className="account-sub-line"><span className="codex-status-pill quota-error" title={quotaErrorMeta.rawMessage}><CircleAlert size={12} />{quotaErrorMeta.statusCode || t('codex.quotaError.badge', '配额异常')}</span></div>)}</div></td>
           <td><span className={`tier-badge ${planClass}`}>{presentation.planLabel}</span></td>
-          <td>{primaryWindow ? (<div className="quota-item"><div className="quota-header"><span className="quota-name">{primaryWindow.label}</span><span className={`quota-value ${primaryWindow.quotaClass}`}>{primaryWindow.valueText}</span></div>
-            <div className="quota-progress-track"><div className={`quota-progress-bar ${primaryWindow.quotaClass}`} style={{ width: `${primaryWindow.percentage}%` }} /></div>
-            {primaryWindow.resetText && (<div className="quota-footer"><span className="quota-reset">{primaryWindow.resetText}</span></div>)}</div>) : (<div className="quota-empty">—</div>)}</td>
-          <td>{secondaryWindow ? (<div className="quota-item"><div className="quota-header"><span className="quota-name">{secondaryWindow.label}</span><span className={`quota-value ${secondaryWindow.quotaClass}`}>{secondaryWindow.valueText}</span></div>
-            <div className="quota-progress-track"><div className={`quota-progress-bar ${secondaryWindow.quotaClass}`} style={{ width: `${secondaryWindow.percentage}%` }} /></div>
-            {secondaryWindow.resetText && (<div className="quota-footer"><span className="quota-reset">{secondaryWindow.resetText}</span></div>)}</div>) : (<div className="quota-empty">—</div>)}
-            {hasQuotaError && (<div className="quota-error-inline table" title={quotaErrorMeta.rawMessage}><CircleAlert size={12} /><span>{quotaErrorMeta.displayText}</span></div>)}</td>
-          <td>{codeReviewWindow ? (<div className="quota-item"><div className="quota-header"><span className="quota-name">{codeReviewWindow.label}</span><span className={`quota-value ${codeReviewWindow.quotaClass}`}>{codeReviewWindow.valueText}</span></div>
-            <div className="quota-progress-track"><div className={`quota-progress-bar ${codeReviewWindow.quotaClass}`} style={{ width: `${codeReviewWindow.percentage}%` }} /></div>
-            {codeReviewWindow.resetText && (<div className="quota-footer"><span className="quota-reset">{codeReviewWindow.resetText}</span></div>)}</div>) : (<div className="quota-empty">—</div>)}</td>
+          <td>
+            <div className="quota-grid">
+              {quotaItems.map((item) => (
+                <div key={item.key} className="quota-item">
+                  <div className="quota-header"><span className="quota-name">{item.label}</span><span className={`quota-value ${item.quotaClass}`}>{item.valueText}</span></div>
+                  <div className="quota-progress-track"><div className={`quota-progress-bar ${item.quotaClass}`} style={{ width: `${item.percentage}%` }} /></div>
+                  {item.resetText && (<div className="quota-footer"><span className="quota-reset">{item.resetText}</span></div>)}
+                </div>
+              ))}
+              {quotaItems.length === 0 && (
+                <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                  {t('common.shared.quota.noData', '暂无配额数据')}
+                </span>
+              )}
+            </div>
+            {hasQuotaError && (<div className="quota-error-inline table" title={quotaErrorMeta.rawMessage}><CircleAlert size={12} /><span>{quotaErrorMeta.displayText}</span></div>)}
+          </td>
           <td className="sticky-action-cell table-action-cell"><div className="action-buttons">
             <button className="action-btn" onClick={() => openTagModal(account.id)} title={t('accounts.editTags', '编辑标签')}><Tag size={14} /></button>
             <button className={`action-btn ${!isCurrent ? 'success' : ''}`} onClick={() => handleSwitch(account.id)} disabled={!!switching} title={t('codex.switch', '切换')}>
@@ -792,14 +809,14 @@ export function CodexAccountsPage() {
           <div className="account-table-container grouped"><table className="account-table"><thead><tr>
             <th style={{ width: 40 }}><input type="checkbox" checked={selected.size === filteredAccounts.length && filteredAccounts.length > 0} onChange={() => toggleSelectAll(filteredAccounts.map((a) => a.id))} /></th>
             <th style={{ width: 260 }}>{t('common.shared.columns.email', '账号')}</th><th style={{ width: 140 }}>{t('common.shared.columns.plan', '订阅')}</th>
-            <th>{quotaColumnLabels.primary}</th><th>{quotaColumnLabels.secondary}</th><th>{quotaColumnLabels.codeReview}</th><th className="sticky-action-header table-action-header">{t('common.shared.columns.actions', '操作')}</th></tr></thead>
-            <tbody>{groupedAccounts.map(([gk, ga]) => (<Fragment key={gk}><tr className="tag-group-row"><td colSpan={7}><div className="tag-group-header"><span className="tag-group-title">{resolveGroupLabel(gk)}</span><span className="tag-group-count">{ga.length}</span></div></td></tr>
+            <th>{t('accounts.columns.quota', '配额状态')}</th><th className="sticky-action-header table-action-header">{t('common.shared.columns.actions', '操作')}</th></tr></thead>
+            <tbody>{groupedAccounts.map(([gk, ga]) => (<Fragment key={gk}><tr className="tag-group-row"><td colSpan={5}><div className="tag-group-header"><span className="tag-group-title">{resolveGroupLabel(gk)}</span><span className="tag-group-count">{ga.length}</span></div></td></tr>
               {renderTableRows(ga, gk)}</Fragment>))}</tbody></table></div>
         ) : (
           <div className="account-table-container"><table className="account-table"><thead><tr>
             <th style={{ width: 40 }}><input type="checkbox" checked={selected.size === filteredAccounts.length && filteredAccounts.length > 0} onChange={() => toggleSelectAll(filteredAccounts.map((a) => a.id))} /></th>
             <th style={{ width: 260 }}>{t('common.shared.columns.email', '账号')}</th><th style={{ width: 140 }}>{t('common.shared.columns.plan', '订阅')}</th>
-            <th>{quotaColumnLabels.primary}</th><th>{quotaColumnLabels.secondary}</th><th>{quotaColumnLabels.codeReview}</th><th className="sticky-action-header table-action-header">{t('common.shared.columns.actions', '操作')}</th></tr></thead>
+            <th>{t('accounts.columns.quota', '配额状态')}</th><th className="sticky-action-header table-action-header">{t('common.shared.columns.actions', '操作')}</th></tr></thead>
             <tbody>{renderTableRows(filteredAccounts)}</tbody></table></div>
         )}
 

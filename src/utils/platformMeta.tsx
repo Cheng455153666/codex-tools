@@ -8,6 +8,7 @@ import { WindsurfIcon } from '../components/icons/WindsurfIcon';
 import { KiroIcon } from '../components/icons/KiroIcon';
 import { CursorIcon } from '../components/icons/CursorIcon';
 import { GeminiIcon } from '../components/icons/GeminiIcon';
+import { CodebuddyIcon } from '../components/icons/CodebuddyIcon';
 
 export function getPlatformLabel(platformId: PlatformId, _t: TFunction): string {
   switch (platformId) {
@@ -25,6 +26,8 @@ export function getPlatformLabel(platformId: PlatformId, _t: TFunction): string 
       return 'Cursor';
     case 'gemini':
       return _t('nav.gemini', 'Gemini');
+    case 'codebuddy':
+      return 'CodeBuddy';
     default:
       return platformId;
   }
@@ -46,6 +49,8 @@ export function renderPlatformIcon(platformId: PlatformId, size = 20): ReactNode
       return <CursorIcon style={{ width: size, height: size }} />;
     case 'gemini':
       return <GeminiIcon style={{ width: size, height: size }} />;
+    case 'codebuddy':
+      return <CodebuddyIcon style={{ width: size, height: size }} />;
     default:
       return null;
   }

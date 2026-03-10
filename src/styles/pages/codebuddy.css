@@ -1,0 +1,286 @@
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-index {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-title {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-retry {
+  border: 1px solid var(--border);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-retry:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-retry:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  padding-left: 28px;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-running {
+  border-color: rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-running .webview-flow-step-icon {
+  color: var(--primary);
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-success {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-success .webview-flow-step-icon {
+  color: #15803d;
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-error {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.codebuddy-accounts-page .ghcp-add-modal .webview-flow-step-error .webview-flow-step-icon {
+  color: #b91c1c;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-item {
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-header {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.codebuddy-accounts-page .quota-query-btn {
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.codebuddy-accounts-page .quota-query-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.codebuddy-accounts-page .codebuddy-extra-credit {
+  gap: 6px;
+}
+
+.codebuddy-accounts-page .codebuddy-table-usage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-query-modal {
+  max-width: 720px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-mode-tabs {
+  width: 100%;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-mode-tabs .add-tab {
+  min-height: 34px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-steps {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-step-with-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-url-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-right: 8px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-url-text {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-url-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-url-buttons .btn {
+  min-height: 30px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-field > span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.codebuddy-accounts-page .codebuddy-quota-field input {
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.codebuddy-accounts-page .codebuddy-quota-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.codebuddy-accounts-page .codebuddy-quota-query-modal .token-input {
+  min-height: 120px;
+}
+
+.codebuddy-accounts-page .codebuddy-oauth-feature-card {
+  border: 1px solid var(--border);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.codebuddy-accounts-page .codebuddy-oauth-feature-card.webview {
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+.codebuddy-accounts-page .codebuddy-oauth-feature-card.oauth {
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.codebuddy-accounts-page .codebuddy-oauth-feature-card .feature-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.codebuddy-accounts-page .codebuddy-oauth-feature-card .feature-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .codebuddy-accounts-page .codebuddy-quota-grid {
+    grid-template-columns: 1fr;
+  }
+}

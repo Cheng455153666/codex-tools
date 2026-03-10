@@ -161,7 +161,8 @@
       "update": "Mettre à jour",
       "restart": "Redémarrer"
     },
-    "gemini": "Comptes Gemini"
+    "gemini": "Comptes Gemini",
+    "codebuddy": "Comptes CodeBuddy"
   },
   "platformLayout": {
     "title": "Disposition des plateformes",
@@ -459,7 +460,15 @@
       "autoUpdateOn": "Activé (mise à jour silencieuse)",
       "opencodeAuthOverwrite": "Écraser la connexion OpenCode lors du changement de Codex",
       "opencodeAuthOverwriteDesc": "Si désactivé, seul Codex est changé et OpenCode conserve son état de connexion actuel",
-      "opencodeRestartRequiresOverwrite": "Activez d’abord « Écraser la connexion OpenCode lors du changement de Codex »"
+      "opencodeRestartRequiresOverwrite": "Activez d’abord « Écraser la connexion OpenCode lors du changement de Codex »",
+      "codebuddySettingsTitle": "Parametres CodeBuddy",
+      "codebuddyAutoRefresh": "Actualisation automatique du quota CodeBuddy",
+      "codebuddyAutoRefreshDesc": "Intervalle d'actualisation en arriere-plan",
+      "codebuddyAppPath": "Chemin de lancement de CodeBuddy",
+      "codebuddyAppPathDesc": "Laisser vide pour utiliser le chemin par defaut",
+      "codebuddyAppPathPlaceholder": "Chemin par defaut",
+      "codebuddyPathSelect": "Selectionner",
+      "codebuddyPathReset": "Reinitialiser par defaut"
     },
     "network": {
       "apiTitle": "API du cockpit antigravité",
@@ -1150,6 +1159,9 @@
       "team": "TEAM",
       "enterprise": "ENTERPRISE"
     },
+    "list": {
+      "showCodeReviewQuota": "Afficher le quota Code Review"
+    },
     "time": {
       "today": "Aujourd'hui {{time}}",
       "tomorrow": "Demain {{time}}",
@@ -1343,7 +1355,11 @@
       "title": "Paramètres Gemini",
       "appPath": "Chemin Gemini"
     },
-    "geminiRefreshInterval": "Actualisation auto du quota"
+    "geminiRefreshInterval": "Actualisation auto du quota",
+    "codebuddy": {
+      "title": "Parametres CodeBuddy",
+      "appPath": "Chemin CodeBuddy"
+    }
   },
   "quotaAlert": {
     "bannerText": "Alerte de quota pour {{email}} (seuil {{threshold}} %, minimum {{lowest}} %, modèles : {{models}})",
@@ -1896,6 +1912,173 @@
       "desc": "Gérez les comptes Gemini en important depuis l'installation locale de Gemini ou en collant des jetons JWT. Les données sont traitées uniquement en local.",
       "reason": "Portée des autorisations : lecture et écriture de oauth_creds.json, google_accounts.json et settings.json sous ~/.gemini par défaut ou le chemin d’instance (GEMINI_CLI_HOME/.gemini) pour l’import de comptes et l’injection locale d’identifiants (changement de compte).",
       "storage": "Portée réseau : OAuth et l’actualisation du quota appellent les API officielles Google/Gemini (comme oauth2.googleapis.com et googleapis.com). Seuls les champs d’authentification/quota nécessaires sont envoyés ; les fichiers locaux ne sont pas téléversés vers des serveurs tiers."
+    }
+  },
+  "codebuddy": {
+    "title": "Gestion des comptes CodeBuddy",
+    "noAccounts": "Aucun compte CodeBuddy",
+    "addAccount": "Ajouter un compte CodeBuddy",
+    "flowNotice": {
+      "title": "Informations sur la gestion des comptes CodeBuddy (cliquer pour developper/reduire)",
+      "desc": "Le changement de compte necessite la lecture du stockage d'authentification local de CodeBuddy et l'appel aux services d'identifiants du systeme pour dechiffrer/rechiffrer. Les donnees sont traitees uniquement en local.",
+      "permission": "Portee des autorisations : lire la base d'authentification CodeBuddy (state.vscdb), appeler les capacites d'identifiants du systeme (Trousseau macOS / DPAPI Windows / Secret Service Linux) pour le dechiffrement et la reecriture.",
+      "network": "Portee reseau : la connexion OAuth et l'actualisation du jeton necessitent des requetes vers codebuddy.ai ; les requetes de quota appellent les API de facturation. Aucune cle locale ni information d'identification n'est televersee."
+    },
+    "nickname": "Surnom",
+    "enterprise": "Entreprise",
+    "usage": "Etat d'utilisation",
+    "usageNormal": "Etat normal",
+    "oauthWaiting": "En attente d'autorisation...",
+    "oauthDesc": "Cliquez sur le bouton ci-dessous pour ouvrir la page d'autorisation CodeBuddy dans votre navigateur.",
+    "oauthDescWebview": "Cliquez sur le bouton ci-dessous pour ouvrir la page d'autorisation CodeBuddy dans la WebView integree.",
+    "oauthFeature": {
+      "webview": {
+        "title": "Recommande : terminer l'auth IDE et l'association du quota en un seul flux",
+        "item1": "Apres connexion via la WebView integree en navigation privee, les donnees de connexion IDE sont associees automatiquement.",
+        "item2": "Les parametres de requete de quota sont captures et associes automatiquement en meme temps.",
+        "item3": "Ideal pour la premiere configuration du compte, avec affichage et actualisation du quota disponibles immediatement."
+      },
+      "oauth": {
+        "title": "Connexion IDE uniquement",
+        "item1": "Ajoutez le compte apres avoir termine OAuth dans votre navigateur, puis utilisez-le pour le changement dans l'IDE.",
+        "item2": "Les parametres de requete de quota ne sont pas associes automatiquement.",
+        "item3": "Si vous avez besoin du quota, lancez manuellement « Interroger le quota » sur la carte du compte."
+      }
+    },
+    "oauthWebviewTab": "OAuth en WebView",
+    "oauthOpenWebview": "Ouvrir dans la WebView",
+    "oauthOpenWebviewIncognito": "Ouvrir dans la WebView privee",
+    "oauthOpenWebviewFailed": "Echec de l'ouverture de la WebView : {{error}}",
+    "oauthOpenBrowserFallback": "Ouvrir dans le navigateur (secours)",
+    "oauthOpenBrowserFailed": "Echec de l'ouverture du navigateur : {{error}}",
+    "oauthWebviewProgressHint": "Une barre d'etapes horizontale s'affiche en haut de la WebView pour reperer les etapes bloquees.",
+    "oauthFlow": {
+      "prepare": "Preparer le lien OAuth",
+      "quota": "Capturer le Cookie dans la WebView et associer la requete de quota",
+      "authorize": "Ouvrir le lien d'autorisation et confirmer",
+      "bind": "Sonder le resultat d'authentification et associer le compte",
+      "retryPrepare": "Regenerer le lien OAuth",
+      "retryQuota": "Recapturer le Cookie et interroger le quota",
+      "retryAuthorize": "Redemander le lien d'autorisation",
+      "retryBind": "Reessayer le sondage d'authentification",
+      "error": "Erreur de flux : {{error}}"
+    },
+    "tokenDesc": "Collez votre jeton d'acces CodeBuddy :",
+    "jsonDesc": "Selectionnez un fichier JSON contenant des comptes CodeBuddy :",
+    "import": {
+      "localDesc": "Importez les donnees de compte depuis le client CodeBuddy local ou depuis un fichier JSON.",
+      "localClient": "Importer depuis CodeBuddy local"
+    },
+    "search": "Rechercher des comptes CodeBuddy...",
+    "quotaQuery": {
+      "title": "Interroger le quota",
+      "desc": "Collez un en-tete Cookie ou une commande cURL complete. Nous extrairons session/session_2 et l'associerons a ce compte.",
+      "button": "Interroger le quota",
+      "submit": "Associer et interroger",
+      "clearBinding": "Effacer l'association",
+      "clearBindingConfirm": "Effacer l'association de requete de quota pour ce compte ? L'actualisation automatique du quota s'arretera apres la suppression.",
+      "clearBindingSuccess": "Association de requete de quota effacee.",
+      "clearBindingFailed": "Echec de l'effacement de l'association du quota : {{error}}",
+      "success": "Quota interroge avec succes. L'association a ete enregistree.",
+      "failed": "Echec de l'interrogation du quota : {{error}}",
+      "failedCompact": "Echec de l'interrogation",
+      "failedRefreshCompact": "Echec de l'actualisation du quota",
+      "failedReasonLabel": "Raison : {{reason}}",
+      "failedReasonAt": "Echec a : {{time}}",
+      "sectionTitle": "Interrogation du quota",
+      "empty": "Aucune information de requete de quota associee pour le moment",
+      "packageUnknown": "Forfait inconnu",
+      "quotaLabel": "Quota restant",
+      "updatedAt": "Derniere interrogation : {{time}}",
+      "cycleRange": "Cycle : {{start}} - {{end}}",
+      "cycleUnknown": "Informations de cycle indisponibles",
+      "expireAt": "Expire le : {{time}}",
+      "expireUnknown": "Expiration : N/A",
+      "noQuota": "Non interroge",
+      "bindTarget": "Compte associe : {{email}}",
+      "coreHint": "Les autres parametres utilisent les valeurs par defaut : ProductCode=p_tcaca, Status=0,3, plage temporelle = maintenant a +100 ans.",
+      "webview": {
+        "tab": "Connexion WebView",
+        "desc": "Connectez-vous a CodeBuddy dans le navigateur integre. Les informations de quota seront recuperees automatiquement apres la connexion.",
+        "open": "Ouvrir dans la WebView",
+        "openIncognito": "Ouvrir dans la WebView privee",
+        "waiting": "En attente de la connexion dans le navigateur...",
+        "hint": "Veuillez vous connecter a CodeBuddy dans la fenetre du navigateur qui s'ouvre. Le quota sera recupere et la fenetre se fermera automatiquement.",
+        "success": "Interrogation du quota WebView reussie",
+        "failed": "Echec de l'interrogation via WebView : {{error}}"
+      },
+      "webviewFlow": {
+        "open": "Ouvrir la WebView",
+        "login": "Se connecter a CodeBuddy",
+        "fetch": "Recuperer les donnees de quota",
+        "bind": "Associer le resultat au compte",
+        "retryOpen": "Rouvrir la WebView",
+        "retryLogin": "Reessayer la connexion",
+        "retryFetch": "Relancer la recuperation du quota",
+        "retryBind": "Reessayer l'association",
+        "error": "Erreur de flux : {{error}}"
+      },
+      "manual": {
+        "tab": "Collage manuel",
+        "step1": "Ouvrez le lien ci-dessous dans votre navigateur et connectez-vous",
+        "step2": "Appuyez sur F12 pour ouvrir les DevTools, puis passez a l'onglet Network",
+        "step3": "Actualisez la page et trouvez la requete get-user-resource",
+        "step4": "Clic droit sur la requete -> Copy -> Copy as cURL",
+        "step5": "Collez-la dans le champ ci-dessous"
+      },
+      "fields": {
+        "cookieHeader": "En-tete Cookie / cURL",
+        "productCode": "Code produit (ProductCode)",
+        "status": "Valeur de statut (Status)",
+        "beginTime": "Heure de debut",
+        "endTime": "Heure de fin",
+        "pageNumber": "Numero de page (PageNumber)",
+        "pageSize": "Taille de page (PageSize)"
+      },
+      "placeholders": {
+        "cookieHeader": "Collez la commande cURL de get-user-resource"
+      },
+      "errors": {
+        "cookieRequired": "Veuillez dabord fournir un en-tete Cookie ou un cURL.",
+        "accountMismatch": "Le cookie de quota appartient a un autre compte (UIN actuel : {{expectedUin}}, UIN renvoye : {{resourceUin}}, UIN payeur : {{payerUin}}). Veuillez passer au bon compte et recopier le cookie.",
+        "statusInvalid": "Format de Status invalide. Utilisez des nombres separes par des virgules.",
+        "pageInvalid": "Valeurs de pagination invalides. Veuillez saisir des nombres superieurs a 0."
+      }
+    },
+    "extraCredit": {
+      "title": "Pack de credit"
+    },
+    "oauthUrlInputPlaceholder": "Vous pouvez saisir manuellement une URL dautorisation",
+    "oauthInvalidUrl": "URL dautorisation invalide. Veuillez saisir une URL complete.",
+    "oauthGotoWebview": "Naviguer dans la WebView ouverte vers lURL saisie",
+    "oauthGotoWebviewSuccess": "Demande envoyee a la WebView pour naviguer vers lURL saisie.",
+    "oauthGotoWebviewFailed": "Echec de la navigation de la WebView : {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "Saisissez une URL a ouvrir dans cette WebView",
+    "oauthWebviewInlineGo": "Aller",
+    "oauthQuotaFailurePrompt": "Lassociation du quota a echoue.\nCliquez sur OK pour reessayer la capture du Cookie et lactualisation du quota ; cliquez sur Annuler pour ignorer (compte uniquement).",
+    "oauthQuotaFailureTitle": "Echec de l'association du quota",
+    "oauthQuotaFailureRetry": "Reessayer",
+    "oauthQuotaFailureSkip": "Ignorer",
+    "oauthSuccessClosePrompt": "Compte ajoute avec succes. Fermer cette WebView maintenant ?\nChoisissez \"Fermer la WebView\" pour fermer maintenant, ou \"Plus tard\" pour la garder ouverte.",
+    "oauthSuccessCloseTitle": "Compte ajoute",
+    "oauthSuccessCloseNowLabel": "Fermer la WebView",
+    "oauthSuccessCloseLaterLabel": "Plus tard",
+    "oauthSuccessCloseNowStatus": "✅ Compte ajoute. Fermeture de la fenetre...",
+    "oauthSuccessCloseLaterStatus": "✅ Compte ajoute. Cette WebView reste ouverte.",
+    "oauthWebviewOverlay": {
+      "steps": {
+        "quotaAuthorize": "1 Connectez-vous à CodeBuddy",
+        "quotaBind": "2 Capturer le Cookie dans la WebView et associer la requete de quota",
+        "quotaComplete": "3 Terminé (fermer manuellement)",
+        "prepare": "1 Preparer le lien OAuth",
+        "authorize": "2 Ouvrir le lien d'autorisation et confirmer",
+        "bind": "3 Sonder le resultat d'authentification et associer le compte",
+        "quota": "4 Capturer le Cookie dans la WebView et associer la requete de quota",
+        "complete": "5 Terminé (fermer manuellement)"
+      },
+      "status": {
+        "loginConfirm": "Veuillez terminer la connexion et l'autorisation sur cette page."
+      }
     }
   }
 }

@@ -1,5 +1,7 @@
 pub mod account;
 pub mod announcement;
+pub mod codebuddy;
+pub mod codebuddy_instance;
 pub mod codex;
 pub mod codex_instance;
 pub mod cursor;

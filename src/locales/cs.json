@@ -161,7 +161,8 @@
       "update": "Aktualizovat",
       "restart": "Restartovat"
     },
-    "gemini": "Účty Gemini"
+    "gemini": "Účty Gemini",
+    "codebuddy": "Účty CodeBuddy"
   },
   "platformLayout": {
     "title": "Rozložení platforem",
@@ -459,7 +460,15 @@
       "autoUpdateOn": "Zapnuto (tichá aktualizace)",
       "opencodeAuthOverwrite": "Při přepnutí Codexu přepsat přihlášení OpenCode",
       "opencodeAuthOverwriteDesc": "Pokud je vypnuto, přepne se pouze Codex a OpenCode zůstane v aktuálním přihlášení",
-      "opencodeRestartRequiresOverwrite": "Nejprve zapněte „Při přepnutí Codexu přepsat přihlášení OpenCode“"
+      "opencodeRestartRequiresOverwrite": "Nejprve zapněte „Při přepnutí Codexu přepsat přihlášení OpenCode“",
+      "codebuddySettingsTitle": "Nastavení CodeBuddy",
+      "codebuddyAutoRefresh": "Automatické obnovení kvóty CodeBuddy",
+      "codebuddyAutoRefreshDesc": "Interval automatického obnovení na pozadí",
+      "codebuddyAppPath": "Spouštěcí cesta CodeBuddy",
+      "codebuddyAppPathDesc": "Pro výchozí cestu ponechte prázdné",
+      "codebuddyAppPathPlaceholder": "Výchozí cesta",
+      "codebuddyPathSelect": "Vybrat",
+      "codebuddyPathReset": "Obnovit výchozí"
     },
     "network": {
       "apiTitle": "Antigravity Cockpit API",
@@ -1150,6 +1159,9 @@
       "team": "TEAM",
       "enterprise": "ENTERPRISE"
     },
+    "list": {
+      "showCodeReviewQuota": "Zobrazit kvótu Code Review"
+    },
     "time": {
       "today": "Dnes {{time}}",
       "tomorrow": "Zítra {{time}}",
@@ -1343,7 +1355,11 @@
       "title": "Nastavení Gemini",
       "appPath": "Cesta k Gemini"
     },
-    "geminiRefreshInterval": "Automatická obnova kvóty"
+    "geminiRefreshInterval": "Automatická obnova kvóty",
+    "codebuddy": {
+      "title": "Nastavení CodeBuddy",
+      "appPath": "Cesta CodeBuddy"
+    }
   },
   "quotaAlert": {
     "bannerText": "Upozornění na kvótu pro {{email}} (práh {{threshold}} %, minimum {{lowest}} %, modely: {{models}})",
@@ -1896,6 +1912,173 @@
       "desc": "Spravujte účty Gemini importem z místní instalace Gemini nebo vložením tokenů JWT. Data jsou zpracovávána pouze lokálně.",
       "reason": "Rozsah oprávnění: čtení a zápis oauth_creds.json, google_accounts.json a settings.json v výchozím ~/.gemini nebo v cestě instance (GEMINI_CLI_HOME/.gemini) pro import účtů a lokální injekci přihlašovacích údajů (přepnutí účtu).",
       "storage": "Síťový rozsah: OAuth a obnovení kvóty volají oficiální API Google/Gemini (např. oauth2.googleapis.com a googleapis.com). Odesílají se jen nutná pole pro autentizaci/kvótu; lokální soubory se na servery třetích stran nenahrávají."
+    }
+  },
+  "codebuddy": {
+    "title": "Správa účtů CodeBuddy",
+    "noAccounts": "Žádné účty CodeBuddy",
+    "addAccount": "Přidat účet CodeBuddy",
+    "flowNotice": {
+      "title": "Informace o správě účtů CodeBuddy (kliknutím rozbalíte/sbalíte)",
+      "desc": "Přepínání účtů vyžaduje čtení místního úložiště autentizace CodeBuddy a volání systémových služeb přihlašovacích údajů pro dešifrování/opětovné zašifrování. Data se zpracovávají pouze lokálně.",
+      "permission": "Rozsah oprávnění: čtení databáze autentizace CodeBuddy (state.vscdb), volání systémových schopností pro přihlašovací údaje (macOS Keychain / Windows DPAPI / Linux Secret Service) pro dešifrování/zápis zpět.",
+      "network": "Rozsah sítě: přihlášení OAuth a obnovení tokenu vyžadují síťové požadavky na codebuddy.ai; dotazy na kvótu volají billing API. Žádné místní klíče ani přihlašovací údaje se neodesílají."
+    },
+    "nickname": "Přezdívka",
+    "enterprise": "Podnikový",
+    "usage": "Stav využití",
+    "usageNormal": "Normální",
+    "oauthWaiting": "Čekání na autorizaci...",
+    "oauthDesc": "Klikněte na tlačítko níže a otevřete autorizační stránku CodeBuddy v prohlížeči.",
+    "oauthDescWebview": "Klikněte na tlačítko níže a otevřete autorizační stránku CodeBuddy ve vestavěném WebView.",
+    "oauthFeature": {
+      "webview": {
+        "title": "Doporučeno: dokončete IDE autorizaci + navázání kvóty v jednom toku",
+        "item1": "Po přihlášení přes vestavěný anonymní WebView se data přihlášení IDE navážou automaticky.",
+        "item2": "Parametry dotazu kvóty se zároveň automaticky zachytí a navážou.",
+        "item3": "Nejvhodnější pro první nastavení účtu; zobrazení/obnovení kvóty je dostupné ihned."
+      },
+      "oauth": {
+        "title": "Pouze přihlášení IDE",
+        "item1": "Po dokončení OAuth v prohlížeči přidejte účet a použijte ho pro přepínání IDE.",
+        "item2": "Parametry dotazu kvóty se nenavážou automaticky.",
+        "item3": "Pokud potřebujete zobrazení kvóty, spusťte na kartě účtu ručně \"Dotázat kvótu\"."
+      }
+    },
+    "oauthWebviewTab": "OAuth přes WebView",
+    "oauthOpenWebview": "Otevřít ve WebView",
+    "oauthOpenWebviewIncognito": "Otevřít v anonymním WebView",
+    "oauthOpenWebviewFailed": "Nepodařilo se otevřít WebView: {{error}}",
+    "oauthOpenBrowserFallback": "Otevřít v prohlížeči (záloha)",
+    "oauthOpenBrowserFailed": "Nepodařilo se otevřít prohlížeč: {{error}}",
+    "oauthWebviewProgressHint": "V horní části WebView se zobrazuje vodorovná lišta kroků pro určení zaseknuté fáze.",
+    "oauthFlow": {
+      "prepare": "Připravit OAuth odkaz",
+      "quota": "Zachytit Cookie ve WebView a navázat dotaz kvóty",
+      "authorize": "Otevřít autorizační odkaz a potvrdit",
+      "bind": "Dotazovat výsledek autorizace a navázat účet",
+      "retryPrepare": "Znovu vygenerovat OAuth odkaz",
+      "retryQuota": "Znovu zachytit Cookie a dotázat kvótu",
+      "retryAuthorize": "Znovu vyžádat autorizační odkaz",
+      "retryBind": "Opakovat dotazování autorizace",
+      "error": "Chyba toku: {{error}}"
+    },
+    "tokenDesc": "Vložte přístupový token CodeBuddy:",
+    "jsonDesc": "Vyberte soubor JSON obsahující účty CodeBuddy:",
+    "import": {
+      "localDesc": "Importujte data účtu z místního klienta CodeBuddy nebo ze souboru JSON.",
+      "localClient": "Importovat z místního CodeBuddy"
+    },
+    "search": "Hledat účty CodeBuddy...",
+    "quotaQuery": {
+      "title": "Dotázat kvótu",
+      "desc": "Vložte hlavičku Cookie nebo celý příkaz cURL. Vybereme session/session_2 a navážeme je k tomuto účtu.",
+      "button": "Dotázat kvótu",
+      "submit": "Navázat a dotázat",
+      "clearBinding": "Zrušit navázání",
+      "clearBindingConfirm": "Zrušit navázání dotazu kvóty pro tento účet? Po zrušení se automatické obnovování kvóty zastaví.",
+      "clearBindingSuccess": "Navázání dotazu kvóty bylo zrušeno.",
+      "clearBindingFailed": "Nepodařilo se zrušit navázání kvóty: {{error}}",
+      "success": "Kvóta úspěšně dotázána. Navázání bylo uloženo.",
+      "failed": "Dotaz kvóty selhal: {{error}}",
+      "failedCompact": "Dotaz selhal",
+      "failedRefreshCompact": "Obnovení kvóty selhalo",
+      "failedReasonLabel": "Důvod: {{reason}}",
+      "failedReasonAt": "Selhalo v: {{time}}",
+      "sectionTitle": "Dotaz kvóty",
+      "empty": "Zatím nejsou navázané informace o dotazu kvóty",
+      "packageUnknown": "Neznámý balíček",
+      "quotaLabel": "Zbývající kvóta",
+      "updatedAt": "Poslední dotaz: {{time}}",
+      "cycleRange": "Cyklus: {{start}} - {{end}}",
+      "cycleUnknown": "Informace o cyklu nejsou dostupné",
+      "expireAt": "Vyprší: {{time}}",
+      "expireUnknown": "Vyprší: N/A",
+      "noQuota": "Nedotázáno",
+      "bindTarget": "Navázaný účet: {{email}}",
+      "coreHint": "Ostatní parametry používají výchozí hodnoty: ProductCode=p_tcaca, Status=0,3, časový rozsah=teď až +100 let.",
+      "webview": {
+        "tab": "Přihlášení WebView",
+        "desc": "Přihlaste se do CodeBuddy ve vestavěném prohlížeči. Informace o kvótě se po přihlášení načtou automaticky.",
+        "open": "Otevřít ve WebView",
+        "openIncognito": "Otevřít v anonymním WebView",
+        "waiting": "Čekání na přihlášení v prohlížeči...",
+        "hint": "Přihlaste se do CodeBuddy v otevřeném okně prohlížeče. Kvóta se načte a okno se automaticky zavře.",
+        "success": "Dotaz kvóty přes WebView byl úspěšný",
+        "failed": "Dotaz WebView selhal: {{error}}"
+      },
+      "webviewFlow": {
+        "open": "Otevřít WebView",
+        "login": "Přihlásit se do CodeBuddy",
+        "fetch": "Načíst data kvóty",
+        "bind": "Navázat výsledek k účtu",
+        "retryOpen": "Znovu otevřít WebView",
+        "retryLogin": "Opakovat přihlášení",
+        "retryFetch": "Znovu načíst kvótu",
+        "retryBind": "Opakovat navázání",
+        "error": "Chyba toku: {{error}}"
+      },
+      "manual": {
+        "tab": "Ruční vložení",
+        "step1": "Otevřete níže uvedený odkaz v prohlížeči a přihlaste se",
+        "step2": "Stiskněte F12, otevřete DevTools a přepněte na kartu Network",
+        "step3": "Obnovte stránku a najděte požadavek get-user-resource",
+        "step4": "Klikněte pravým tlačítkem na požadavek → Copy → Copy as cURL",
+        "step5": "Vložte do vstupního pole níže"
+      },
+      "fields": {
+        "cookieHeader": "Hlavička Cookie / cURL",
+        "productCode": "Kód produktu",
+        "status": "Stav",
+        "beginTime": "Čas začátku",
+        "endTime": "Čas konce",
+        "pageNumber": "Číslo stránky",
+        "pageSize": "Velikost stránky"
+      },
+      "placeholders": {
+        "cookieHeader": "Vložte příkaz cURL pro get-user-resource"
+      },
+      "errors": {
+        "cookieRequired": "Nejprve zadejte Cookie header nebo cURL.",
+        "accountMismatch": "Cookie kvóty patří jinému účtu (aktuální UIN: {{expectedUin}}, vrácené UIN: {{resourceUin}}, payerUin: {{payerUin}}). Přepněte na správný účet a zkopírujte cookie znovu.",
+        "statusInvalid": "Neplatný formát Status. Použijte čísla oddělená čárkou.",
+        "pageInvalid": "Neplatné hodnoty stránkování. Zadejte čísla větší než 0."
+      }
+    },
+    "extraCredit": {
+      "title": "Kreditní balíček"
+    },
+    "oauthUrlInputPlaceholder": "Autorizační URL můžete zadat ručně",
+    "oauthInvalidUrl": "Neplatná autorizační URL. Zadejte úplnou URL.",
+    "oauthGotoWebview": "Přejít v otevřeném WebView na zadanou URL",
+    "oauthGotoWebviewSuccess": "WebView dostalo požadavek přejít na zadanou URL.",
+    "oauthGotoWebviewFailed": "Nepodařilo se navigovat WebView: {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "Zadejte URL pro navigaci v tomto WebView",
+    "oauthWebviewInlineGo": "Přejít",
+    "oauthQuotaFailurePrompt": "Navázání kvóty selhalo.\nKlikněte na OK pro opětovné zachycení Cookie a obnovení kvóty; klikněte na Zrušit pro přeskočení (pouze účet).",
+    "oauthQuotaFailureTitle": "Navázání kvóty selhalo",
+    "oauthQuotaFailureRetry": "Zkusit znovu",
+    "oauthQuotaFailureSkip": "Přeskočit",
+    "oauthSuccessClosePrompt": "Účet byl úspěšně přidán. Zavřít toto WebView nyní?\nZvolte \"Zavřít WebView\" pro okamžité zavření nebo \"Později\" pro ponechání otevřeného.",
+    "oauthSuccessCloseTitle": "Účet přidán",
+    "oauthSuccessCloseNowLabel": "Zavřít WebView",
+    "oauthSuccessCloseLaterLabel": "Později",
+    "oauthSuccessCloseNowStatus": "✅ Účet přidán. Zavírám okno...",
+    "oauthSuccessCloseLaterStatus": "✅ Účet přidán. Toto WebView zůstane otevřené.",
+    "oauthWebviewOverlay": {
+      "steps": {
+        "quotaAuthorize": "1 Přihlaste se do CodeBuddy",
+        "quotaBind": "2 Zachytit Cookie ve WebView a navázat dotaz kvóty",
+        "quotaComplete": "3 Dokončeno (zavřít ručně)",
+        "prepare": "1 Připravit OAuth odkaz",
+        "authorize": "2 Otevřít autorizační odkaz a potvrdit",
+        "bind": "3 Dotazovat výsledek autorizace a navázat účet",
+        "quota": "4 Zachytit Cookie ve WebView a navázat dotaz kvóty",
+        "complete": "5 Dokončeno (zavřít ručně)"
+      },
+      "status": {
+        "loginConfirm": "Na této stránce dokončete přihlášení a autorizaci."
+      }
     }
   }
 }

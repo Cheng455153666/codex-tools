@@ -8,6 +8,7 @@ export type Page =
   | 'kiro'
   | 'cursor'
   | 'gemini'
+  | 'codebuddy'
   | 'codex-instances'
   | 'instances'
   | 'accounts'

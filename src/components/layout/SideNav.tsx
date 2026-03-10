@@ -31,6 +31,7 @@ const PAGE_PLATFORM_MAP: Partial<Record<Page, PlatformId>> = {
   kiro: 'kiro',
   cursor: 'cursor',
   gemini: 'gemini',
+  codebuddy: 'codebuddy',
 };
 
 export function SideNav({

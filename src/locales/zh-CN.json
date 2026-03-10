@@ -151,6 +151,7 @@
     "fingerprints": "设备指纹",
     "settings": "设置",
     "codex": "Codex 账号",
+    "codebuddy": "CodeBuddy 账号",
     "githubCopilot": "GitHub Copilot",
     "windsurf": "Windsurf",
     "gemini": "Gemini",
@@ -453,6 +454,14 @@
       "kiroAppPathPlaceholder": "默认路径",
       "kiroPathSelect": "选择",
       "kiroPathReset": "重置默认",
+      "codebuddySettingsTitle": "CodeBuddy 设置",
+      "codebuddyAutoRefresh": "CodeBuddy 自动刷新配额",
+      "codebuddyAutoRefreshDesc": "后台自动更新频率",
+      "codebuddyAppPath": "CodeBuddy 启动路径",
+      "codebuddyAppPathDesc": "留空则使用默认路径",
+      "codebuddyAppPathPlaceholder": "默认路径",
+      "codebuddyPathSelect": "选择",
+      "codebuddyPathReset": "重置默认",
       "cursorPathReset": "重置默认",
       "codexLaunchOnSwitch": "切换 Codex 时自动启动 Codex App",
       "codexLaunchOnSwitchDesc": "切换账号后自动启动或重启 Codex App",
@@ -1150,6 +1159,9 @@
       "team": "TEAM",
       "enterprise": "ENTERPRISE"
     },
+    "list": {
+      "showCodeReviewQuota": "显示 Code Review 配额"
+    },
     "time": {
       "today": "今天 {{time}}",
       "tomorrow": "明天 {{time}}",
@@ -1180,6 +1192,173 @@
     "noAvailableTags": "暂无可用标签",
     "clearFilter": "清空筛选",
     "editTags": "编辑标签"
+  },
+  "codebuddy": {
+    "title": "CodeBuddy 账号管理",
+    "noAccounts": "暂无 CodeBuddy 账号",
+    "addAccount": "添加 CodeBuddy 账号",
+    "flowNotice": {
+      "title": "CodeBuddy 账号管理说明（点击展开/收起）",
+      "desc": "切换账号需读取 CodeBuddy 本地认证存储并调用系统凭据服务进行加解密，数据仅在本地处理。",
+      "permission": "权限范围：读取 CodeBuddy 认证数据库 (state.vscdb)，调用系统凭据能力（macOS Keychain / Windows DPAPI / Linux Secret Service）进行解密/回写。",
+      "network": "网络范围：OAuth 授权登录与 Token 刷新需联网请求 codebuddy.ai；配额查询需调用计费 API。不上传本地密钥或凭证。"
+    },
+    "nickname": "昵称",
+    "enterprise": "企业",
+    "usage": "用量状态",
+    "usageNormal": "正常",
+    "oauthWaiting": "等待授权完成...",
+    "oauthDesc": "点击下方按钮将在浏览器中打开 CodeBuddy 授权页面。",
+    "oauthDescWebview": "点击下方按钮将在内置 WebView 中打开 CodeBuddy 授权页面。",
+    "oauthFeature": {
+      "webview": {
+        "title": "推荐：一次完成 IDE 授权 + 配额绑定",
+        "item1": "在内置无痕 WebView 中登录后，系统会自动绑定 IDE 登录信息。",
+        "item2": "同时自动采集配额查询所需参数，无需额外手动绑定。",
+        "item3": "适合首次添加账号，完成后可直接查看和刷新配额。"
+      },
+      "oauth": {
+        "title": "仅授权 IDE 登录信息",
+        "item1": "在浏览器完成 OAuth 后即可添加账号并用于 IDE 切换。",
+        "item2": "不会自动绑定配额查询参数。",
+        "item3": "如需配额显示，请在账号卡片中手动执行“查询配额”绑定。"
+      }
+    },
+    "oauthWebviewTab": "WebView 授权",
+    "oauthOpenWebview": "在 WebView 中打开",
+    "oauthOpenWebviewIncognito": "在无痕 WebView 中打开",
+    "oauthOpenWebviewFailed": "打开 WebView 失败：{{error}}",
+    "oauthOpenBrowserFallback": "在浏览器中打开（备用）",
+    "oauthOpenBrowserFailed": "打开浏览器失败：{{error}}",
+    "oauthWebviewProgressHint": "WebView 顶部显示横向步骤条，便于定位卡住步骤。",
+    "oauthFlow": {
+      "prepare": "准备授权链接",
+      "quota": "WebView 获取 Cookie 并绑定配额查询",
+      "authorize": "访问授权链接并确认授权",
+      "bind": "轮询授权结果并绑定账号",
+      "retryPrepare": "重新生成授权链接",
+      "retryQuota": "重新采集 Cookie 并查询配额",
+      "retryAuthorize": "重新请求授权链接",
+      "retryBind": "重新轮询授权结果",
+      "error": "流程异常：{{error}}"
+    },
+    "oauthWebviewOverlay": {
+      "steps": {
+        "quotaAuthorize": "1 登录并进入 CodeBuddy",
+        "quotaBind": "2 WebView 获取 Cookie 并绑定配额查询",
+        "quotaComplete": "3 已完成（请手动关闭）",
+        "prepare": "1 准备授权链接",
+        "authorize": "2 访问授权链接并确认授权",
+        "bind": "3 轮询授权结果并绑定账号",
+        "quota": "4 WebView 获取 Cookie 并绑定配额查询",
+        "complete": "5 已完成（请手动关闭）"
+      },
+      "status": {
+        "loginConfirm": "请在页面中完成登录并确认授权。"
+      }
+    },
+    "tokenDesc": "粘贴 CodeBuddy 的 access token：",
+    "jsonDesc": "选择包含 CodeBuddy 账号的 JSON 文件：",
+    "import": {
+      "localDesc": "支持从本机 CodeBuddy 客户端或 JSON 文件导入账号数据。",
+      "localClient": "从本机 CodeBuddy 导入"
+    },
+    "search": "搜索 CodeBuddy 账号...",
+    "quotaQuery": {
+      "title": "查询配额",
+      "desc": "粘贴 Cookie Header 或完整 cURL，系统将提取 session/session_2 并绑定到当前账号。",
+      "button": "查询配额",
+      "submit": "绑定并查询",
+      "clearBinding": "清除绑定",
+      "clearBindingConfirm": "确认清除当前账号的配额查询绑定参数？清除后将停止自动刷新配额。",
+      "clearBindingSuccess": "已清除配额查询绑定参数。",
+      "clearBindingFailed": "清除配额绑定失败：{{error}}",
+      "success": "配额查询成功，已绑定查询参数。",
+      "failed": "配额查询失败：{{error}}",
+      "failedCompact": "查询失败",
+      "failedRefreshCompact": "刷新配额失败",
+      "failedReasonLabel": "原因：{{reason}}",
+      "failedReasonAt": "失败时间：{{time}}",
+      "sectionTitle": "配额查询",
+      "empty": "暂无绑定配额查询信息",
+      "packageUnknown": "套餐信息未知",
+      "quotaLabel": "剩余配额",
+      "updatedAt": "最近查询：{{time}}",
+      "cycleRange": "周期：{{start}} - {{end}}",
+      "cycleUnknown": "周期信息暂无",
+      "expireAt": "到期时间：{{time}}",
+      "expireUnknown": "到期时间：暂无",
+      "noQuota": "未查询",
+      "bindTarget": "绑定账号：{{email}}",
+      "coreHint": "其他参数将使用系统默认值：ProductCode=p_tcaca，Status=0,3，时间范围=当前时间到+100年。",
+      "webview": {
+        "tab": "WebView 登录",
+        "desc": "在内置浏览器中登录 CodeBuddy，登录后将自动获取配额信息。",
+        "open": "在 WebView 中打开",
+        "openIncognito": "在无痕 WebView 中打开",
+        "waiting": "等待浏览器登录...",
+        "hint": "请在弹出的浏览器窗口中登录 CodeBuddy，登录后将自动获取配额并关闭窗口。",
+        "success": "WebView 配额查询成功",
+        "failed": "WebView 查询失败：{{error}}"
+      },
+      "webviewFlow": {
+        "open": "打开 WebView",
+        "login": "登录 CodeBuddy",
+        "fetch": "抓取配额信息",
+        "bind": "绑定查询结果到账号",
+        "retryOpen": "重新打开 WebView",
+        "retryLogin": "重新登录",
+        "retryFetch": "重新获取配额信息",
+        "retryBind": "重新绑定",
+        "error": "流程异常：{{error}}"
+      },
+      "manual": {
+        "tab": "手动粘贴",
+        "step1": "在浏览器中打开下方链接并登录",
+        "step2": "按 F12 打开开发者工具，切换到 Network（网络）面板",
+        "step3": "刷新页面，找到 get-user-resource 请求",
+        "step4": "右键该请求 → Copy → Copy as cURL",
+        "step5": "粘贴到下方输入框"
+      },
+      "fields": {
+        "cookieHeader": "Cookie 标头 / cURL",
+        "productCode": "产品代码 (ProductCode)",
+        "status": "状态值 (Status)",
+        "beginTime": "开始时间",
+        "endTime": "结束时间",
+        "pageNumber": "页码 (PageNumber)",
+        "pageSize": "每页数量 (PageSize)"
+      },
+      "placeholders": {
+        "cookieHeader": "粘贴 get-user-resource 的 cURL 命令"
+      },
+      "errors": {
+        "cookieRequired": "请先填写 Cookie Header 或 cURL。",
+        "accountMismatch": "配额 Cookie 对应账号与当前账号不一致（当前 UIN：{{expectedUin}}，返回 UIN：{{resourceUin}}，payerUin：{{payerUin}}）。请切换到正确账号后重新复制 Cookie。",
+        "statusInvalid": "Status 格式无效，请使用逗号分隔的数字。",
+        "pageInvalid": "分页参数无效，请输入大于 0 的数字。"
+      }
+    },
+    "extraCredit": {
+      "title": "加量包"
+    },
+    "oauthUrlInputPlaceholder": "可手动输入授权地址",
+    "oauthInvalidUrl": "授权链接格式不正确，请输入完整 URL。",
+    "oauthGotoWebview": "让已打开 WebView 跳转到输入地址",
+    "oauthGotoWebviewSuccess": "已请求 WebView 跳转到输入地址。",
+    "oauthGotoWebviewFailed": "WebView 跳转失败：{{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "在此输入网址并在当前 WebView 跳转",
+    "oauthWebviewInlineGo": "跳转",
+    "oauthQuotaFailurePrompt": "配额绑定失败。\n点击“确定”重试 Cookie 采集并刷新配额；点击“取消”跳过（仅添加账号）。",
+    "oauthQuotaFailureTitle": "配额绑定失败",
+    "oauthQuotaFailureRetry": "重试",
+    "oauthQuotaFailureSkip": "跳过",
+    "oauthSuccessClosePrompt": "账号添加完成，是否关闭 WebView？\n点击“关闭 WebView”将立即关闭；点击“稍后再说”保持当前页面不关闭。",
+    "oauthSuccessCloseTitle": "账号添加完成",
+    "oauthSuccessCloseNowLabel": "关闭 WebView",
+    "oauthSuccessCloseLaterLabel": "稍后再说",
+    "oauthSuccessCloseNowStatus": "✅ 账号添加完成，窗口即将关闭…",
+    "oauthSuccessCloseLaterStatus": "✅ 账号添加完成，已保持当前页面打开。"
   },
   "githubCopilot": {
     "title": "GitHub Copilot 账号管理",
@@ -1339,6 +1518,10 @@
       "appPath": "Cursor 路径"
     },
     "cursorRefreshInterval": "配额自动刷新",
+    "codebuddy": {
+      "title": "CodeBuddy 设置",
+      "appPath": "CodeBuddy 路径"
+    },
     "gemini": {
       "title": "Gemini 设置",
       "appPath": "Gemini CLI 路径"

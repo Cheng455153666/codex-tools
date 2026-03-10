@@ -161,7 +161,8 @@
       "update": "Aktualizuj",
       "restart": "Uruchom ponownie"
     },
-    "gemini": "Konta Gemini"
+    "gemini": "Konta Gemini",
+    "codebuddy": "Konta CodeBuddy"
   },
   "platformLayout": {
     "title": "Układ platform",
@@ -459,7 +460,15 @@
       "autoUpdateOn": "Włączone (cicha aktualizacja)",
       "opencodeAuthOverwrite": "Nadpisuj logowanie OpenCode podczas przełączania Codex",
       "opencodeAuthOverwriteDesc": "Gdy wyłączone, przełączany jest tylko Codex, a OpenCode zachowuje bieżący stan logowania",
-      "opencodeRestartRequiresOverwrite": "Najpierw włącz „Nadpisuj logowanie OpenCode podczas przełączania Codex”"
+      "opencodeRestartRequiresOverwrite": "Najpierw włącz „Nadpisuj logowanie OpenCode podczas przełączania Codex”",
+      "codebuddySettingsTitle": "Ustawienia CodeBuddy",
+      "codebuddyAutoRefresh": "Automatyczne odświeżanie limitu CodeBuddy",
+      "codebuddyAutoRefreshDesc": "Interwał automatycznego odświeżania w tle",
+      "codebuddyAppPath": "Ścieżka uruchamiania CodeBuddy",
+      "codebuddyAppPathDesc": "Pozostaw puste, aby użyć domyślnej ścieżki",
+      "codebuddyAppPathPlaceholder": "Domyślna ścieżka",
+      "codebuddyPathSelect": "Wybierz",
+      "codebuddyPathReset": "Przywróć domyślne"
     },
     "network": {
       "apiTitle": "API kokpitu antygrawitacyjnego",
@@ -1150,6 +1159,9 @@
       "team": "TEAM",
       "enterprise": "ENTERPRISE"
     },
+    "list": {
+      "showCodeReviewQuota": "Pokaż limit Code Review"
+    },
     "time": {
       "today": "Dzisiaj {{time}}",
       "tomorrow": "Jutro {{time}}",
@@ -1343,7 +1355,11 @@
       "title": "Ustawienia Gemini",
       "appPath": "Ścieżka Gemini"
     },
-    "geminiRefreshInterval": "Automatyczne odświeżanie limitu"
+    "geminiRefreshInterval": "Automatyczne odświeżanie limitu",
+    "codebuddy": {
+      "title": "Ustawienia CodeBuddy",
+      "appPath": "Ścieżka CodeBuddy"
+    }
   },
   "quotaAlert": {
     "bannerText": "Alert limitu dla {{email}} (próg {{threshold}}%, minimum {{lowest}}%, modele: {{models}})",
@@ -1896,6 +1912,173 @@
       "desc": "Zarządzaj kontami Gemini, importując z lokalnej instalacji Gemini lub wklejając tokeny JWT. Dane są przetwarzane wyłącznie lokalnie.",
       "reason": "Zakres uprawnień: odczyt i zapis oauth_creds.json, google_accounts.json oraz settings.json w domyślnym ~/.gemini lub ścieżce instancji (GEMINI_CLI_HOME/.gemini) do importu kont i lokalnego wstrzykiwania poświadczeń (przełączanie kont).",
       "storage": "Zakres sieci: OAuth i odświeżanie limitu wywołują oficjalne API Google/Gemini (np. oauth2.googleapis.com i googleapis.com). Wysyłane są tylko wymagane pola uwierzytelniania/limitu; lokalne pliki nie są wysyłane na serwery stron trzecich."
+    }
+  },
+  "codebuddy": {
+    "title": "Zarządzanie kontami CodeBuddy",
+    "noAccounts": "Brak kont CodeBuddy",
+    "addAccount": "Dodaj konto CodeBuddy",
+    "flowNotice": {
+      "title": "Informacje o zarządzaniu kontami CodeBuddy (kliknij, aby rozwinąć/zwinąć)",
+      "desc": "Przełączanie kont wymaga odczytu lokalnego magazynu uwierzytelniania CodeBuddy oraz wywołania systemowych usług poświadczeń do odszyfrowania/ponownego zaszyfrowania. Dane są przetwarzane wyłącznie lokalnie.",
+      "permission": "Zakres uprawnień: odczyt bazy uwierzytelniania CodeBuddy (state.vscdb), wywołanie systemowych mechanizmów poświadczeń (macOS Keychain / Windows DPAPI / Linux Secret Service) do odszyfrowania i zapisu zwrotnego.",
+      "network": "Zakres sieci: logowanie OAuth i odświeżanie tokenu wymagają żądań do codebuddy.ai; zapytania o limity wywołują API rozliczeń. Żadne lokalne klucze ani poświadczenia nie są wysyłane."
+    },
+    "nickname": "Pseudonim",
+    "enterprise": "Firmowe",
+    "usage": "Stan użycia",
+    "usageNormal": "Normalny",
+    "oauthWaiting": "Oczekiwanie na autoryzację...",
+    "oauthDesc": "Kliknij przycisk poniżej, aby otworzyć stronę autoryzacji CodeBuddy w przeglądarce.",
+    "oauthDescWebview": "Kliknij przycisk poniżej, aby otworzyć stronę autoryzacji CodeBuddy we wbudowanym WebView.",
+    "oauthFeature": {
+      "webview": {
+        "title": "Zalecane: zakończ autoryzację IDE + powiązanie limitu w jednym przepływie",
+        "item1": "Po zalogowaniu we wbudowanym prywatnym WebView dane logowania IDE zostaną powiązane automatycznie.",
+        "item2": "Parametry zapytania limitu zostaną jednocześnie automatycznie przechwycone i powiązane.",
+        "item3": "Najlepsze dla pierwszej konfiguracji konta, z natychmiastowym podglądem/odświeżaniem limitu."
+      },
+      "oauth": {
+        "title": "Tylko logowanie IDE",
+        "item1": "Dodaj konto po zakończeniu OAuth w przeglądarce, a następnie użyj go do przełączania IDE.",
+        "item2": "Parametry zapytania limitu nie są automatycznie powiązywane.",
+        "item3": "Jeśli potrzebujesz podglądu limitu, uruchom ręcznie „Zapytaj limit” na karcie konta."
+      }
+    },
+    "oauthWebviewTab": "OAuth przez WebView",
+    "oauthOpenWebview": "Otwórz w WebView",
+    "oauthOpenWebviewIncognito": "Otwórz w prywatnym WebView",
+    "oauthOpenWebviewFailed": "Nie udało się otworzyć WebView: {{error}}",
+    "oauthOpenBrowserFallback": "Otwórz w przeglądarce (awaryjnie)",
+    "oauthOpenBrowserFailed": "Nie udało się otworzyć przeglądarki: {{error}}",
+    "oauthWebviewProgressHint": "U góry WebView wyświetlany jest poziomy pasek kroków, aby wskazać zablokowany etap.",
+    "oauthFlow": {
+      "prepare": "Przygotuj link OAuth",
+      "quota": "Przechwyć Cookie w WebView i powiąż zapytanie limitu",
+      "authorize": "Otwórz link autoryzacji i potwierdź",
+      "bind": "Odpytaj wynik autoryzacji i powiąż konto",
+      "retryPrepare": "Wygeneruj link OAuth ponownie",
+      "retryQuota": "Ponownie przechwyć Cookie i zapytaj limit",
+      "retryAuthorize": "Ponownie poproś o link autoryzacji",
+      "retryBind": "Ponów odpytywanie autoryzacji",
+      "error": "Błąd przepływu: {{error}}"
+    },
+    "tokenDesc": "Wklej token dostępu CodeBuddy:",
+    "jsonDesc": "Wybierz plik JSON zawierający konta CodeBuddy:",
+    "import": {
+      "localDesc": "Importuj dane konta z lokalnego klienta CodeBuddy lub z pliku JSON.",
+      "localClient": "Importuj z lokalnego CodeBuddy"
+    },
+    "search": "Szukaj kont CodeBuddy...",
+    "quotaQuery": {
+      "title": "Zapytaj limit",
+      "desc": "Wklej nagłówek Cookie albo pełną komendę cURL. Wyodrębnimy session/session_2 i powiążemy je z tym kontem.",
+      "button": "Zapytaj limit",
+      "submit": "Powiąż i zapytaj",
+      "clearBinding": "Wyczyść powiązanie",
+      "clearBindingConfirm": "Wyczyścić powiązanie zapytania limitu dla tego konta? Po wyczyszczeniu automatyczne odświeżanie limitu zostanie zatrzymane.",
+      "clearBindingSuccess": "Powiązanie zapytania limitu zostało wyczyszczone.",
+      "clearBindingFailed": "Nie udało się wyczyścić powiązania limitu: {{error}}",
+      "success": "Limit został pomyślnie pobrany. Powiązanie zapisano.",
+      "failed": "Zapytanie limitu nie powiodło się: {{error}}",
+      "failedCompact": "Zapytanie nieudane",
+      "failedRefreshCompact": "Odświeżanie limitu nieudane",
+      "failedReasonLabel": "Powód: {{reason}}",
+      "failedReasonAt": "Błąd o: {{time}}",
+      "sectionTitle": "Zapytanie limitu",
+      "empty": "Brak powiązanych informacji o zapytaniu limitu",
+      "packageUnknown": "Nieznany pakiet",
+      "quotaLabel": "Pozostały limit",
+      "updatedAt": "Ostatnie zapytanie: {{time}}",
+      "cycleRange": "Cykl: {{start}} - {{end}}",
+      "cycleUnknown": "Brak informacji o cyklu",
+      "expireAt": "Wygasa: {{time}}",
+      "expireUnknown": "Wygasa: brak danych",
+      "noQuota": "Nie zapytano",
+      "bindTarget": "Powiązane konto: {{email}}",
+      "coreHint": "Pozostałe parametry używają wartości domyślnych: ProductCode=p_tcaca, Status=0,3, zakres czasu=od teraz do +100 lat.",
+      "webview": {
+        "tab": "Logowanie WebView",
+        "desc": "Zaloguj się do CodeBuddy we wbudowanej przeglądarce. Informacje o limicie zostaną pobrane automatycznie po zalogowaniu.",
+        "open": "Otwórz w WebView",
+        "openIncognito": "Otwórz w prywatnym WebView",
+        "waiting": "Oczekiwanie na logowanie w przeglądarce...",
+        "hint": "Zaloguj się do CodeBuddy w wyskakującym oknie przeglądarki. Limit zostanie pobrany, a okno zamknie się automatycznie.",
+        "success": "Zapytanie limitu WebView zakończone powodzeniem",
+        "failed": "Zapytanie WebView nieudane: {{error}}"
+      },
+      "webviewFlow": {
+        "open": "Otwórz WebView",
+        "login": "Zaloguj się do CodeBuddy",
+        "fetch": "Pobierz dane limitu",
+        "bind": "Powiąż wynik z kontem",
+        "retryOpen": "Otwórz WebView ponownie",
+        "retryLogin": "Ponów logowanie",
+        "retryFetch": "Pobierz limit ponownie",
+        "retryBind": "Ponów powiązanie",
+        "error": "Błąd przepływu: {{error}}"
+      },
+      "manual": {
+        "tab": "Wklej ręcznie",
+        "step1": "Otwórz poniższy link w przeglądarce i zaloguj się",
+        "step2": "Naciśnij F12, aby otworzyć DevTools, i przejdź do karty Network",
+        "step3": "Odśwież stronę i znajdź żądanie get-user-resource",
+        "step4": "Kliknij prawym przyciskiem żądanie → Copy → Copy as cURL",
+        "step5": "Wklej do pola poniżej"
+      },
+      "fields": {
+        "cookieHeader": "Nagłówek Cookie / cURL",
+        "productCode": "Kod produktu",
+        "status": "Status",
+        "beginTime": "Czas rozpoczęcia",
+        "endTime": "Czas zakończenia",
+        "pageNumber": "Numer strony",
+        "pageSize": "Rozmiar strony"
+      },
+      "placeholders": {
+        "cookieHeader": "Wklej komendę cURL dla get-user-resource"
+      },
+      "errors": {
+        "cookieRequired": "Najpierw podaj nagłówek Cookie lub cURL.",
+        "accountMismatch": "Cookie limitu należy do innego konta (bieżący UIN: {{expectedUin}}, zwrócony UIN: {{resourceUin}}, payerUin: {{payerUin}}). Przełącz się na poprawne konto i skopiuj cookie ponownie.",
+        "statusInvalid": "Nieprawidłowy format Status. Użyj liczb oddzielonych przecinkami.",
+        "pageInvalid": "Nieprawidłowe wartości stronicowania. Wprowadź liczby większe od 0."
+      }
+    },
+    "extraCredit": {
+      "title": "Pakiet kredytów"
+    },
+    "oauthUrlInputPlaceholder": "Możesz ręcznie wpisać URL autoryzacji",
+    "oauthInvalidUrl": "Nieprawidłowy URL autoryzacji. Wprowadź pełny URL.",
+    "oauthGotoWebview": "Przejdź w otwartym WebView do podanego URL",
+    "oauthGotoWebviewSuccess": "Wysłano żądanie nawigacji WebView do podanego URL.",
+    "oauthGotoWebviewFailed": "Nie udało się nawigować WebView: {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "Wprowadź URL, aby przejść w tym WebView",
+    "oauthWebviewInlineGo": "Przejdź",
+    "oauthQuotaFailurePrompt": "Powiązanie limitu nie powiodło się.\nKliknij OK, aby ponowić przechwytywanie Cookie i odświeżenie limitu; kliknij Anuluj, aby pominąć (tylko konto).",
+    "oauthQuotaFailureTitle": "Powiązanie limitu nie powiodło się",
+    "oauthQuotaFailureRetry": "Ponów",
+    "oauthQuotaFailureSkip": "Pomiń",
+    "oauthSuccessClosePrompt": "Konto dodano pomyślnie. Zamknąć teraz to WebView?\nWybierz „Zamknij WebView”, aby zamknąć teraz, albo „Później”, aby pozostawić otwarte.",
+    "oauthSuccessCloseTitle": "Konto dodane",
+    "oauthSuccessCloseNowLabel": "Zamknij WebView",
+    "oauthSuccessCloseLaterLabel": "Później",
+    "oauthSuccessCloseNowStatus": "✅ Konto dodane. Zamykanie okna...",
+    "oauthSuccessCloseLaterStatus": "✅ Konto dodane. To WebView pozostanie otwarte.",
+    "oauthWebviewOverlay": {
+      "steps": {
+        "quotaAuthorize": "1 Zaloguj się do CodeBuddy",
+        "quotaBind": "2 Przechwyć Cookie w WebView i powiąż zapytanie limitu",
+        "quotaComplete": "3 Gotowe (zamknij ręcznie)",
+        "prepare": "1 Przygotuj link OAuth",
+        "authorize": "2 Otwórz link autoryzacji i potwierdź",
+        "bind": "3 Odpytaj wynik autoryzacji i powiąż konto",
+        "quota": "4 Przechwyć Cookie w WebView i powiąż zapytanie limitu",
+        "complete": "5 Gotowe (zamknij ręcznie)"
+      },
+      "status": {
+        "loginConfirm": "Na tej stronie dokończ logowanie i autoryzację."
+      }
     }
   }
 }

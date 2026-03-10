@@ -39,6 +39,7 @@ export interface OAuthService {
   startLogin: () => Promise<OAuthStartResponse>;
   completeLogin: (loginId: string) => Promise<unknown>;
   cancelLogin: (loginId?: string) => Promise<void>;
+  openAuthUrl?: (url: string) => Promise<void>;
 }
 
 export interface OAuthStartResponse {
@@ -89,6 +90,8 @@ export interface ProviderPageConfig<TAccount extends ProviderAccountBase> {
   store: ProviderStoreActions<TAccount>;
   /** OAuth 服务（可选，Codex 等使用自定义 OAuth 流程的平台可不传） */
   oauthService?: OAuthService;
+  /** 触发 OAuth 流程的 addTab key，默认 ['oauth'] */
+  oauthTabKeys?: string[];
   /** 数据服务 */
   dataService: ProviderDataService;
   /** 获取展示用 email/displayName */
@@ -248,6 +251,7 @@ export interface UseProviderAccountsPageReturn {
   handleCopyOauthUrl: () => Promise<void>;
   handleCopyOauthUserCode: () => Promise<void>;
   handleRetryOauth: () => void;
+  handleRetryOauthComplete: () => void;
   handleOpenOauthUrl: () => Promise<void>;
 
   // Inject / Switch
@@ -287,8 +291,16 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
     exportFilePrefix,
     store,
     oauthService,
+    oauthTabKeys: oauthTabKeysConfig,
     dataService,
   } = config;
+
+  const oauthTabKeys = useMemo(() => {
+    const normalized = (oauthTabKeysConfig || [])
+      .map((item) => item.trim())
+      .filter(Boolean);
+    return normalized.length > 0 ? normalized : ['oauth'];
+  }, [oauthTabKeysConfig]);
 
   const {
     accounts,
@@ -620,6 +632,7 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
   }, [showAddModal, addTab, addStatus]);
 
   const resetAddModalState = useCallback(() => {
+    oauthAttemptSeqRef.current += 1;
     setAddStatus('idle');
     setAddMessage('');
     setTokenInput('');
@@ -633,6 +646,8 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
     setOauthTimedOut(false);
     setOauthPolling(false);
     oauthActiveRef.current = false;
+    oauthCompletingRef.current = false;
+    oauthLoginIdRef.current = null;
   }, []);
 
   const openAddModal = useCallback(
@@ -793,6 +808,7 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
   const oauthActiveRef = useRef(false);
   const oauthLoginIdRef = useRef<string | null>(null);
   const oauthCompletingRef = useRef(false);
+  const oauthAttemptSeqRef = useRef(0);
 
   const oauthLog = useCallback(
     (...args: unknown[]) => {
@@ -820,6 +836,11 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
     await fetchAccounts();
     setAddStatus('success');
     setAddMessage(t('common.shared.oauth.success', '授权成功'));
+    // 授权完成后不再触发 cancelLogin，避免误关仍需用户手动关闭的 WebView
+    oauthLoginIdRef.current = null;
+    oauthActiveRef.current = false;
+    oauthCompletingRef.current = false;
+    setOauthPolling(false);
     setTimeout(() => {
       setShowAddModal(false);
       resetAddModalState();
@@ -844,9 +865,10 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
 
   const prepareOauthUrl = useCallback(() => {
     if (!oauthService) return;
-    if (!showAddModalRef.current || addTabRef.current !== 'oauth') return;
+    if (!showAddModalRef.current || !oauthTabKeys.includes(addTabRef.current)) return;
     if (oauthActiveRef.current) return;
     if (oauthCompletingRef.current) return;
+    const attemptSeq = ++oauthAttemptSeqRef.current;
     oauthActiveRef.current = true;
     setOauthPrepareError(null);
     setOauthCompleteError(null);
@@ -860,10 +882,16 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
 
     let started = false;
 
-    oauthService
-      .startLogin()
-      .then((resp) => {
+    void (async () => {
+      try {
+        const resp = await oauthService.startLogin();
         started = true;
+
+        if (attemptSeq !== oauthAttemptSeqRef.current) {
+          oauthLog('忽略过期 OAuth start 响应', { attemptSeq, loginId: resp.loginId });
+          return;
+        }
+
         oauthLoginIdRef.current = resp.loginId ?? null;
 
         const url =
@@ -882,49 +910,67 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
           url,
           expiresIn: resp.expiresIn,
           intervalSeconds: resp.intervalSeconds,
+          attemptSeq,
         });
 
         setOauthPolling(true);
         oauthCompletingRef.current = true;
         oauthActiveRef.current = false;
-        return oauthService!.completeLogin(resp.loginId);
-      })
-      .then(async () => {
+        await oauthService.completeLogin(resp.loginId);
+
+        if (attemptSeq !== oauthAttemptSeqRef.current) {
+          oauthLog('忽略过期 OAuth complete 成功回调', {
+            attemptSeq,
+            loginId: resp.loginId,
+          });
+          return;
+        }
+
         setOauthPolling(false);
         oauthCompletingRef.current = false;
         await completeOauthSuccess();
-      })
-      .catch((e) => {
+      } catch (e) {
+        if (attemptSeq !== oauthAttemptSeqRef.current) {
+          oauthLog('忽略过期 OAuth 异常回调', {
+            attemptSeq,
+            error: String(e),
+          });
+          return;
+        }
         if (!started) {
           handleOauthPrepareError(e);
           return;
         }
         handleOauthCompleteError(e);
-      })
-      .finally(() => {
-        oauthActiveRef.current = false;
-      });
+      } finally {
+        if (attemptSeq === oauthAttemptSeqRef.current) {
+          oauthActiveRef.current = false;
+        }
+      }
+    })();
   }, [
     oauthService,
     completeOauthSuccess,
     handleOauthCompleteError,
     handleOauthPrepareError,
     oauthLog,
+    oauthTabKeys,
     platformKey,
   ]);
 
   // Auto-prepare OAuth when modal opens on oauth tab
   useEffect(() => {
-    if (!showAddModal || addTab !== 'oauth' || oauthUrl) return;
+    if (!showAddModal || !oauthTabKeys.includes(addTab) || oauthUrl) return;
     prepareOauthUrl();
-  }, [showAddModal, addTab, oauthUrl, prepareOauthUrl]);
+  }, [showAddModal, addTab, oauthUrl, prepareOauthUrl, oauthTabKeys]);
 
   // Cancel OAuth when modal closes or tab changes
   useEffect(() => {
-    if (showAddModal && addTab === 'oauth') return;
+    if (showAddModal && oauthTabKeys.includes(addTab)) return;
     const loginId = oauthLoginIdRef.current ?? undefined;
     if (!loginId) return;
     oauthLog('弹框关闭或切换标签，准备取消授权流程', { loginId });
+    oauthAttemptSeqRef.current += 1;
     oauthService?.cancelLogin(loginId).catch(() => {});
     oauthActiveRef.current = false;
     oauthLoginIdRef.current = null;
@@ -938,7 +984,7 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
     setOauthCompleteError(null);
     setOauthTimedOut(false);
     setOauthPolling(false);
-  }, [showAddModal, addTab, oauthLog, oauthService]);
+  }, [showAddModal, addTab, oauthLog, oauthService, oauthTabKeys]);
 
   const handleCopyOauthUrl = useCallback(async () => {
     if (!oauthUrl) return;
@@ -968,11 +1014,16 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
   }, [oauthUserCode, oauthLog]);
 
   const handleRetryOauth = useCallback(() => {
+    const previousLoginId = oauthLoginIdRef.current ?? undefined;
     oauthLog('用户点击刷新授权信息', {
-      loginId: oauthLoginIdRef.current,
+      loginId: previousLoginId,
       error: oauthCompleteError,
       timedOut: oauthTimedOut,
     });
+    oauthAttemptSeqRef.current += 1;
+    if (previousLoginId) {
+      oauthService?.cancelLogin(previousLoginId).catch(() => {});
+    }
     oauthActiveRef.current = false;
     oauthLoginIdRef.current = null;
     oauthCompletingRef.current = false;
@@ -986,23 +1037,79 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
     setOauthUserCode(null);
     setOauthUserCodeCopied(false);
     prepareOauthUrl();
-  }, [oauthCompleteError, oauthTimedOut, oauthLog, prepareOauthUrl]);
+  }, [oauthCompleteError, oauthTimedOut, oauthLog, oauthService, prepareOauthUrl]);
+
+  const handleRetryOauthComplete = useCallback(() => {
+    if (!oauthService) return;
+    const loginId = oauthLoginIdRef.current;
+    if (!loginId) return;
+    if (oauthCompletingRef.current) return;
+    const attemptSeq = ++oauthAttemptSeqRef.current;
+
+    oauthLog('用户点击重新轮询授权结果', {
+      loginId,
+      error: oauthCompleteError,
+      timedOut: oauthTimedOut,
+      attemptSeq,
+    });
+
+    setOauthPrepareError(null);
+    setOauthCompleteError(null);
+    setOauthTimedOut(false);
+    setOauthPolling(true);
+    oauthCompletingRef.current = true;
+    oauthActiveRef.current = false;
+
+    oauthService
+      .completeLogin(loginId)
+      .then(async () => {
+        if (attemptSeq !== oauthAttemptSeqRef.current) {
+          oauthLog('忽略过期 OAuth 重试成功回调', { loginId, attemptSeq });
+          return;
+        }
+        setOauthPolling(false);
+        oauthCompletingRef.current = false;
+        await completeOauthSuccess();
+      })
+      .catch((e) => {
+        if (attemptSeq !== oauthAttemptSeqRef.current) {
+          oauthLog('忽略过期 OAuth 重试异常回调', {
+            loginId,
+            attemptSeq,
+            error: String(e),
+          });
+          return;
+        }
+        handleOauthCompleteError(e);
+      });
+  }, [
+    oauthService,
+    oauthLog,
+    oauthCompleteError,
+    oauthTimedOut,
+    completeOauthSuccess,
+    handleOauthCompleteError,
+  ]);
 
   const handleOpenOauthUrl = useCallback(async () => {
     if (!oauthUrl) return;
-    oauthLog('用户点击在浏览器打开授权链接', {
+    oauthLog('用户点击打开授权链接', {
       loginId: oauthLoginIdRef.current,
       authUrl: oauthUrl,
     });
     try {
-      await openUrl(oauthUrl);
+      if (oauthService?.openAuthUrl) {
+        await oauthService.openAuthUrl(oauthUrl);
+      } else {
+        await openUrl(oauthUrl);
+      }
     } catch (e) {
-      console.error('打开浏览器失败:', e);
+      console.error('打开授权链接失败:', e);
       await navigator.clipboard.writeText(oauthUrl).catch(() => {});
       setOauthUrlCopied(true);
       setTimeout(() => setOauthUrlCopied(false), 1200);
     }
-  }, [oauthUrl, oauthLog]);
+  }, [oauthUrl, oauthLog, oauthService]);
 
   // ─── Flow Notice ──────────────────────────────────────────────────────
   const [isFlowNoticeCollapsed, setIsFlowNoticeCollapsed] = useState<boolean>(() => {
@@ -1173,6 +1280,7 @@ export function useProviderAccountsPage<TAccount extends ProviderAccountBase>(
     handleCopyOauthUrl,
     handleCopyOauthUserCode,
     handleRetryOauth,
+    handleRetryOauthComplete,
     handleOpenOauthUrl,
     handleInjectToVSCode,
     isFlowNoticeCollapsed,

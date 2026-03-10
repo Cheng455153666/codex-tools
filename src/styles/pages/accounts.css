@@ -264,6 +264,12 @@
   border: 1px solid var(--plan-free-border);
 }
 
+.tier-badge.trial {
+  background: var(--plan-trial-bg);
+  color: var(--plan-trial-color);
+  border: 1px solid var(--plan-trial-border);
+}
+
 .tier-badge.unknown {
   background: var(--plan-unknown-bg);
   color: var(--plan-unknown-color);

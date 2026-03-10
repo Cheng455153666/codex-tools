@@ -161,7 +161,8 @@
       "update": "Обновить",
       "restart": "Перезапустить"
     },
-    "gemini": "Близнецы"
+    "gemini": "Близнецы",
+    "codebuddy": "Аккаунты CodeBuddy"
   },
   "platformLayout": {
     "title": "Макет платформ",
@@ -459,7 +460,15 @@
       "autoUpdateOn": "Включено (тихое обновление)",
       "opencodeAuthOverwrite": "Перезаписать логин OpenCode при переключении Кодекса",
       "opencodeAuthOverwriteDesc": "Если выключено, переключается только Codex, а OpenCode сохраняет текущее состояние входа в систему.",
-      "opencodeRestartRequiresOverwrite": "Сначала включите «Перезаписывать логин OpenCode при переключении Кодекса»."
+      "opencodeRestartRequiresOverwrite": "Сначала включите «Перезаписывать логин OpenCode при переключении Кодекса».",
+      "codebuddySettingsTitle": "Настройки CodeBuddy",
+      "codebuddyAutoRefresh": "Автообновление квоты CodeBuddy",
+      "codebuddyAutoRefreshDesc": "Интервал фонового автообновления",
+      "codebuddyAppPath": "Путь запуска CodeBuddy",
+      "codebuddyAppPathDesc": "Оставьте пустым, чтобы использовать путь по умолчанию",
+      "codebuddyAppPathPlaceholder": "Путь по умолчанию",
+      "codebuddyPathSelect": "Выбрать",
+      "codebuddyPathReset": "Сбросить по умолчанию"
     },
     "network": {
       "apiTitle": "API антигравитационной кабины",
@@ -1150,6 +1159,9 @@
       "team": "TEAM",
       "enterprise": "ENTERPRISE"
     },
+    "list": {
+      "showCodeReviewQuota": "Показать квоту Code Review"
+    },
     "time": {
       "today": "Сегодня {{time}}",
       "tomorrow": "Завтра {{time}}",
@@ -1343,7 +1355,11 @@
       "title": "Настройки Близнецов",
       "appPath": "Путь CLI Gemini"
     },
-    "geminiRefreshInterval": "Автоматическое обновление квоты"
+    "geminiRefreshInterval": "Автоматическое обновление квоты",
+    "codebuddy": {
+      "title": "Настройки CodeBuddy",
+      "appPath": "Путь CodeBuddy"
+    }
   },
   "quotaAlert": {
     "bannerText": "Предупреждение о квоте для {{email}} (порог {{threshold}}%, минимум {{lowest}}%, модели: {{models}})",
@@ -1896,6 +1912,173 @@
     },
     "switch": {
       "success": "Аккаунт успешно переключен"
+    }
+  },
+  "codebuddy": {
+    "title": "Управление аккаунтами CodeBuddy",
+    "noAccounts": "Нет аккаунтов CodeBuddy",
+    "addAccount": "Добавить аккаунт CodeBuddy",
+    "flowNotice": {
+      "title": "Информация об управлении аккаунтами CodeBuddy (нажмите, чтобы развернуть/свернуть)",
+      "desc": "Переключение аккаунтов требует чтения локального хранилища аутентификации CodeBuddy и вызова системных сервисов учетных данных для расшифровки и повторного шифрования. Данные обрабатываются только локально.",
+      "permission": "Область доступа: чтение базы аутентификации CodeBuddy (state.vscdb), вызов системных возможностей хранения учетных данных (macOS Keychain / Windows DPAPI / Linux Secret Service) для расшифровки и обратной записи.",
+      "network": "Сетевой доступ: вход по OAuth и обновление токена требуют запросов к codebuddy.ai; запросы квоты обращаются к billing API. Никакие локальные ключи или учетные данные не загружаются."
+    },
+    "nickname": "Псевдоним",
+    "enterprise": "Корпоративный",
+    "usage": "Статус использования",
+    "usageNormal": "В норме",
+    "oauthWaiting": "Ожидание авторизации...",
+    "oauthDesc": "Нажмите кнопку ниже, чтобы открыть страницу авторизации CodeBuddy в браузере.",
+    "oauthDescWebview": "Нажмите кнопку ниже, чтобы открыть страницу авторизации CodeBuddy во встроенном WebView.",
+    "oauthFeature": {
+      "webview": {
+        "title": "Рекомендуется: завершить авторизацию IDE и привязку квоты за один проход",
+        "item1": "После входа через встроенный WebView в режиме инкогнито данные входа IDE будут привязаны автоматически.",
+        "item2": "Параметры запроса квоты будут одновременно автоматически перехвачены и привязаны.",
+        "item3": "Лучший вариант для первой настройки аккаунта: просмотр и обновление квоты доступны сразу."
+      },
+      "oauth": {
+        "title": "Только вход в IDE",
+        "item1": "Добавьте аккаунт после завершения OAuth в браузере, затем используйте его для переключения в IDE.",
+        "item2": "Параметры запроса квоты не привязываются автоматически.",
+        "item3": "Если нужен показ квоты, вручную запустите «Запросить квоту» на карточке аккаунта."
+      }
+    },
+    "oauthWebviewTab": "OAuth в WebView",
+    "oauthOpenWebview": "Открыть в WebView",
+    "oauthOpenWebviewIncognito": "Открыть в WebView инкогнито",
+    "oauthOpenWebviewFailed": "Не удалось открыть WebView: {{error}}",
+    "oauthOpenBrowserFallback": "Открыть в браузере (резервный вариант)",
+    "oauthOpenBrowserFailed": "Не удалось открыть браузер: {{error}}",
+    "oauthWebviewProgressHint": "В верхней части WebView отображается горизонтальная шкала шагов, чтобы легче было найти зависший этап.",
+    "oauthFlow": {
+      "prepare": "Подготовить ссылку OAuth",
+      "quota": "Перехватить Cookie в WebView и привязать запрос квоты",
+      "authorize": "Открыть ссылку авторизации и подтвердить",
+      "bind": "Опросить результат авторизации и привязать аккаунт",
+      "retryPrepare": "Сгенерировать ссылку OAuth заново",
+      "retryQuota": "Снова перехватить Cookie и запросить квоту",
+      "retryAuthorize": "Повторно запросить ссылку авторизации",
+      "retryBind": "Повторить опрос авторизации",
+      "error": "Ошибка потока: {{error}}"
+    },
+    "tokenDesc": "Вставьте токен доступа CodeBuddy:",
+    "jsonDesc": "Выберите JSON-файл с аккаунтами CodeBuddy:",
+    "import": {
+      "localDesc": "Импортируйте данные аккаунта из локального клиента CodeBuddy или из JSON-файла.",
+      "localClient": "Импорт из локального CodeBuddy"
+    },
+    "search": "Поиск аккаунтов CodeBuddy...",
+    "quotaQuery": {
+      "title": "Запросить квоту",
+      "desc": "Вставьте заголовок Cookie или полную команду cURL. Мы извлечем session/session_2 и привяжем их к этому аккаунту.",
+      "button": "Запросить квоту",
+      "submit": "Привязать и запросить",
+      "clearBinding": "Очистить привязку",
+      "clearBindingConfirm": "Очистить привязку запроса квоты для этого аккаунта? После очистки автообновление квоты будет остановлено.",
+      "clearBindingSuccess": "Привязка запроса квоты очищена.",
+      "clearBindingFailed": "Не удалось очистить привязку квоты: {{error}}",
+      "success": "Квота успешно получена. Привязка сохранена.",
+      "failed": "Не удалось запросить квоту: {{error}}",
+      "failedCompact": "Запрос не выполнен",
+      "failedRefreshCompact": "Не удалось обновить квоту",
+      "failedReasonLabel": "Причина: {{reason}}",
+      "failedReasonAt": "Сбой в: {{time}}",
+      "sectionTitle": "Запрос квоты",
+      "empty": "Привязанной информации о запросе квоты пока нет",
+      "packageUnknown": "Неизвестный пакет",
+      "quotaLabel": "Оставшаяся квота",
+      "updatedAt": "Последний запрос: {{time}}",
+      "cycleRange": "Цикл: {{start}} - {{end}}",
+      "cycleUnknown": "Информация о цикле недоступна",
+      "expireAt": "Истекает: {{time}}",
+      "expireUnknown": "Срок действия: Н/Д",
+      "noQuota": "Не запрашивалось",
+      "bindTarget": "Привязанный аккаунт: {{email}}",
+      "coreHint": "Остальные параметры используют значения по умолчанию: ProductCode=p_tcaca, Status=0,3, диапазон времени = сейчас и до +100 лет.",
+      "webview": {
+        "tab": "Вход через WebView",
+        "desc": "Войдите в CodeBuddy во встроенном браузере. После входа информация о квоте будет получена автоматически.",
+        "open": "Открыть в WebView",
+        "openIncognito": "Открыть в WebView инкогнито",
+        "waiting": "Ожидание входа в браузере...",
+        "hint": "Войдите в CodeBuddy во всплывающем окне браузера. Квота будет получена, а окно закроется автоматически.",
+        "success": "Запрос квоты через WebView выполнен",
+        "failed": "Ошибка запроса через WebView: {{error}}"
+      },
+      "webviewFlow": {
+        "open": "Открыть WebView",
+        "login": "Войти в CodeBuddy",
+        "fetch": "Получить данные квоты",
+        "bind": "Привязать результат к аккаунту",
+        "retryOpen": "Открыть WebView снова",
+        "retryLogin": "Повторить вход",
+        "retryFetch": "Запросить квоту снова",
+        "retryBind": "Повторить привязку",
+        "error": "Ошибка потока: {{error}}"
+      },
+      "manual": {
+        "tab": "Вставить вручную",
+        "step1": "Откройте ссылку ниже в браузере и войдите в систему",
+        "step2": "Нажмите F12, чтобы открыть DevTools, и перейдите на вкладку Network",
+        "step3": "Обновите страницу и найдите запрос get-user-resource",
+        "step4": "Щелкните запрос правой кнопкой -> Copy -> Copy as cURL",
+        "step5": "Вставьте его в поле ниже"
+      },
+      "fields": {
+        "cookieHeader": "Заголовок Cookie / cURL",
+        "productCode": "Код продукта (ProductCode)",
+        "status": "Значение статуса (Status)",
+        "beginTime": "Время начала",
+        "endTime": "Время окончания",
+        "pageNumber": "Номер страницы (PageNumber)",
+        "pageSize": "Размер страницы (PageSize)"
+      },
+      "placeholders": {
+        "cookieHeader": "Вставьте команду cURL для get-user-resource"
+      },
+      "errors": {
+        "cookieRequired": "Сначала укажите заголовок Cookie или cURL.",
+        "accountMismatch": "Cookie квоты принадлежит другому аккаунту (текущий UIN: {{expectedUin}}, возвращенный UIN: {{resourceUin}}, UIN плательщика: {{payerUin}}). Переключитесь на нужный аккаунт и скопируйте cookie еще раз.",
+        "statusInvalid": "Неверный формат Status. Используйте числа, разделенные запятыми.",
+        "pageInvalid": "Неверные параметры пагинации. Введите числа больше 0."
+      }
+    },
+    "extraCredit": {
+      "title": "Пакет кредитов"
+    },
+    "oauthUrlInputPlaceholder": "Вы можете вручную ввести URL авторизации",
+    "oauthInvalidUrl": "Недопустимый URL авторизации. Введите полный URL.",
+    "oauthGotoWebview": "Перейти в открытом WebView по введенному URL",
+    "oauthGotoWebviewSuccess": "В WebView отправлен запрос на переход по введенному URL.",
+    "oauthGotoWebviewFailed": "Не удалось выполнить переход в WebView: {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "Введите URL для перехода в этом WebView",
+    "oauthWebviewInlineGo": "Перейти",
+    "oauthQuotaFailurePrompt": "Не удалось привязать квоту.\nНажмите OK, чтобы повторить перехват Cookie и обновление квоты; нажмите Отмена, чтобы пропустить (только аккаунт).",
+    "oauthQuotaFailureTitle": "Не удалось привязать квоту",
+    "oauthQuotaFailureRetry": "Повторить",
+    "oauthQuotaFailureSkip": "Пропустить",
+    "oauthSuccessClosePrompt": "Аккаунт успешно добавлен. Закрыть этот WebView сейчас?\nВыберите \"Закрыть WebView\", чтобы закрыть сейчас, или \"Позже\", чтобы оставить его открытым.",
+    "oauthSuccessCloseTitle": "Аккаунт добавлен",
+    "oauthSuccessCloseNowLabel": "Закрыть WebView",
+    "oauthSuccessCloseLaterLabel": "Позже",
+    "oauthSuccessCloseNowStatus": "✅ Аккаунт добавлен. Закрываем окно...",
+    "oauthSuccessCloseLaterStatus": "✅ Аккаунт добавлен. Этот WebView останется открытым.",
+    "oauthWebviewOverlay": {
+      "steps": {
+        "quotaAuthorize": "1 Войдите в CodeBuddy",
+        "quotaBind": "2 Перехватить Cookie в WebView и привязать запрос квоты",
+        "quotaComplete": "3 Готово (закройте вручную)",
+        "prepare": "1 Подготовить ссылку OAuth",
+        "authorize": "2 Открыть ссылку авторизации и подтвердить",
+        "bind": "3 Опросить результат авторизации и привязать аккаунт",
+        "quota": "4 Перехватить Cookie в WebView и привязать запрос квоты",
+        "complete": "5 Готово (закройте вручную)"
+      },
+      "status": {
+        "loginConfirm": "Пожалуйста, завершите вход и авторизацию на этой странице."
+      }
     }
   }
 }

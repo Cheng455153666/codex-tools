@@ -137,21 +137,21 @@ pub fn run() {
         })
         .on_window_event(|window, event| match event {
             WindowEvent::CloseRequested { api, .. } => {
+                if window.label() != "main" {
+                    return;
+                }
                 let config = modules::config::get_user_config();
 
                 match config.close_behavior {
                     CloseWindowBehavior::Minimize => {
-                        // 直接最小化到托盘
                         api.prevent_close();
                         let _ = window.hide();
                         info!("[Window] 窗口已最小化到托盘");
                     }
                     CloseWindowBehavior::Quit => {
-                        // 直接退出，不阻止关闭
                         info!("[Window] 用户选择退出应用");
                     }
                     CloseWindowBehavior::Ask => {
-                        // 需要询问用户，阻止关闭并发送事件到前端
                         api.prevent_close();
                         let _ = window.emit("window:close_requested", ());
                         info!("[Window] 等待用户选择关闭行为");
@@ -340,6 +340,39 @@ pub fn run() {
             commands::kiro::update_kiro_account_tags,
             commands::kiro::get_kiro_accounts_index_path,
             commands::kiro::inject_kiro_to_vscode,
+            // CodeBuddy Commands
+            commands::codebuddy::list_codebuddy_accounts,
+            commands::codebuddy::delete_codebuddy_account,
+            commands::codebuddy::delete_codebuddy_accounts,
+            commands::codebuddy::import_codebuddy_from_json,
+            commands::codebuddy::import_codebuddy_from_local,
+            commands::codebuddy::export_codebuddy_accounts,
+            commands::codebuddy::refresh_codebuddy_token,
+            commands::codebuddy::refresh_all_codebuddy_tokens,
+            commands::codebuddy::query_codebuddy_quota_with_binding,
+            commands::codebuddy::clear_codebuddy_quota_binding,
+            commands::codebuddy::open_codebuddy_quota_webview,
+            commands::codebuddy::open_codebuddy_oauth_webview,
+            commands::codebuddy::codebuddy_oauth_webview_action,
+            commands::codebuddy::codebuddy_oauth_webview_submit_snapshot,
+            commands::codebuddy::codebuddy_quota_webview_submit_snapshot,
+            commands::codebuddy::codebuddy_oauth_login_start,
+            commands::codebuddy::codebuddy_oauth_login_complete,
+            commands::codebuddy::codebuddy_oauth_login_cancel,
+            commands::codebuddy::add_codebuddy_account_with_token,
+            commands::codebuddy::update_codebuddy_account_tags,
+            commands::codebuddy::get_codebuddy_accounts_index_path,
+            commands::codebuddy::inject_codebuddy_to_vscode,
+            // CodeBuddy Instance Commands
+            commands::codebuddy_instance::codebuddy_get_instance_defaults,
+            commands::codebuddy_instance::codebuddy_list_instances,
+            commands::codebuddy_instance::codebuddy_create_instance,
+            commands::codebuddy_instance::codebuddy_update_instance,
+            commands::codebuddy_instance::codebuddy_delete_instance,
+            commands::codebuddy_instance::codebuddy_start_instance,
+            commands::codebuddy_instance::codebuddy_stop_instance,
+            commands::codebuddy_instance::codebuddy_open_instance_window,
+            commands::codebuddy_instance::codebuddy_close_all_instances,
             // Cursor Commands
             commands::cursor::list_cursor_accounts,
             commands::cursor::delete_cursor_account,

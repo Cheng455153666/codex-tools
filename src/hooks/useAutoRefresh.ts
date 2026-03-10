@@ -7,6 +7,7 @@ import { useWindsurfAccountStore } from '../stores/useWindsurfAccountStore';
 import { useKiroAccountStore } from '../stores/useKiroAccountStore';
 import { useCursorAccountStore } from '../stores/useCursorAccountStore';
 import { useGeminiAccountStore } from '../stores/useGeminiAccountStore';
+import { useCodebuddyAccountStore } from '../stores/useCodebuddyAccountStore';
 
 interface GeneralConfig {
   language: string;
@@ -18,6 +19,7 @@ interface GeneralConfig {
   kiro_auto_refresh_minutes: number;
   cursor_auto_refresh_minutes: number;
   gemini_auto_refresh_minutes: number;
+  codebuddy_auto_refresh_minutes: number;
   auto_switch_enabled: boolean;
   close_behavior: string;
   opencode_app_path?: string;
@@ -48,6 +50,7 @@ export function useAutoRefresh() {
   const refreshAllKiroTokens = useKiroAccountStore((state) => state.refreshAllTokens);
   const refreshAllCursorTokens = useCursorAccountStore((state) => state.refreshAllTokens);
   const refreshAllGeminiTokens = useGeminiAccountStore((state) => state.refreshAllTokens);
+  const refreshAllCodebuddyTokens = useCodebuddyAccountStore((state) => state.refreshAllTokens);
 
   const agIntervalRef = useRef<number | null>(null);
   const autoSwitchIntervalRef = useRef<number | null>(null);
@@ -57,6 +60,7 @@ export function useAutoRefresh() {
   const kiroIntervalRef = useRef<number | null>(null);
   const cursorIntervalRef = useRef<number | null>(null);
   const geminiIntervalRef = useRef<number | null>(null);
+  const codebuddyIntervalRef = useRef<number | null>(null);
 
   const agRefreshingRef = useRef(false);
   const codexRefreshingRef = useRef(false);
@@ -65,6 +69,7 @@ export function useAutoRefresh() {
   const kiroRefreshingRef = useRef(false);
   const cursorRefreshingRef = useRef(false);
   const geminiRefreshingRef = useRef(false);
+  const codebuddyRefreshingRef = useRef(false);
   const autoSwitchRefreshingRef = useRef(false);
 
   const setupRunningRef = useRef(false);
@@ -103,6 +108,10 @@ export function useAutoRefresh() {
     if (geminiIntervalRef.current) {
       window.clearInterval(geminiIntervalRef.current);
       geminiIntervalRef.current = null;
+    }
+    if (codebuddyIntervalRef.current) {
+      window.clearInterval(codebuddyIntervalRef.current);
+      codebuddyIntervalRef.current = null;
     }
   }, []);
 
@@ -354,6 +363,29 @@ export function useAutoRefresh() {
             console.log('[AutoRefresh] Gemini 已禁用');
           }
 
+          if (config.codebuddy_auto_refresh_minutes > 0) {
+            console.log(`[AutoRefresh] CodeBuddy 已启用: 每 ${config.codebuddy_auto_refresh_minutes} 分钟`);
+            const codebuddyMs = config.codebuddy_auto_refresh_minutes * 60 * 1000;
+
+            codebuddyIntervalRef.current = window.setInterval(async () => {
+              if (codebuddyRefreshingRef.current) {
+                return;
+              }
+              codebuddyRefreshingRef.current = true;
+
+              try {
+                console.log('[AutoRefresh] 触发 CodeBuddy 配额刷新...');
+                await refreshAllCodebuddyTokens();
+              } catch (e) {
+                console.error('[AutoRefresh] CodeBuddy 刷新失败:', e);
+              } finally {
+                codebuddyRefreshingRef.current = false;
+              }
+            }, codebuddyMs);
+          } else {
+            console.log('[AutoRefresh] CodeBuddy 已禁用');
+          }
+
           // 自动切号开启时，额外每 60 秒刷新当前账号（不影响原有配额自动刷新规则）
           if (config.auto_switch_enabled) {
             console.log('[AutoRefresh] 自动切号已启用: 每 60 秒刷新当前账号');
@@ -393,6 +425,7 @@ export function useAutoRefresh() {
     refreshAllGeminiTokens,
     refreshAllGhcpTokens,
     refreshAllKiroTokens,
+    refreshAllCodebuddyTokens,
     refreshAllQuotas,
     refreshAllWindsurfTokens,
     syncCurrentFromClient,

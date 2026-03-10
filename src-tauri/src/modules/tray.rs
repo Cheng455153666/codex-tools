@@ -27,10 +27,11 @@ enum PlatformId {
     Kiro,
     Cursor,
     Gemini,
+    Codebuddy,
 }
 
 impl PlatformId {
-    fn default_order() -> [Self; 7] {
+    fn default_order() -> [Self; 8] {
         [
             Self::Antigravity,
             Self::Codex,
@@ -39,6 +40,7 @@ impl PlatformId {
             Self::Kiro,
             Self::Cursor,
             Self::Gemini,
+            Self::Codebuddy,
         ]
     }
 
@@ -51,6 +53,7 @@ impl PlatformId {
             crate::modules::tray_layout::PLATFORM_KIRO => Some(Self::Kiro),
             crate::modules::tray_layout::PLATFORM_CURSOR => Some(Self::Cursor),
             crate::modules::tray_layout::PLATFORM_GEMINI => Some(Self::Gemini),
+            crate::modules::tray_layout::PLATFORM_CODEBUDDY => Some(Self::Codebuddy),
             _ => None,
         }
     }
@@ -64,6 +67,7 @@ impl PlatformId {
             Self::Kiro => crate::modules::tray_layout::PLATFORM_KIRO,
             Self::Cursor => crate::modules::tray_layout::PLATFORM_CURSOR,
             Self::Gemini => crate::modules::tray_layout::PLATFORM_GEMINI,
+            Self::Codebuddy => crate::modules::tray_layout::PLATFORM_CODEBUDDY,
         }
     }
 
@@ -76,6 +80,7 @@ impl PlatformId {
             Self::Kiro => "Kiro",
             Self::Cursor => "Cursor",
             Self::Gemini => "Gemini",
+            Self::Codebuddy => "CodeBuddy",
         }
     }
 
@@ -88,6 +93,7 @@ impl PlatformId {
             Self::Kiro => "kiro",
             Self::Cursor => "cursor",
             Self::Gemini => "gemini",
+            Self::Codebuddy => "codebuddy",
         }
     }
 }
@@ -401,6 +407,7 @@ fn get_account_display_info(platform: PlatformId, lang: &str) -> AccountDisplayI
         PlatformId::Kiro => build_kiro_display_info(lang),
         PlatformId::Cursor => build_cursor_display_info(lang),
         PlatformId::Gemini => build_gemini_display_info(lang),
+        PlatformId::Codebuddy => build_codebuddy_display_info(lang),
     }
 }
 
@@ -928,9 +935,8 @@ fn build_gemini_display_info(lang: &str) -> AccountDisplayInfo {
     }
 
     let buckets = collect_gemini_bucket_remaining(&account);
-    let pro_bucket = pick_lowest_gemini_bucket(&buckets, |model_id| {
-        model_id.to_lowercase().contains("pro")
-    });
+    let pro_bucket =
+        pick_lowest_gemini_bucket(&buckets, |model_id| model_id.to_lowercase().contains("pro"));
     let flash_bucket = pick_lowest_gemini_bucket(&buckets, |model_id| {
         model_id.to_lowercase().contains("flash")
     });
@@ -964,6 +970,49 @@ fn build_gemini_display_info(lang: &str) -> AccountDisplayInfo {
             first_non_empty(&[Some(account.email.as_str()), Some(account.id.as_str())])
                 .unwrap_or("—")
         ),
+        quota_lines,
+    }
+}
+
+fn build_codebuddy_display_info(lang: &str) -> AccountDisplayInfo {
+    let accounts = crate::modules::codebuddy_account::list_accounts();
+    let account = accounts.iter().max_by_key(|a| a.last_used).cloned();
+    let Some(account) = account else {
+        return AccountDisplayInfo {
+            account: format!("📧 {}", get_text("not_logged_in", lang)),
+            quota_lines: vec!["—".to_string()],
+        };
+    };
+
+    let mut quota_lines = Vec::new();
+
+    if let Some(payment) = account.payment_type.as_deref() {
+        quota_lines.push(format!("Plan: {}", payment));
+    }
+
+    if let Some(code) = account.dosage_notify_code.as_deref() {
+        let msg = if lang == "zh" || lang == "zh-CN" {
+            account.dosage_notify_zh.as_deref().unwrap_or(code)
+        } else {
+            account.dosage_notify_en.as_deref().unwrap_or(code)
+        };
+        quota_lines.push(msg.to_string());
+    }
+
+    if quota_lines.is_empty() {
+        quota_lines.push(get_text("loading", lang));
+    }
+
+    let display_email = first_non_empty(&[
+        Some(account.email.as_str()),
+        account.nickname.as_deref(),
+        account.uid.as_deref(),
+        Some(account.id.as_str()),
+    ])
+    .unwrap_or("—");
+
+    AccountDisplayInfo {
+        account: format!("📧 {}", display_email),
         quota_lines,
     }
 }

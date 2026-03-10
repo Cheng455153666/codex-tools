@@ -46,6 +46,10 @@ interface GeneralConfig {
   windsurf_app_path: string;
   kiro_app_path: string;
   cursor_app_path: string;
+  codebuddy_app_path: string;
+  codebuddy_auto_refresh_minutes: number;
+  codebuddy_quota_alert_enabled: boolean;
+  codebuddy_quota_alert_threshold: number;
   opencode_sync_on_switch: boolean;
   opencode_auth_overwrite_on_switch: boolean;
   codex_launch_on_switch: boolean;
@@ -67,7 +71,7 @@ interface GeneralConfig {
   gemini_quota_alert_threshold: number;
 }
 
-type AppPathTarget = 'antigravity' | 'codex' | 'vscode' | 'opencode' | 'windsurf' | 'kiro' | 'cursor';
+type AppPathTarget = 'antigravity' | 'codex' | 'vscode' | 'opencode' | 'windsurf' | 'kiro' | 'cursor' | 'codebuddy';
 const REFRESH_PRESET_VALUES = ['-1', '2', '5', '10', '15'];
 const THRESHOLD_PRESET_VALUES = ['0', '20', '40', '60'];
 const FALLBACK_PLATFORM_SETTINGS_ORDER: Record<PlatformId, number> = {
@@ -78,6 +82,7 @@ const FALLBACK_PLATFORM_SETTINGS_ORDER: Record<PlatformId, number> = {
   kiro: 4,
   cursor: 5,
   gemini: 6,
+  codebuddy: 7,
 };
 type UpdateCheckSource = 'auto' | 'manual';
 type UpdateCheckFinishedDetail = {
@@ -142,6 +147,12 @@ export function SettingsPage() {
   const [windsurfAppPath, setWindsurfAppPath] = useState('');
   const [kiroAppPath, setKiroAppPath] = useState('');
   const [cursorAppPath, setCursorAppPath] = useState('');
+  const [codebuddyAppPath, setCodebuddyAppPath] = useState('');
+  const [codebuddyAutoRefresh, setCodebuddyAutoRefresh] = useState('10');
+  const [codebuddyQuotaAlertEnabled, setCodebuddyQuotaAlertEnabled] = useState(false);
+  const [codebuddyQuotaAlertThreshold, setCodebuddyQuotaAlertThreshold] = useState('20');
+  const [codebuddyAutoRefreshCustomMode, setCodebuddyAutoRefreshCustomMode] = useState(false);
+  const [codebuddyQuotaAlertThresholdCustomMode, setCodebuddyQuotaAlertThresholdCustomMode] = useState(false);
   const [appPathResetDetectingTargets, setAppPathResetDetectingTargets] = useState<Set<AppPathTarget>>(new Set());
   const [opencodeSyncOnSwitch, setOpencodeSyncOnSwitch] = useState(true);
   const [opencodeAuthOverwriteOnSwitch, setOpencodeAuthOverwriteOnSwitch] = useState(true);
@@ -297,6 +308,7 @@ export function SettingsPage() {
       !ghcpAutoRefresh.trim() ||
       !windsurfAutoRefresh.trim() ||
       !kiroAutoRefresh.trim() ||
+      !codebuddyAutoRefresh.trim() ||
       !cursorAutoRefresh.trim() ||
       !geminiAutoRefresh.trim()
     ) {
@@ -308,6 +320,7 @@ export function SettingsPage() {
     const ghcpAutoRefreshNum = parseInt(ghcpAutoRefresh, 10) || -1;
     const windsurfAutoRefreshNum = parseInt(windsurfAutoRefresh, 10) || -1;
     const kiroAutoRefreshNum = parseInt(kiroAutoRefresh, 10) || -1;
+    const codebuddyAutoRefreshNum = parseInt(codebuddyAutoRefresh, 10) || -1;
     const cursorAutoRefreshNum = parseInt(cursorAutoRefresh, 10) || -1;
     const geminiAutoRefreshNum = parseInt(geminiAutoRefresh, 10) || -1;
     const parsedAutoSwitchThreshold = Number.parseInt(autoSwitchThreshold, 10);
@@ -316,6 +329,7 @@ export function SettingsPage() {
     const parsedGhcpQuotaAlertThreshold = Number.parseInt(ghcpQuotaAlertThreshold, 10);
     const parsedWindsurfQuotaAlertThreshold = Number.parseInt(windsurfQuotaAlertThreshold, 10);
     const parsedKiroQuotaAlertThreshold = Number.parseInt(kiroQuotaAlertThreshold, 10);
+    const parsedCodebuddyQuotaAlertThreshold = Number.parseInt(codebuddyQuotaAlertThreshold, 10);
     const parsedCursorQuotaAlertThreshold = Number.parseInt(cursorQuotaAlertThreshold, 10);
     const parsedGeminiQuotaAlertThreshold = Number.parseInt(geminiQuotaAlertThreshold, 10);
 
@@ -334,6 +348,7 @@ export function SettingsPage() {
           ghcpAutoRefreshMinutes: ghcpAutoRefreshNum,
           windsurfAutoRefreshMinutes: windsurfAutoRefreshNum,
           kiroAutoRefreshMinutes: kiroAutoRefreshNum,
+          codebuddyAutoRefreshMinutes: codebuddyAutoRefreshNum,
           cursorAutoRefreshMinutes: cursorAutoRefreshNum,
           geminiAutoRefreshMinutes: geminiAutoRefreshNum,
           closeBehavior,
@@ -345,6 +360,7 @@ export function SettingsPage() {
           windsurfAppPath,
           kiroAppPath,
           cursorAppPath,
+          codebuddyAppPath,
           opencodeSyncOnSwitch,
           opencodeAuthOverwriteOnSwitch,
           codexLaunchOnSwitch,
@@ -368,6 +384,10 @@ export function SettingsPage() {
           kiroQuotaAlertThreshold: Number.isNaN(parsedKiroQuotaAlertThreshold)
             ? 20
             : parsedKiroQuotaAlertThreshold,
+          codebuddyQuotaAlertEnabled,
+          codebuddyQuotaAlertThreshold: Number.isNaN(parsedCodebuddyQuotaAlertThreshold)
+            ? 20
+            : parsedCodebuddyQuotaAlertThreshold,
           cursorQuotaAlertEnabled,
           cursorQuotaAlertThreshold: Number.isNaN(parsedCursorQuotaAlertThreshold)
             ? 20
@@ -409,6 +429,7 @@ export function SettingsPage() {
     windsurfAppPath,
     kiroAppPath,
     cursorAppPath,
+    codebuddyAppPath,
     opencodeSyncOnSwitch,
     opencodeAuthOverwriteOnSwitch,
     codexLaunchOnSwitch,
@@ -424,6 +445,9 @@ export function SettingsPage() {
     windsurfQuotaAlertThreshold,
     kiroQuotaAlertEnabled,
     kiroQuotaAlertThreshold,
+    codebuddyAutoRefresh,
+    codebuddyQuotaAlertEnabled,
+    codebuddyQuotaAlertThreshold,
     cursorQuotaAlertEnabled,
     cursorQuotaAlertThreshold,
     geminiQuotaAlertEnabled,
@@ -592,6 +616,10 @@ export function SettingsPage() {
       setWindsurfAppPath(config.windsurf_app_path || '');
       setKiroAppPath(config.kiro_app_path || '');
       setCursorAppPath(config.cursor_app_path || '');
+      setCodebuddyAppPath(config.codebuddy_app_path || '');
+      setCodebuddyAutoRefresh(String(config.codebuddy_auto_refresh_minutes ?? 10));
+      setCodebuddyQuotaAlertEnabled(config.codebuddy_quota_alert_enabled ?? false);
+      setCodebuddyQuotaAlertThreshold(String(config.codebuddy_quota_alert_threshold ?? 20));
       setOpencodeSyncOnSwitch(config.opencode_sync_on_switch ?? true);
       setOpencodeAuthOverwriteOnSwitch(config.opencode_auth_overwrite_on_switch ?? true);
       setCodexLaunchOnSwitch(config.codex_launch_on_switch ?? true);
@@ -616,6 +644,7 @@ export function SettingsPage() {
       setGhcpAutoRefreshCustomMode(false);
       setWindsurfAutoRefreshCustomMode(false);
       setKiroAutoRefreshCustomMode(false);
+      setCodebuddyAutoRefreshCustomMode(false);
       setCursorAutoRefreshCustomMode(false);
       setGeminiAutoRefreshCustomMode(false);
       setAutoSwitchThresholdCustomMode(false);
@@ -624,6 +653,7 @@ export function SettingsPage() {
       setGhcpQuotaAlertThresholdCustomMode(false);
       setWindsurfQuotaAlertThresholdCustomMode(false);
       setKiroQuotaAlertThresholdCustomMode(false);
+      setCodebuddyQuotaAlertThresholdCustomMode(false);
       setCursorQuotaAlertThresholdCustomMode(false);
       setGeminiQuotaAlertThresholdCustomMode(false);
       // 同步语言
@@ -690,6 +720,8 @@ export function SettingsPage() {
       setKiroAppPath(path);
     } else if (target === 'cursor') {
       setCursorAppPath(path);
+    } else if (target === 'codebuddy') {
+      setCodebuddyAppPath(path);
     } else {
       setOpencodeAppPath(path);
     }
@@ -707,6 +739,9 @@ export function SettingsPage() {
     }
     if (target === 'cursor') {
       return t('settings.general.cursorPathReset', '重置默认');
+    }
+    if (target === 'codebuddy') {
+      return t('settings.general.codebuddyPathReset', '重置默认');
     }
     if (target === 'opencode') {
       return t('settings.general.opencodePathReset', '重置默认');
@@ -768,6 +803,7 @@ export function SettingsPage() {
   const ghcpAutoRefreshIsPreset = REFRESH_PRESET_VALUES.includes(ghcpAutoRefresh);
   const windsurfAutoRefreshIsPreset = REFRESH_PRESET_VALUES.includes(windsurfAutoRefresh);
   const kiroAutoRefreshIsPreset = REFRESH_PRESET_VALUES.includes(kiroAutoRefresh);
+  const codebuddyAutoRefreshIsPreset = REFRESH_PRESET_VALUES.includes(codebuddyAutoRefresh);
   const cursorAutoRefreshIsPreset = REFRESH_PRESET_VALUES.includes(cursorAutoRefresh);
   const geminiAutoRefreshIsPreset = REFRESH_PRESET_VALUES.includes(geminiAutoRefresh);
   const autoSwitchThresholdIsPreset = THRESHOLD_PRESET_VALUES.includes(autoSwitchThreshold);
@@ -776,6 +812,7 @@ export function SettingsPage() {
   const ghcpQuotaAlertThresholdIsPreset = THRESHOLD_PRESET_VALUES.includes(ghcpQuotaAlertThreshold);
   const windsurfQuotaAlertThresholdIsPreset = THRESHOLD_PRESET_VALUES.includes(windsurfQuotaAlertThreshold);
   const kiroQuotaAlertThresholdIsPreset = THRESHOLD_PRESET_VALUES.includes(kiroQuotaAlertThreshold);
+  const codebuddyQuotaAlertThresholdIsPreset = THRESHOLD_PRESET_VALUES.includes(codebuddyQuotaAlertThreshold);
   const cursorQuotaAlertThresholdIsPreset = THRESHOLD_PRESET_VALUES.includes(cursorQuotaAlertThreshold);
   const geminiQuotaAlertThresholdIsPreset = THRESHOLD_PRESET_VALUES.includes(geminiQuotaAlertThreshold);
 
@@ -2054,6 +2091,194 @@ export function SettingsPage() {
                       >
                         {!kiroQuotaAlertThresholdIsPreset && (
                           <option value={kiroQuotaAlertThreshold}>{kiroQuotaAlertThreshold}%</option>
+                        )}
+                        <option value="0">0%</option>
+                        <option value="20">20%</option>
+                        <option value="40">40%</option>
+                        <option value="60">60%</option>
+                        <option value="custom">{t('settings.general.autoRefreshCustom')}</option>
+                      </select>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+              </div>
+
+              <div style={{ order: platformSettingsOrder.codebuddy }}>
+                <div className="group-title">{t('settings.general.codebuddySettingsTitle', 'CodeBuddy 设置')}</div>
+                <div className="settings-group">
+              <div className="settings-row">
+                <div className="row-label">
+                  <div className="row-title">{t('settings.general.codebuddyAutoRefresh', 'CodeBuddy 自动刷新配额')}</div>
+                  <div className="row-desc">{t('settings.general.codebuddyAutoRefreshDesc', '后台自动更新频率')}</div>
+                </div>
+                <div className="row-control">
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {codebuddyAutoRefreshCustomMode ? (
+                      <div className="settings-inline-input" style={{ minWidth: '120px', width: 'auto' }}>
+                        <input
+                          type="number"
+                          min={1}
+                          max={999}
+                          className="settings-select settings-select--input-mode settings-select--with-unit"
+                          value={codebuddyAutoRefresh}
+                          placeholder={t('quickSettings.inputMinutes', '输入分钟数')}
+                          onChange={(e) => setCodebuddyAutoRefresh(sanitizeNumberInput(e.target.value))}
+                          onBlur={() => {
+                            const normalized = normalizeNumberInput(codebuddyAutoRefresh, 1, 999);
+                            if (REFRESH_PRESET_VALUES.includes(normalized)) {
+                              setCodebuddyAutoRefreshCustomMode(false);
+                            }
+                            setCodebuddyAutoRefresh(normalized);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const normalized = normalizeNumberInput(codebuddyAutoRefresh, 1, 999);
+                              setCodebuddyAutoRefreshCustomMode(false);
+                              setCodebuddyAutoRefresh(normalized);
+                            }
+                          }}
+                        />
+                        <span className="settings-input-unit">{t('settings.general.minutes')}</span>
+                      </div>
+                    ) : (
+                      <select
+                        className="settings-select"
+                        style={{ minWidth: '120px', width: 'auto' }}
+                        value={codebuddyAutoRefresh}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === 'custom') {
+                            setCodebuddyAutoRefreshCustomMode(true);
+                            setCodebuddyAutoRefresh(codebuddyAutoRefresh !== '-1' ? codebuddyAutoRefresh : '1');
+                            return;
+                          }
+                          setCodebuddyAutoRefreshCustomMode(false);
+                          setCodebuddyAutoRefresh(val);
+                        }}
+                      >
+                        {!codebuddyAutoRefreshIsPreset && (
+                          <option value={codebuddyAutoRefresh}>
+                            {codebuddyAutoRefresh} {t('settings.general.minutes')}
+                          </option>
+                        )}
+                        <option value="-1">{t('settings.general.autoRefreshDisabled')}</option>
+                        <option value="2">2 {t('settings.general.minutes')}</option>
+                        <option value="5">5 {t('settings.general.minutes')}</option>
+                        <option value="10">10 {t('settings.general.minutes')}</option>
+                        <option value="15">15 {t('settings.general.minutes')}</option>
+                        <option value="custom">{t('settings.general.autoRefreshCustom')}</option>
+                      </select>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="settings-row">
+                <div className="row-label">
+                  <div className="row-title">{t('settings.general.codebuddyAppPath', 'CodeBuddy 启动路径')}</div>
+                  <div className="row-desc">{t('settings.general.codebuddyAppPathDesc', '留空则使用默认路径')}</div>
+                </div>
+                <div className="row-control row-control--grow">
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1 }}>
+                    <input
+                      type="text"
+                      className="settings-input settings-input--path"
+                      value={codebuddyAppPath}
+                      placeholder={t('settings.general.codebuddyAppPathPlaceholder', '默认路径')}
+                      onChange={(e) => setCodebuddyAppPath(e.target.value)}
+                    />
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => handlePickAppPath('codebuddy')}
+                      disabled={isAppPathResetDetecting('codebuddy')}
+                    >
+                      {t('settings.general.codebuddyPathSelect', '选择')}
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => handleResetAppPath('codebuddy')}
+                      disabled={isAppPathResetDetecting('codebuddy')}
+                    >
+                      <RefreshCw size={16} className={isAppPathResetDetecting('codebuddy') ? 'spin' : undefined} />
+                      {isAppPathResetDetecting('codebuddy')
+                        ? t('common.loading', '加载中...')
+                        : getResetLabelByTarget('codebuddy')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="settings-row">
+                <div className="row-label">
+                  <div className="row-title">{t('quickSettings.quotaAlert.enable', '超额预警')}</div>
+                  <div className="row-desc">{t('quickSettings.quotaAlert.hint', '当当前账号任意模型配额低于阈值时，发送原生通知并在页面提示快捷切号。')}</div>
+                </div>
+                <div className="row-control">
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={codebuddyQuotaAlertEnabled}
+                      onChange={(e) => setCodebuddyQuotaAlertEnabled(e.target.checked)}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+              </div>
+              {codebuddyQuotaAlertEnabled && (
+                <div className="settings-row" style={{ animation: 'fadeUp 0.3s ease both' }}>
+                  <div className="row-label">
+                    <div className="row-title">{t('quickSettings.quotaAlert.threshold', '预警阈值')}</div>
+                    <div className="row-desc">{t('quickSettings.quotaAlert.thresholdDesc', '任意模型配额低于此百分比时触发预警')}</div>
+                  </div>
+                  <div className="row-control">
+                    {codebuddyQuotaAlertThresholdCustomMode ? (
+                      <div className="settings-inline-input">
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          className="settings-select settings-select--input-mode settings-select--with-unit"
+                          value={codebuddyQuotaAlertThreshold}
+                          placeholder={t('quickSettings.inputPercent', '输入百分比')}
+                          onChange={(e) => setCodebuddyQuotaAlertThreshold(sanitizeNumberInput(e.target.value))}
+                          onBlur={() => {
+                            const normalized = normalizeNumberInput(codebuddyQuotaAlertThreshold, 0, 100);
+                            if (THRESHOLD_PRESET_VALUES.includes(normalized)) {
+                              setCodebuddyQuotaAlertThresholdCustomMode(false);
+                            }
+                            setCodebuddyQuotaAlertThreshold(normalized);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const normalized = normalizeNumberInput(codebuddyQuotaAlertThreshold, 0, 100);
+                              setCodebuddyQuotaAlertThresholdCustomMode(false);
+                              setCodebuddyQuotaAlertThreshold(normalized);
+                            }
+                          }}
+                        />
+                        <span className="settings-input-unit">%</span>
+                      </div>
+                    ) : (
+                      <select
+                        className="settings-select"
+                        value={codebuddyQuotaAlertThreshold}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === 'custom') {
+                            setCodebuddyQuotaAlertThresholdCustomMode(true);
+                            setCodebuddyQuotaAlertThreshold(codebuddyQuotaAlertThreshold || '20');
+                            return;
+                          }
+                          setCodebuddyQuotaAlertThresholdCustomMode(false);
+                          setCodebuddyQuotaAlertThreshold(val);
+                        }}
+                      >
+                        {!codebuddyQuotaAlertThresholdIsPreset && (
+                          <option value={codebuddyQuotaAlertThreshold}>{codebuddyQuotaAlertThreshold}%</option>
                         )}
                         <option value="0">0%</option>
                         <option value="20">20%</option>

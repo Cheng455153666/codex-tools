@@ -1,5 +1,8 @@
 pub mod account;
 pub mod announcement;
+pub mod codebuddy_account;
+pub mod codebuddy_instance;
+pub mod codebuddy_oauth;
 pub mod codex_account;
 pub mod codex_instance;
 pub mod codex_oauth;

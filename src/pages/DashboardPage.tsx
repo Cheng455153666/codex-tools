@@ -7,6 +7,7 @@ import { useWindsurfAccountStore } from '../stores/useWindsurfAccountStore';
 import { useKiroAccountStore } from '../stores/useKiroAccountStore';
 import { useCursorAccountStore } from '../stores/useCursorAccountStore';
 import { useGeminiAccountStore } from '../stores/useGeminiAccountStore';
+import { useCodebuddyAccountStore } from '../stores/useCodebuddyAccountStore';
 import { usePlatformLayoutStore } from '../stores/usePlatformLayoutStore';
 import { Page } from '../types/navigation';
 import { Users, CheckCircle2, Sparkles, RotateCw, Play, Github, HelpCircle } from 'lucide-react';
@@ -159,6 +160,11 @@ export function DashboardPage({ onNavigate, onOpenPlatformLayout, onEasterEggTri
     switchAccount: switchGeminiAccount,
   } = useGeminiAccountStore();
 
+  const {
+    accounts: codebuddyAccounts,
+    fetchAccounts: fetchCodebuddyAccounts,
+  } = useCodebuddyAccountStore();
+
   const agCurrentId = agCurrent?.id;
   const codexCurrentId = codexCurrent?.id;
 
@@ -204,6 +210,7 @@ export function DashboardPage({ onNavigate, onOpenPlatformLayout, onEasterEggTri
         fetchKiroAccounts(),
         fetchCursorAccounts(),
         fetchGeminiAccounts(),
+        fetchCodebuddyAccounts(),
       ]);
     };
 
@@ -232,7 +239,8 @@ export function DashboardPage({ onNavigate, onOpenPlatformLayout, onEasterEggTri
         windsurfAccounts.length +
         kiroAccounts.length +
         cursorAccounts.length +
-        geminiAccounts.length,
+        geminiAccounts.length +
+        codebuddyAccounts.length,
       antigravity: agAccounts.length,
       codex: codexAccounts.length,
       githubCopilot: githubCopilotAccounts.length,
@@ -240,8 +248,9 @@ export function DashboardPage({ onNavigate, onOpenPlatformLayout, onEasterEggTri
       kiro: kiroAccounts.length,
       cursor: cursorAccounts.length,
       gemini: geminiAccounts.length,
+      codebuddy: codebuddyAccounts.length,
     };
-  }, [agAccounts, codexAccounts, githubCopilotAccounts, windsurfAccounts, kiroAccounts, cursorAccounts, geminiAccounts]);
+  }, [agAccounts, codexAccounts, githubCopilotAccounts, windsurfAccounts, kiroAccounts, cursorAccounts, geminiAccounts, codebuddyAccounts]);
 
   // Refresh States
   const [refreshing, setRefreshing] = React.useState<Set<string>>(new Set());
@@ -1564,6 +1573,7 @@ export function DashboardPage({ onNavigate, onOpenPlatformLayout, onEasterEggTri
     kiro: stats.kiro,
     cursor: stats.cursor,
     gemini: stats.gemini,
+    codebuddy: stats.codebuddy,
   };
 
   const visibleCardPlatformIds = visiblePlatformOrder;

@@ -10,7 +10,7 @@ type AccountLike = {
   email: string;
 };
 
-type InstancesAppType = 'antigravity' | 'codex' | 'vscode' | 'windsurf' | 'kiro' | 'cursor' | 'gemini';
+type InstancesAppType = 'antigravity' | 'codex' | 'vscode' | 'windsurf' | 'kiro' | 'cursor' | 'gemini' | 'codebuddy';
 
 interface PlatformInstancesContentProps<TAccount extends AccountLike> {
   instanceStore: InstanceStoreState;

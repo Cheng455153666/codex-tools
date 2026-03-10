@@ -305,11 +305,9 @@ fn run_command_get_trimmed(program: &str, args: &[&str]) -> Option<String> {
 fn get_macos_safe_storage_password() -> Result<String, String> {
     let candidates = [
         ("Windsurf Safe Storage", Some("Windsurf")),
+        ("Windsurf Safe Storage", Some("windsurf")),
         ("Windsurf Safe Storage", Some("Windsurf Safe Storage")),
         ("Windsurf Safe Storage", None),
-        ("Code Safe Storage", Some("Code")),
-        ("Code Safe Storage", Some("Code Safe Storage")),
-        ("Code Safe Storage", None),
     ];
 
     for (service, account) in candidates {
@@ -346,15 +344,7 @@ fn run_command_get_trimmed(program: &str, args: &[&str]) -> Option<String> {
 
 #[cfg(target_os = "linux")]
 fn get_linux_v11_key() -> Option<[u8; 16]> {
-    let app_names = [
-        "windsurf",
-        "Windsurf",
-        "code",
-        "Code",
-        "code-oss",
-        "Code - OSS",
-        "VSCodium",
-    ];
+    let app_names = ["windsurf", "Windsurf"];
     for app in app_names {
         if let Some(password) =
             run_command_get_trimmed("secret-tool", &["lookup", "application", app])

@@ -1,5 +1,5 @@
 use std::time::Instant;
-use tauri::AppHandle;
+use tauri::{AppHandle, Emitter};
 
 use crate::models::cursor::CursorAccount;
 use crate::modules::{cursor_account, cursor_oauth, logger};
@@ -181,7 +181,7 @@ pub fn cursor_oauth_login_cancel(login_id: Option<String>) -> Result<(), String>
 }
 
 #[tauri::command]
-pub fn inject_cursor_account(app: AppHandle, account_id: String) -> Result<String, String> {
+pub async fn inject_cursor_account(app: AppHandle, account_id: String) -> Result<String, String> {
     let started_at = Instant::now();
     logger::log_info(&format!(
         "[Cursor Switch] 开始切换账号: account_id={}",
@@ -193,13 +193,54 @@ pub fn inject_cursor_account(app: AppHandle, account_id: String) -> Result<Strin
 
     cursor_account::inject_to_cursor(&account_id)?;
 
+    if let Err(err) = crate::modules::cursor_instance::update_default_settings(
+        Some(Some(account_id.clone())),
+        None,
+        Some(false),
+    ) {
+        logger::log_warn(&format!("更新 Cursor 默认实例绑定账号失败: {}", err));
+    }
+
+    let launch_warning =
+        match crate::commands::cursor_instance::cursor_start_instance("__default__".to_string())
+            .await
+        {
+            Ok(_) => None,
+            Err(err) => {
+                if err.starts_with("APP_PATH_NOT_FOUND:") || err.contains("启动 Cursor 失败") {
+                    logger::log_warn(&format!("Cursor 默认实例启动失败: {}", err));
+                    if err.starts_with("APP_PATH_NOT_FOUND:") || err.contains("APP_PATH_NOT_FOUND:")
+                    {
+                        let _ = app.emit(
+                            "app:path_missing",
+                            serde_json::json!({ "app": "cursor", "retry": { "kind": "default" } }),
+                        );
+                    }
+                    Some(err)
+                } else {
+                    return Err(err);
+                }
+            }
+        };
+
     let _ = crate::modules::tray::update_tray_menu(&app);
 
-    logger::log_info(&format!(
-        "[Cursor Switch] 切号成功: account_id={}, email={}, elapsed={}ms",
-        account.id,
-        account.email,
-        started_at.elapsed().as_millis()
-    ));
-    Ok(format!("切换完成: {}", account.email))
+    if let Some(err) = launch_warning {
+        logger::log_warn(&format!(
+            "[Cursor Switch] 切号完成但启动失败: account_id={}, email={}, elapsed={}ms, error={}",
+            account.id,
+            account.email,
+            started_at.elapsed().as_millis(),
+            err
+        ));
+        Ok(format!("切换完成，但 Cursor 启动失败: {}", err))
+    } else {
+        logger::log_info(&format!(
+            "[Cursor Switch] 切号成功: account_id={}, email={}, elapsed={}ms",
+            account.id,
+            account.email,
+            started_at.elapsed().as_millis()
+        ));
+        Ok(format!("切换完成: {}", account.email))
+    }
 }

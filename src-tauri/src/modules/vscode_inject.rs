@@ -59,6 +59,7 @@ const SALT: &[u8] = b"saltysalt";
 enum SafeStorageReadMode {
     Default,
     AntigravityOnly,
+    CodeBuddyOnly,
 }
 
 // PBKDF2-HMAC-SHA1(1 iteration, key = "peanuts", salt = "saltysalt")
@@ -355,6 +356,24 @@ fn build_macos_safe_storage_candidates(
         ];
     }
 
+    if matches!(mode, SafeStorageReadMode::CodeBuddyOnly) {
+        return vec![
+            (
+                "CodeBuddy Safe Storage".to_string(),
+                Some("CodeBuddy".to_string()),
+            ),
+            (
+                "CodeBuddy Safe Storage".to_string(),
+                Some("codebuddy".to_string()),
+            ),
+            ("CodeBuddy Safe Storage".to_string(), None),
+            (
+                "CodeBuddy Safe Storage".to_string(),
+                Some("CodeBuddy Safe Storage".to_string()),
+            ),
+        ];
+    }
+
     let mut app_names: Vec<String> = Vec::new();
     if let Some(root) = data_root {
         if let Some(name) = root.file_name().and_then(|value| value.to_str()) {
@@ -440,8 +459,11 @@ fn run_command_get_trimmed(program: &str, args: &[&str]) -> Option<String> {
 }
 
 #[cfg(target_os = "linux")]
-fn get_linux_v11_key() -> Option<[u8; 16]> {
-    let app_names = ["code", "Code", "code-oss", "Code - OSS", "VSCodium"];
+fn get_linux_v11_key(mode: SafeStorageReadMode) -> Option<[u8; 16]> {
+    let app_names: &[&str] = match mode {
+        SafeStorageReadMode::CodeBuddyOnly => &["CodeBuddy", "codebuddy"],
+        _ => &["code", "Code", "code-oss", "Code - OSS", "VSCodium"],
+    };
 
     for app in app_names {
         if let Some(password) =
@@ -479,7 +501,7 @@ fn decrypt_secret_payload_with_mode(
     {
         match detect_prefix(encrypted) {
             Some("v11") => {
-                let key = get_linux_v11_key().ok_or(
+                let key = get_linux_v11_key(mode).ok_or(
                     "Cannot load Linux secret storage key for VS Code (v11 payload)".to_string(),
                 )?;
                 match decrypt_cbc_prefixed(encrypted, V11_PREFIX, &key) {
@@ -515,37 +537,50 @@ fn encrypt_secret_payload(
     preferred_prefix: Option<&str>,
     data_root: Option<&Path>,
 ) -> Result<Vec<u8>, String> {
+    encrypt_secret_payload_with_mode(
+        plaintext,
+        preferred_prefix,
+        data_root,
+        SafeStorageReadMode::Default,
+    )
+}
+
+fn encrypt_secret_payload_with_mode(
+    plaintext: &[u8],
+    preferred_prefix: Option<&str>,
+    data_root: Option<&Path>,
+    mode: SafeStorageReadMode,
+) -> Result<Vec<u8>, String> {
     #[cfg(not(target_os = "linux"))]
     let _ = preferred_prefix;
 
-    #[cfg(target_os = "linux")]
-    let _ = data_root;
-
     #[cfg(target_os = "windows")]
     {
+        let _ = mode;
         let key = get_windows_encryption_key(data_root)?;
         return encrypt_windows_gcm_v10(&key, plaintext);
     }
 
     #[cfg(target_os = "macos")]
     {
-        let password = get_macos_safe_storage_password(data_root, SafeStorageReadMode::Default)?;
+        let password = get_macos_safe_storage_password(data_root, mode)?;
         let key = pbkdf2_sha1_key(&password, 1003);
         return encrypt_cbc_prefixed(V10_PREFIX, &key, plaintext);
     }
 
     #[cfg(target_os = "linux")]
     {
+        let _ = data_root;
         let target_prefix = if let Some(prefix) = preferred_prefix {
             prefix
-        } else if get_linux_v11_key().is_some() {
+        } else if get_linux_v11_key(mode).is_some() {
             "v11"
         } else {
             "v10"
         };
 
         if target_prefix == "v11" {
-            let key = get_linux_v11_key().ok_or(
+            let key = get_linux_v11_key(mode).ok_or(
                 "Cannot load Linux secret storage key for VS Code (v11 payload)".to_string(),
             )?;
             return encrypt_cbc_prefixed(V11_PREFIX, &key, plaintext);
@@ -556,7 +591,7 @@ fn encrypt_secret_payload(
 
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
     {
-        let _ = (plaintext, preferred_prefix, data_root);
+        let _ = (plaintext, preferred_prefix, data_root, mode);
         Err("Unsupported platform".to_string())
     }
 }
@@ -765,6 +800,20 @@ pub fn read_antigravity_secret_storage_value(
     )
 }
 
+pub fn read_codebuddy_secret_storage_value(
+    extension_id: &str,
+    key: &str,
+    user_data_dir: Option<&str>,
+) -> Result<Option<String>, String> {
+    let data_root = resolve_vscode_data_root(user_data_dir)?;
+    read_secret_storage_value_with_data_root_and_mode(
+        &data_root,
+        extension_id,
+        key,
+        SafeStorageReadMode::CodeBuddyOnly,
+    )
+}
+
 fn load_existing_sessions(
     existing_encrypted_value: Option<&str>,
     data_root: Option<&Path>,
@@ -840,4 +889,102 @@ pub fn inject_copilot_token_for_user_data_dir(
 ) -> Result<String, String> {
     let data_root = resolve_vscode_data_root(Some(user_data_dir))?;
     inject_copilot_token_with_data_root(&data_root, username, token, github_user_id)
+}
+
+/// Generic: encrypt a plaintext string and write it to a given state.vscdb
+/// under an arbitrary `secret://` key. The `db_path` should point to
+/// `<AppSupport>/<AppName>/User/globalStorage/state.vscdb` so that
+/// the parent `<AppName>` directory is used to derive the encryption key.
+#[allow(dead_code)]
+pub fn inject_secret_to_state_db(
+    db_path: &std::path::Path,
+    db_key: &str,
+    plaintext: &str,
+) -> Result<(), String> {
+    inject_secret_to_state_db_with_mode(db_path, db_key, plaintext, SafeStorageReadMode::Default)
+}
+
+pub fn inject_secret_to_state_db_for_codebuddy(
+    db_path: &std::path::Path,
+    db_key: &str,
+    plaintext: &str,
+) -> Result<(), String> {
+    inject_secret_to_state_db_with_mode(
+        db_path,
+        db_key,
+        plaintext,
+        SafeStorageReadMode::CodeBuddyOnly,
+    )
+}
+
+fn inject_secret_to_state_db_with_mode(
+    db_path: &std::path::Path,
+    db_key: &str,
+    plaintext: &str,
+    mode: SafeStorageReadMode,
+) -> Result<(), String> {
+    let data_root = db_path
+        .parent()
+        .and_then(|p| p.parent())
+        .and_then(|p| p.parent())
+        .ok_or_else(|| {
+            format!(
+                "Cannot determine data root from db path: {}",
+                db_path.display()
+            )
+        })?;
+
+    if let Some(parent) = db_path.parent() {
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create state.vscdb parent dir: {}", e))?;
+    }
+
+    let conn = rusqlite::Connection::open(db_path)
+        .map_err(|e| format!("Failed to open state.vscdb: {}", e))?;
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS ItemTable (key TEXT PRIMARY KEY, value TEXT)",
+        [],
+    )
+    .map_err(|e| format!("Failed to init ItemTable: {}", e))?;
+
+    let existing_prefix: Option<String> = match conn.query_row(
+        "SELECT value FROM ItemTable WHERE key = ?",
+        [db_key],
+        |row| row.get::<_, String>(0),
+    ) {
+        Ok(val) => {
+            if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&val) {
+                if let Ok(bytes) = decode_buffer_data(&parsed) {
+                    detect_prefix(&bytes).map(|s| s.to_string())
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        }
+        Err(_) => None,
+    };
+
+    let encrypted = encrypt_secret_payload_with_mode(
+        plaintext.as_bytes(),
+        existing_prefix.as_deref(),
+        Some(data_root),
+        mode,
+    )?;
+
+    let buffer_json = serde_json::json!({
+        "type": "Buffer",
+        "data": encrypted
+    });
+    let buffer_str = serde_json::to_string(&buffer_json)
+        .map_err(|e| format!("Failed to serialize Buffer: {}", e))?;
+
+    conn.execute(
+        "INSERT OR REPLACE INTO ItemTable (key, value) VALUES (?, ?)",
+        rusqlite::params![db_key, buffer_str],
+    )
+    .map_err(|e| format!("Failed to write to state.vscdb: {}", e))?;
+
+    Ok(())
 }

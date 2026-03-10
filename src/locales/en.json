@@ -151,6 +151,7 @@
     "fingerprints": "Fingerprints",
     "settings": "Settings",
     "codex": "Codex Accounts",
+    "codebuddy": "CodeBuddy",
     "githubCopilot": "GitHub Copilot",
     "windsurf": "Windsurf",
     "gemini": "Gemini",
@@ -453,6 +454,14 @@
       "kiroAppPathPlaceholder": "Default path",
       "kiroPathSelect": "Select",
       "kiroPathReset": "Reset to default",
+      "codebuddySettingsTitle": "CodeBuddy Settings",
+      "codebuddyAutoRefresh": "CodeBuddy Auto Refresh Quota",
+      "codebuddyAutoRefreshDesc": "Background auto-refresh interval",
+      "codebuddyAppPath": "CodeBuddy Launch Path",
+      "codebuddyAppPathDesc": "Leave empty for default path",
+      "codebuddyAppPathPlaceholder": "Default path",
+      "codebuddyPathSelect": "Select",
+      "codebuddyPathReset": "Reset to default",
       "cursorPathReset": "Reset default",
       "codexLaunchOnSwitch": "Launch Codex App when switching Codex",
       "codexLaunchOnSwitchDesc": "Start or restart Codex App after switching accounts",
@@ -1150,6 +1159,9 @@
       "team": "TEAM",
       "enterprise": "ENTERPRISE"
     },
+    "list": {
+      "showCodeReviewQuota": "Show Code Review quota"
+    },
     "time": {
       "today": "Today {{time}}",
       "tomorrow": "Tomorrow {{time}}",
@@ -1180,6 +1192,173 @@
     "noAvailableTags": "No tags available",
     "clearFilter": "Clear Filter",
     "editTags": "Edit Tags"
+  },
+  "codebuddy": {
+    "title": "CodeBuddy Account Management",
+    "noAccounts": "No CodeBuddy accounts",
+    "addAccount": "Add CodeBuddy Account",
+    "flowNotice": {
+      "title": "CodeBuddy Account Management Info (click to expand/collapse)",
+      "desc": "Switching accounts requires reading CodeBuddy local auth storage and calling system credential services for decryption/re-encryption. Data is processed locally only.",
+      "permission": "Permission scope: read CodeBuddy auth database (state.vscdb), call system credential capabilities (macOS Keychain / Windows DPAPI / Linux Secret Service) for decrypt/write-back.",
+      "network": "Network scope: OAuth login and token refresh require network requests to codebuddy.ai; quota queries call billing APIs. No local keys or credentials are uploaded."
+    },
+    "nickname": "Nickname",
+    "enterprise": "Enterprise",
+    "usage": "Usage Status",
+    "usageNormal": "Normal",
+    "oauthWaiting": "Waiting for authorization...",
+    "oauthDesc": "Click the button below to open the CodeBuddy authorization page in your browser.",
+    "oauthDescWebview": "Click the button below to open the CodeBuddy authorization page in built-in WebView.",
+    "oauthFeature": {
+      "webview": {
+        "title": "Recommended: complete IDE auth + quota binding in one flow",
+        "item1": "After signing in via built-in incognito WebView, IDE sign-in data is bound automatically.",
+        "item2": "Quota query parameters are captured and bound automatically at the same time.",
+        "item3": "Best for first-time account setup, with quota view/refresh available immediately."
+      },
+      "oauth": {
+        "title": "IDE sign-in only",
+        "item1": "Add the account after completing OAuth in your browser, then use it for IDE switching.",
+        "item2": "Quota query parameters are not bound automatically.",
+        "item3": "If you need quota display, manually run \"Query Quota\" on the account card."
+      }
+    },
+    "oauthWebviewTab": "WebView OAuth",
+    "oauthOpenWebview": "Open in WebView",
+    "oauthOpenWebviewIncognito": "Open in Incognito WebView",
+    "oauthOpenWebviewFailed": "Failed to open WebView: {{error}}",
+    "oauthOpenBrowserFallback": "Open in Browser (Fallback)",
+    "oauthOpenBrowserFailed": "Failed to open browser: {{error}}",
+    "oauthWebviewProgressHint": "A horizontal step bar is shown at the top of the WebView to locate stuck stages.",
+    "oauthFlow": {
+      "prepare": "Prepare OAuth link",
+      "quota": "Capture Cookie in WebView and bind quota query",
+      "authorize": "Open authorization link and confirm",
+      "bind": "Poll auth result and bind account",
+      "retryPrepare": "Regenerate OAuth link",
+      "retryQuota": "Recapture Cookie and query quota",
+      "retryAuthorize": "Request authorization link again",
+      "retryBind": "Retry auth polling",
+      "error": "Flow error: {{error}}"
+    },
+    "oauthWebviewOverlay": {
+      "steps": {
+        "quotaAuthorize": "1 Sign in to CodeBuddy",
+        "quotaBind": "2 Capture Cookie in WebView and bind quota query",
+        "quotaComplete": "3 Done (close manually)",
+        "prepare": "1 Prepare OAuth link",
+        "authorize": "2 Open authorization link and confirm",
+        "bind": "3 Poll auth result and bind account",
+        "quota": "4 Capture Cookie in WebView and bind quota query",
+        "complete": "5 Done (close manually)"
+      },
+      "status": {
+        "loginConfirm": "Please complete sign-in and authorization on this page."
+      }
+    },
+    "tokenDesc": "Paste your CodeBuddy access token:",
+    "jsonDesc": "Select a JSON file containing CodeBuddy accounts:",
+    "import": {
+      "localDesc": "Import account data from local CodeBuddy client or a JSON file.",
+      "localClient": "Import from local CodeBuddy"
+    },
+    "search": "Search CodeBuddy accounts...",
+    "quotaQuery": {
+      "title": "Query Quota",
+      "desc": "Paste a Cookie header or full cURL command. We will extract session/session_2 and bind it to this account.",
+      "button": "Query Quota",
+      "submit": "Bind & Query",
+      "clearBinding": "Clear Binding",
+      "clearBindingConfirm": "Clear quota query binding for this account? Auto-refresh of quota will stop after clearing.",
+      "clearBindingSuccess": "Quota query binding cleared.",
+      "clearBindingFailed": "Failed to clear quota binding: {{error}}",
+      "success": "Quota queried successfully. Binding has been saved.",
+      "failed": "Quota query failed: {{error}}",
+      "failedCompact": "Query failed",
+      "failedRefreshCompact": "Quota refresh failed",
+      "failedReasonLabel": "Reason: {{reason}}",
+      "failedReasonAt": "Failed at: {{time}}",
+      "sectionTitle": "Quota Query",
+      "empty": "No bound quota query info yet",
+      "packageUnknown": "Unknown package",
+      "quotaLabel": "Remaining quota",
+      "updatedAt": "Last queried: {{time}}",
+      "cycleRange": "Cycle: {{start}} - {{end}}",
+      "cycleUnknown": "Cycle info unavailable",
+      "expireAt": "Expires at: {{time}}",
+      "expireUnknown": "Expires at: N/A",
+      "noQuota": "Not queried",
+      "bindTarget": "Bound account: {{email}}",
+      "coreHint": "Other parameters use defaults: ProductCode=p_tcaca, Status=0,3, time range=now to +100 years.",
+      "webview": {
+        "tab": "WebView Login",
+        "desc": "Log in to CodeBuddy in the built-in browser. Quota info will be fetched automatically after login.",
+        "open": "Open in WebView",
+        "openIncognito": "Open in Incognito WebView",
+        "waiting": "Waiting for browser login...",
+        "hint": "Please log in to CodeBuddy in the pop-up browser window. Quota will be fetched and the window will close automatically.",
+        "success": "WebView quota query succeeded",
+        "failed": "WebView query failed: {{error}}"
+      },
+      "webviewFlow": {
+        "open": "Open WebView",
+        "login": "Log in to CodeBuddy",
+        "fetch": "Fetch quota data",
+        "bind": "Bind result to account",
+        "retryOpen": "Reopen WebView",
+        "retryLogin": "Retry login",
+        "retryFetch": "Refetch quota",
+        "retryBind": "Retry binding",
+        "error": "Flow error: {{error}}"
+      },
+      "manual": {
+        "tab": "Manual Paste",
+        "step1": "Open the link below in your browser and log in",
+        "step2": "Press F12 to open DevTools, switch to the Network tab",
+        "step3": "Refresh the page, find the get-user-resource request",
+        "step4": "Right-click the request → Copy → Copy as cURL",
+        "step5": "Paste into the input box below"
+      },
+      "fields": {
+        "cookieHeader": "Cookie Header / cURL",
+        "productCode": "ProductCode",
+        "status": "Status",
+        "beginTime": "Begin Time",
+        "endTime": "End Time",
+        "pageNumber": "PageNumber",
+        "pageSize": "PageSize"
+      },
+      "placeholders": {
+        "cookieHeader": "Paste the cURL command of get-user-resource"
+      },
+      "errors": {
+        "cookieRequired": "Please provide Cookie header or cURL first.",
+        "accountMismatch": "The quota cookie belongs to a different account (current UIN: {{expectedUin}}, returned UIN: {{resourceUin}}, payerUin: {{payerUin}}). Please switch to the correct account and copy the cookie again.",
+        "statusInvalid": "Invalid Status format. Use comma-separated numbers.",
+        "pageInvalid": "Invalid pagination values. Please enter numbers greater than 0."
+      }
+    },
+    "extraCredit": {
+      "title": "Credit Package"
+    },
+    "oauthUrlInputPlaceholder": "You can enter an authorization URL manually",
+    "oauthInvalidUrl": "Invalid authorization URL. Please enter a full URL.",
+    "oauthGotoWebview": "Navigate opened WebView to input URL",
+    "oauthGotoWebviewSuccess": "Requested WebView to navigate to the input URL.",
+    "oauthGotoWebviewFailed": "Failed to navigate WebView: {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "Enter a URL to navigate within this WebView",
+    "oauthWebviewInlineGo": "Go",
+    "oauthQuotaFailurePrompt": "Quota binding failed.\nClick OK to retry Cookie capture and refresh quota; click Cancel to skip (account only).",
+    "oauthQuotaFailureTitle": "Quota binding failed",
+    "oauthQuotaFailureRetry": "Retry",
+    "oauthQuotaFailureSkip": "Skip",
+    "oauthSuccessClosePrompt": "Account added successfully. Close this WebView now?\nChoose \"Close WebView\" to close now, or \"Later\" to keep it open.",
+    "oauthSuccessCloseTitle": "Account Added",
+    "oauthSuccessCloseNowLabel": "Close WebView",
+    "oauthSuccessCloseLaterLabel": "Later",
+    "oauthSuccessCloseNowStatus": "✅ Account added. Closing window...",
+    "oauthSuccessCloseLaterStatus": "✅ Account added. This WebView stays open."
   },
   "githubCopilot": {
     "title": "GitHub Copilot Account Management",
@@ -1339,6 +1518,10 @@
       "appPath": "Cursor Path"
     },
     "cursorRefreshInterval": "Quota Auto Refresh",
+    "codebuddy": {
+      "title": "CodeBuddy Settings",
+      "appPath": "CodeBuddy Path"
+    },
     "gemini": {
       "title": "Gemini Settings",
       "appPath": "Gemini CLI Path"

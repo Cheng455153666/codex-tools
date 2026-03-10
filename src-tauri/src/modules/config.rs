@@ -71,6 +71,9 @@ pub struct UserConfig {
     /// Gemini 自动刷新间隔（分钟），-1 表示禁用
     #[serde(default = "default_gemini_auto_refresh")]
     pub gemini_auto_refresh_minutes: i32,
+    /// CodeBuddy 自动刷新间隔（分钟），-1 表示禁用
+    #[serde(default = "default_codebuddy_auto_refresh")]
+    pub codebuddy_auto_refresh_minutes: i32,
     /// 窗口关闭行为
     #[serde(default = "default_close_behavior")]
     pub close_behavior: CloseWindowBehavior,
@@ -101,6 +104,9 @@ pub struct UserConfig {
     /// Cursor 启动路径（为空则使用默认路径）
     #[serde(default = "default_cursor_app_path")]
     pub cursor_app_path: String,
+    /// CodeBuddy 启动路径（为空则使用默认路径）
+    #[serde(default = "default_codebuddy_app_path")]
+    pub codebuddy_app_path: String,
     /// 切换 Codex 时是否自动重启 OpenCode
     #[serde(default = "default_opencode_sync_on_switch")]
     pub opencode_sync_on_switch: bool,
@@ -158,6 +164,12 @@ pub struct UserConfig {
     /// Gemini 配额预警阈值（百分比）
     #[serde(default = "default_gemini_quota_alert_threshold")]
     pub gemini_quota_alert_threshold: i32,
+    /// 是否启用 CodeBuddy 配额预警通知
+    #[serde(default = "default_codebuddy_quota_alert_enabled")]
+    pub codebuddy_quota_alert_enabled: bool,
+    /// CodeBuddy 配额预警阈值（百分比）
+    #[serde(default = "default_codebuddy_quota_alert_threshold")]
+    pub codebuddy_quota_alert_threshold: i32,
 }
 
 /// 窗口关闭行为
@@ -226,7 +238,10 @@ fn default_cursor_auto_refresh() -> i32 {
 } // 默认 10 分钟
 fn default_gemini_auto_refresh() -> i32 {
     10
-} // 默认 10 分钟
+}
+fn default_codebuddy_auto_refresh() -> i32 {
+    10
+}
 fn default_close_behavior() -> CloseWindowBehavior {
     CloseWindowBehavior::Ask
 }
@@ -255,6 +270,9 @@ fn default_kiro_app_path() -> String {
     String::new()
 }
 fn default_cursor_app_path() -> String {
+    String::new()
+}
+fn default_codebuddy_app_path() -> String {
     String::new()
 }
 fn default_opencode_sync_on_switch() -> bool {
@@ -314,6 +332,12 @@ fn default_gemini_quota_alert_enabled() -> bool {
 fn default_gemini_quota_alert_threshold() -> i32 {
     20
 }
+fn default_codebuddy_quota_alert_enabled() -> bool {
+    false
+}
+fn default_codebuddy_quota_alert_threshold() -> i32 {
+    20
+}
 
 impl Default for UserConfig {
     fn default() -> Self {
@@ -329,6 +353,7 @@ impl Default for UserConfig {
             kiro_auto_refresh_minutes: default_kiro_auto_refresh(),
             cursor_auto_refresh_minutes: default_cursor_auto_refresh(),
             gemini_auto_refresh_minutes: default_gemini_auto_refresh(),
+            codebuddy_auto_refresh_minutes: default_codebuddy_auto_refresh(),
             close_behavior: default_close_behavior(),
             minimize_behavior: default_minimize_behavior(),
             hide_dock_icon: default_hide_dock_icon(),
@@ -339,6 +364,7 @@ impl Default for UserConfig {
             windsurf_app_path: default_windsurf_app_path(),
             kiro_app_path: default_kiro_app_path(),
             cursor_app_path: default_cursor_app_path(),
+            codebuddy_app_path: default_codebuddy_app_path(),
             opencode_sync_on_switch: default_opencode_sync_on_switch(),
             opencode_auth_overwrite_on_switch: default_opencode_auth_overwrite_on_switch(),
             codex_launch_on_switch: default_codex_launch_on_switch(),
@@ -358,6 +384,8 @@ impl Default for UserConfig {
             cursor_quota_alert_threshold: default_cursor_quota_alert_threshold(),
             gemini_quota_alert_enabled: default_gemini_quota_alert_enabled(),
             gemini_quota_alert_threshold: default_gemini_quota_alert_threshold(),
+            codebuddy_quota_alert_enabled: default_codebuddy_quota_alert_enabled(),
+            codebuddy_quota_alert_threshold: default_codebuddy_quota_alert_threshold(),
         }
     }
 }

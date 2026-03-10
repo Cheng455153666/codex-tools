@@ -41,7 +41,7 @@ interface InstancesManagerProps<TAccount extends AccountLike> {
   renderAccountQuotaPreview: (account: TAccount) => ReactNode;
   renderAccountBadge?: (account: TAccount) => ReactNode;
   getAccountSearchText?: (account: TAccount) => string;
-  appType?: 'antigravity' | 'codex' | 'vscode' | 'windsurf' | 'kiro' | 'cursor' | 'gemini';
+  appType?: 'antigravity' | 'codex' | 'vscode' | 'windsurf' | 'kiro' | 'cursor' | 'gemini' | 'codebuddy';
   onInstanceStarted?: (instance: InstanceProfile) => void | Promise<void>;
   resolveStartSuccessMessage?: (instance: InstanceProfile) => string;
 }
