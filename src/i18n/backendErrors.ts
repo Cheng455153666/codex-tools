@@ -31,7 +31,25 @@ const AUTH_EXPIRED_MESSAGE = phrases(
   "Срок авторизации истек. Войдите снова."
 );
 
+const DEACTIVATED_ACCOUNT_MESSAGE = phrases(
+  "账号被封禁，请检查邮箱",
+  "This account has been deactivated. Please check your email.",
+  "このアカウントは停止されています。メールを確認してください。",
+  "이 계정은 비활성화되었습니다. 이메일을 확인하세요.",
+  "Этот аккаунт деактивирован. Проверьте электронную почту."
+);
+
 const REPLACEMENTS: PhraseReplacement[] = [
+  {
+    source: "账号被封禁，请检查邮箱",
+    target: phrases(
+      "账号被封禁，请检查邮箱",
+      "This account has been deactivated. Please check your email.",
+      "このアカウントは停止されています。メールを確認してください。",
+      "이 계정은 비활성화되었습니다. 이메일을 확인하세요.",
+      "Этот аккаунт деактивирован. Проверьте электронную почту."
+    ),
+  },
   {
     source: "授权过期，请重新登录授权。",
     target: phrases(
@@ -1713,9 +1731,25 @@ function looksLikeExpiredAuthorizationError(raw: string): boolean {
   return hasAuthExpiredSignal && hasUsageOrRefreshContext;
 }
 
+function looksLikeDeactivatedAccountError(raw: string): boolean {
+  const normalized = raw.toLowerCase();
+  return (
+    normalized.includes("your openai account has been deactivated") ||
+    normalized.includes("account has been deactivated") ||
+    normalized.includes("account deactivated") ||
+    normalized.includes("deactivated_user") ||
+    (normalized.includes("deactivated") && normalized.includes("check your email")) ||
+    normalized.includes("账号被封禁，请检查邮箱")
+  );
+}
+
 export function localizeBackendError(raw: string, locale: AppLocale): string {
   if (!raw) {
     return raw;
+  }
+
+  if (looksLikeDeactivatedAccountError(raw)) {
+    return DEACTIVATED_ACCOUNT_MESSAGE[locale];
   }
 
   if (looksLikeExpiredAuthorizationError(raw)) {
