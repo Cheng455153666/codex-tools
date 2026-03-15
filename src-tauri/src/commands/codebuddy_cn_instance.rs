@@ -131,11 +131,28 @@ fn inject_bound_account_for_instance_start(
     let secret_key = r#"{"extensionId":"tencent-cloud.coding-copilot","key":"planning-genie.new.accessTokencn"}"#;
     let db_key = format!("secret://{}", secret_key);
 
-    modules::vscode_inject::inject_secret_to_state_db_for_codebuddy_cn(
+    if let Err(err) = modules::vscode_inject::inject_secret_to_state_db_for_codebuddy_cn(
         &state_db_path,
         &db_key,
         &session_json,
-    )?;
+    ) {
+        let friendly_err = if err.contains("Safe Storage password")
+            || err.contains("Keychain")
+            || err.contains("Failed to read")
+        {
+            format!(
+                "注入登录状态失败：{}\n\n可能的原因：\n\
+                1. CodeBuddy CN 从未登录过，请先手动打开 CodeBuddy CN 并登录一次\n\
+                2. macOS Keychain 中缺少加密密钥条目\n\n\
+                请尝试：打开 CodeBuddy CN → 登录任意账号 → 退出 → 再使用切号功能",
+                err
+            )
+        } else {
+            err
+        };
+        return Err(friendly_err);
+    }
+    verify_state_db_injection(&state_db_path, &db_key)?;
 
     modules::logger::log_info(&format!(
         "CodeBuddy CN 账号注入完成: email={}, db={}",
@@ -144,6 +161,27 @@ fn inject_bound_account_for_instance_start(
     ));
 
     Ok(())
+}
+
+fn verify_state_db_injection(state_db_path: &Path, db_key: &str) -> Result<(), String> {
+    let conn = rusqlite::Connection::open(state_db_path)
+        .map_err(|e| format!("注入校验失败，无法打开 state.vscdb: {}", e))?;
+
+    let value: Option<String> = conn
+        .query_row(
+            "SELECT value FROM ItemTable WHERE key = ?1",
+            [db_key],
+            |row| row.get(0),
+        )
+        .ok();
+    match value {
+        Some(stored) if !stored.trim().is_empty() => Ok(()),
+        _ => Err(format!(
+            "注入校验失败，未在 state.vscdb 找到目标 key: db={}, key={}",
+            state_db_path.to_string_lossy(),
+            db_key
+        )),
+    }
 }
 
 #[tauri::command]

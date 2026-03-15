@@ -343,11 +343,27 @@ pub async fn inject_codebuddy_cn_to_vscode(
     let secret_key = r#"{"extensionId":"tencent-cloud.coding-copilot","key":"planning-genie.new.accessTokencn"}"#;
     let db_key = format!("secret://{}", secret_key);
 
-    crate::modules::vscode_inject::inject_secret_to_state_db_for_codebuddy_cn(
+    if let Err(err) = crate::modules::vscode_inject::inject_secret_to_state_db_for_codebuddy_cn(
         &state_db_path,
         &db_key,
         &session_json,
-    )?;
+    ) {
+        let friendly_err = if err.contains("Safe Storage password")
+            || err.contains("Keychain")
+            || err.contains("Failed to read")
+        {
+            format!(
+                "注入登录状态失败：{}\n\n可能的原因：\n\
+                1. CodeBuddy CN 从未登录过，请先手动打开 CodeBuddy CN 并登录一次\n\
+                2. macOS Keychain 中缺少加密密钥条目\n\n\
+                请尝试：打开 CodeBuddy CN → 登录任意账号 → 退出 → 再使用切号功能",
+                err
+            )
+        } else {
+            err
+        };
+        return Err(friendly_err);
+    }
 
     if let Err(err) = crate::modules::codebuddy_cn_instance::update_default_settings(
         Some(Some(account_id.clone())),
@@ -413,24 +429,6 @@ pub async fn sync_codebuddy_cn_to_workbuddy(app: AppHandle) -> Result<i32, Strin
 
     logger::log_info(&format!(
         "[CodeBuddy CN -> WorkBuddy] 同步完成: count={}, elapsed={}ms",
-        synced_count,
-        started_at.elapsed().as_millis()
-    ));
-
-    Ok(synced_count as i32)
-}
-
-#[tauri::command]
-pub async fn sync_workbuddy_to_codebuddy_cn(app: AppHandle) -> Result<i32, String> {
-    let started_at = Instant::now();
-    logger::log_info("[WorkBuddy -> CodeBuddy CN] 开始同步账号");
-
-    let synced_count = codebuddy_cn_account::sync_accounts_from_workbuddy()?;
-
-    let _ = crate::modules::tray::update_tray_menu(&app);
-
-    logger::log_info(&format!(
-        "[WorkBuddy -> CodeBuddy CN] 同步完成: count={}, elapsed={}ms",
         synced_count,
         started_at.elapsed().as_millis()
     ));

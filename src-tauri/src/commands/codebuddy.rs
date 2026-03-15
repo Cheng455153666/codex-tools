@@ -297,11 +297,27 @@ pub async fn inject_codebuddy_to_vscode(
         r#"{"extensionId":"tencent-cloud.coding-copilot","key":"planning-genie.new.accessToken"}"#;
     let db_key = format!("secret://{}", secret_key);
 
-    crate::modules::vscode_inject::inject_secret_to_state_db_for_codebuddy(
+    if let Err(err) = crate::modules::vscode_inject::inject_secret_to_state_db_for_codebuddy(
         &state_db_path,
         &db_key,
         &session_json,
-    )?;
+    ) {
+        let friendly_err = if err.contains("Safe Storage password")
+            || err.contains("Keychain")
+            || err.contains("Failed to read")
+        {
+            format!(
+                "注入登录状态失败：{}\n\n可能的原因：\n\
+                1. CodeBuddy 从未登录过，请先手动打开 CodeBuddy 并登录一次\n\
+                2. macOS Keychain 中缺少加密密钥条目\n\n\
+                请尝试：打开 CodeBuddy → 登录任意账号 → 退出 → 再使用切号功能",
+                err
+            )
+        } else {
+            err
+        };
+        return Err(friendly_err);
+    }
 
     if let Err(err) = crate::modules::codebuddy_instance::update_default_settings(
         Some(Some(account_id.clone())),

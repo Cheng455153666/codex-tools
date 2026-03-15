@@ -391,7 +391,6 @@ pub fn run() {
             commands::codebuddy_cn::get_codebuddy_cn_accounts_index_path,
             commands::codebuddy_cn::inject_codebuddy_cn_to_vscode,
             commands::codebuddy_cn::sync_codebuddy_cn_to_workbuddy,
-            commands::codebuddy_cn::sync_workbuddy_to_codebuddy_cn,
             // WorkBuddy Commands
             commands::workbuddy::list_workbuddy_accounts,
             commands::workbuddy::delete_workbuddy_account,
@@ -408,6 +407,7 @@ pub fn run() {
             commands::workbuddy::update_workbuddy_account_tags,
             commands::workbuddy::get_workbuddy_accounts_index_path,
             commands::workbuddy::inject_workbuddy_to_vscode,
+            commands::workbuddy::sync_workbuddy_to_codebuddy_cn,
             // WorkBuddy Instance Commands
             commands::workbuddy_instance::workbuddy_get_instance_defaults,
             commands::workbuddy_instance::workbuddy_list_instances,

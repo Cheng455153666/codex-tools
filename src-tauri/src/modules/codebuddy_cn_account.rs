@@ -1104,7 +1104,7 @@ pub fn import_payload_from_local() -> Result<Option<CodebuddyOAuthCompletePayloa
         });
 
     let Some(raw_token) = token_candidate else {
-        return Err("本地 CodeBuddy 登录信息解析失败：未找到 access token".to_string());
+        return Err("本地 CodeBuddy 登录信息解析失败: 未找到 access token".to_string());
     };
 
     let Some((uid_from_token, normalized_token)) =
@@ -1113,7 +1113,7 @@ pub fn import_payload_from_local() -> Result<Option<CodebuddyOAuthCompletePayloa
         return Err("本地 CodeBuddy 登录信息解析失败：access token 无效".to_string());
     };
     let Some(access_token) = normalize_local_codebuddy_cn_token(&normalized_token) else {
-        return Err("本地 CodeBuddy 登录信息解析失败：access token 为空".to_string());
+        return Err("本地 CodeBuddy 登录信息解析失败: access token 为空".to_string());
     };
 
     let payload = build_local_import_payload(access_token, parsed_json, uid_from_token);
@@ -1224,64 +1224,6 @@ pub fn sync_accounts_to_workbuddy() -> Result<usize, String> {
                 logger::log_warn(&format!(
                     "[CodeBuddy CN -> WorkBuddy] 同步账号失败: email={}, error={}",
                     cn_account.email, e
-                ));
-            }
-        }
-    }
-
-    Ok(synced_count)
-}
-
-/// 从 WorkBuddy 同步账号到 CodeBuddy CN
-pub fn sync_accounts_from_workbuddy() -> Result<usize, String> {
-    use crate::models::codebuddy::CodebuddyOAuthCompletePayload;
-    use crate::modules::workbuddy_account;
-
-    let workbuddy_accounts = workbuddy_account::list_accounts();
-    if workbuddy_accounts.is_empty() {
-        return Ok(0);
-    }
-
-    let mut synced_count = 0;
-    for wb_account in workbuddy_accounts {
-        // 将 WorkBuddy 账号转换为 CodeBuddy CN payload
-        let payload = CodebuddyOAuthCompletePayload {
-            email: wb_account.email.clone(),
-            uid: wb_account.uid.clone(),
-            nickname: wb_account.nickname.clone(),
-            enterprise_id: wb_account.enterprise_id.clone(),
-            enterprise_name: wb_account.enterprise_name.clone(),
-            access_token: wb_account.access_token.clone(),
-            refresh_token: wb_account.refresh_token.clone(),
-            token_type: wb_account.token_type.clone(),
-            expires_at: wb_account.expires_at,
-            domain: wb_account.domain.clone(),
-            plan_type: wb_account.plan_type.clone(),
-            dosage_notify_code: wb_account.dosage_notify_code.clone(),
-            dosage_notify_zh: wb_account.dosage_notify_zh.clone(),
-            dosage_notify_en: wb_account.dosage_notify_en.clone(),
-            payment_type: wb_account.payment_type.clone(),
-            quota_raw: wb_account.quota_raw.clone(),
-            auth_raw: wb_account.auth_raw.clone(),
-            profile_raw: wb_account.profile_raw.clone(),
-            usage_raw: wb_account.usage_raw.clone(),
-            status: wb_account.status.clone(),
-            status_reason: wb_account.status_reason.clone(),
-        };
-
-        // 使用 CodeBuddy CN 的 upsert 函数保存账号
-        match upsert_account(payload) {
-            Ok(_) => {
-                synced_count += 1;
-                logger::log_info(&format!(
-                    "[WorkBuddy -> CodeBuddy CN] 同步账号成功: email={}",
-                    wb_account.email
-                ));
-            }
-            Err(e) => {
-                logger::log_warn(&format!(
-                    "[WorkBuddy -> CodeBuddy CN] 同步账号失败: email={}, error={}",
-                    wb_account.email, e
                 ));
             }
         }

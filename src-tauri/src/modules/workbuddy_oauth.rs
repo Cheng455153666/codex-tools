@@ -43,7 +43,7 @@ fn build_client() -> Result<reqwest::Client, String> {
     reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(30))
         .build()
-        .map_err(|e| format!("创建 HTTP 客户端失败：{}", e))
+        .map_err(|e| format!("创建 HTTP 客户端失败:{}", e))
 }
 
 fn normalize_non_empty(value: Option<&str>) -> Option<String> {
@@ -108,16 +108,16 @@ async fn start_login_with_platform(platform: &str) -> Result<WorkbuddyOAuthStart
         .json(&json!({}))
         .send()
         .await
-        .map_err(|e| format!("请求 auth/state 失败：{}", e))?;
+        .map_err(|e| format!("请求 auth/state 失败:{}", e))?;
 
     let body: Value = resp
         .json()
         .await
-        .map_err(|e| format!("解析 auth/state 响应失败：{}", e))?;
+        .map_err(|e| format!("解析 auth/state 响应失败:{}", e))?;
 
     let data = body
         .get("data")
-        .ok_or_else(|| format!("auth/state 响应缺少 data 字段：{}", body))?;
+        .ok_or_else(|| format!("auth/state 响应缺少 data 字段:{}", body))?;
 
     let state = data
         .get("state")
@@ -154,7 +154,7 @@ async fn start_login_with_platform(platform: &str) -> Result<WorkbuddyOAuthStart
     }
 
     logger::log_info(&format!(
-        "[WorkBuddy OAuth] 登录已启动：login_id={}, state={}",
+        "[WorkBuddy OAuth] 登录已启动: login_id={}, state={}",
         login_id, state
     ));
 
@@ -262,7 +262,7 @@ pub async fn complete_login(login_id: &str) -> Result<WorkbuddyOAuthCompletePayl
                                     Ok(info) => info,
                                     Err(e) => {
                                         logger::log_warn(&format!(
-                                            "[WorkBuddy OAuth] 获取账号信息失败：{}",
+                                            "[WorkBuddy OAuth] 获取账号信息失败:{}",
                                             e
                                         ));
                                         (None, None, String::new(), None, None, None)
@@ -298,7 +298,7 @@ pub async fn complete_login(login_id: &str) -> Result<WorkbuddyOAuthCompletePayl
                 }
             }
             Err(e) => {
-                logger::log_warn(&format!("[WorkBuddy OAuth] 轮询 token 请求失败：{}", e));
+                logger::log_warn(&format!("[WorkBuddy OAuth] 轮询 token 请求失败:{}", e));
             }
         }
 
@@ -359,12 +359,12 @@ async fn fetch_account_info(
     let resp = req
         .send()
         .await
-        .map_err(|e| format!("请求 login/account 失败：{}", e))?;
+        .map_err(|e| format!("请求 login/account 失败:{}", e))?;
 
     let body: Value = resp
         .json()
         .await
-        .map_err(|e| format!("解析 login/account 响应失败：{}", e))?;
+        .map_err(|e| format!("解析 login/account 响应失败:{}", e))?;
 
     let data = body.get("data").cloned().unwrap_or(json!({}));
 
@@ -436,12 +436,12 @@ pub async fn refresh_token(
     let resp = req
         .send()
         .await
-        .map_err(|e| format!("刷新 token 失败：{}", e))?;
+        .map_err(|e| format!("刷新 token 失败:{}", e))?;
 
     let body: Value = resp
         .json()
         .await
-        .map_err(|e| format!("解析刷新响应失败：{}", e))?;
+        .map_err(|e| format!("解析刷新响应失败:{}", e))?;
 
     let code = body.get("code").and_then(|v| v.as_i64()).unwrap_or(-1);
     if code != 0 && code != 200 {
@@ -489,12 +489,12 @@ pub async fn fetch_dosage_notify(
     let resp = req
         .send()
         .await
-        .map_err(|e| format!("请求 dosage notify 失败：{}", e))?;
+        .map_err(|e| format!("请求 dosage notify 失败:{}", e))?;
 
     let body: Value = resp
         .json()
         .await
-        .map_err(|e| format!("解析 dosage 响应失败：{}", e))?;
+        .map_err(|e| format!("解析 dosage 响应失败:{}", e))?;
 
     Ok(body)
 }
@@ -530,12 +530,12 @@ pub async fn fetch_payment_type(
     let resp = req
         .send()
         .await
-        .map_err(|e| format!("请求 payment type 失败：{}", e))?;
+        .map_err(|e| format!("请求 payment type 失败:{}", e))?;
 
     let body: Value = resp
         .json()
         .await
-        .map_err(|e| format!("解析 payment type 响应失败：{}", e))?;
+        .map_err(|e| format!("解析 payment type 响应失败:{}", e))?;
 
     Ok(body)
 }
@@ -586,7 +586,7 @@ pub async fn fetch_user_resource_with_access_token(
         .json(&body)
         .send()
         .await
-        .map_err(|e| format!("请求 user resource（Token）失败：{}", e))?;
+        .map_err(|e| format!("请求 user resource（Token）失败:{}", e))?;
 
     let status_code = resp.status();
     let content_type = resp
@@ -606,7 +606,7 @@ pub async fn fetch_user_resource_with_access_token(
         .await
         .map_err(|e| {
             format!(
-                "解析 user resource（Token）响应失败：{} (http={}, url={}, has_uid={}, has_enterprise_id={}, content_type={}, content_encoding={})",
+                "解析 user resource（Token）响应失败:{} (http={}, url={}, has_uid={}, has_enterprise_id={}, content_type={}, content_encoding={})",
                 e,
                 status_code.as_u16(),
                 url,
@@ -712,7 +712,7 @@ async fn refresh_payload_for_account_inner(
             }
             Err(e) => {
                 logger::log_warn(&format!(
-                    "[WorkBuddy] Token 刷新失败，将使用现有 token 查询配额：{}",
+                    "[WorkBuddy] Token 刷新失败，将使用现有 token 查询配额:{}",
                     e
                 ));
             }
@@ -766,7 +766,7 @@ async fn refresh_payload_for_account_inner(
         }
         Err(err) => {
             logger::log_warn(&format!(
-                "[WorkBuddy][IDE Token] 刷新 user_resource 失败：{}",
+                "[WorkBuddy][IDE Token] 刷新 user_resource 失败:{}",
                 err
             ));
             quota_refresh_error = Some(err.clone());
@@ -877,12 +877,12 @@ pub async fn build_payload_from_token(
         .header("Authorization", format!("Bearer {}", access_token))
         .send()
         .await
-        .map_err(|e| format!("请求 accounts 失败：{}", e))?;
+        .map_err(|e| format!("请求 accounts 失败: {}", e))?;
 
     let body: Value = resp
         .json()
         .await
-        .map_err(|e| format!("解析 accounts 响应失败：{}", e))?;
+        .map_err(|e| format!("解析 accounts 响应失败:{}", e))?;
 
     let accounts = body
         .get("data")
