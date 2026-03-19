@@ -324,10 +324,10 @@
   display: inline-flex;
   gap: 2px;
   flex-wrap: nowrap;
-  padding: 3px;
-  border: 1px solid color-mix(in srgb, var(--line) 86%, var(--surface-tint) 14%);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--meta-bg) 58%, transparent);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .editorPicker {
@@ -459,11 +459,11 @@
 .themeSwitch {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border: 1px solid color-mix(in srgb, var(--line) 84%, var(--brand-cool) 16%);
+  gap: 0;
   border-radius: 999px;
-  padding: 4px 8px 4px 6px;
-  background: color-mix(in srgb, var(--button-ghost-bg) 70%, transparent);
+  border: 0;
+  padding: 0;
+  background: transparent;
   cursor: pointer;
   user-select: none;
 }
@@ -479,7 +479,7 @@
   height: 20px;
   border-radius: 999px;
   background: var(--surface-switch-track);
-  border: 1px solid var(--line);
+  border: 0;
   display: inline-flex;
   align-items: center;
   padding: 2px;
@@ -504,10 +504,7 @@
 }
 
 .themeSwitchText {
-  min-width: 2.2em;
-  font: 600 0.72rem/1 var(--font-ui);
-  color: var(--ink);
-  text-align: center;
+  display: none;
 }
 
 .settingValueMuted {

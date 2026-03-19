@@ -203,13 +203,13 @@
 }
 
 .editorPicker.languagePicker {
-  width: 132px;
-  min-width: 132px;
+  width: 112px;
+  min-width: 112px;
 }
 
 .editorPicker.languagePicker .editorPickerTrigger {
-  min-height: 44px;
-  padding-right: 34px;
+  min-height: 38px;
+  padding: 4px 28px 4px 8px;
 }
 
 .iconGlyph {

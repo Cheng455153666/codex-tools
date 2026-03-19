@@ -367,6 +367,11 @@
   background: color-mix(in srgb, var(--body-bg) 14%, var(--surface-tint) 86%);
 }
 
+.usageGrid.isFreePlan {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+}
+
 .usageDial {
   display: grid;
   justify-items: center;
