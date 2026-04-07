@@ -181,6 +181,13 @@ pub(crate) fn is_executable_file(path: &Path) -> bool {
 }
 
 fn preferred_executable_dirs() -> Vec<PathBuf> {
+    preferred_executable_dir_candidates()
+        .into_iter()
+        .filter(|dir| dir.is_dir())
+        .collect()
+}
+
+fn preferred_executable_dir_candidates() -> Vec<PathBuf> {
     let mut dirs = Vec::new();
 
     #[cfg(target_os = "macos")]
@@ -200,6 +207,39 @@ fn preferred_executable_dirs() -> Vec<PathBuf> {
         }
     }
 
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        for dir in [
+            PathBuf::from("/usr/local/bin"),
+            PathBuf::from("/usr/local/sbin"),
+            PathBuf::from("/usr/bin"),
+            PathBuf::from("/usr/sbin"),
+            PathBuf::from("/bin"),
+            PathBuf::from("/sbin"),
+            PathBuf::from("/snap/bin"),
+            PathBuf::from("/var/lib/flatpak/exports/bin"),
+            PathBuf::from("/home/linuxbrew/.linuxbrew/bin"),
+            PathBuf::from("/home/linuxbrew/.linuxbrew/sbin"),
+            PathBuf::from("/nix/var/nix/profiles/default/bin"),
+            PathBuf::from("/run/current-system/sw/bin"),
+        ] {
+            push_unique_candidate(&mut dirs, dir);
+        }
+    }
+
+    if let Some(cargo_home) = env::var_os("CARGO_HOME").map(PathBuf::from) {
+        push_unique_candidate(&mut dirs, cargo_home.join("bin"));
+    }
+
+    if let Some(homebrew_prefix) = env::var_os("HOMEBREW_PREFIX").map(PathBuf::from) {
+        push_unique_candidate(&mut dirs, homebrew_prefix.join("bin"));
+        push_unique_candidate(&mut dirs, homebrew_prefix.join("sbin"));
+    }
+
+    if let Some(pnpm_home) = env::var_os("PNPM_HOME").map(PathBuf::from) {
+        push_unique_candidate(&mut dirs, pnpm_home);
+    }
+
     if let Some(home) = dirs::home_dir() {
         for dir in [
             home.join(".cargo").join("bin"),
@@ -208,14 +248,20 @@ fn preferred_executable_dirs() -> Vec<PathBuf> {
             home.join(".asdf").join("shims"),
             home.join(".volta").join("bin"),
             home.join(".npm-global").join("bin"),
+            home.join(".linuxbrew").join("bin"),
+            home.join(".linuxbrew").join("sbin"),
+            home.join(".nix-profile").join("bin"),
+            home.join(".rye").join("shims"),
+            home.join(".local").join("share").join("mise").join("shims"),
             home.join("Library").join("pnpm"),
+            home.join("scoop").join("shims"),
             home.join("AppData")
                 .join("Local")
                 .join("Microsoft")
                 .join("WinGet")
                 .join("Links"),
         ] {
-            push_unique_dir(&mut dirs, dir);
+            push_unique_candidate(&mut dirs, dir);
         }
     }
 
@@ -224,6 +270,12 @@ fn preferred_executable_dirs() -> Vec<PathBuf> {
 
 fn push_unique_dir(dirs: &mut Vec<PathBuf>, candidate: PathBuf) {
     if candidate.is_dir() && !dirs.iter().any(|existing| existing == &candidate) {
+        dirs.push(candidate);
+    }
+}
+
+fn push_unique_candidate(dirs: &mut Vec<PathBuf>, candidate: PathBuf) {
+    if !dirs.iter().any(|existing| existing == &candidate) {
         dirs.push(candidate);
     }
 }
@@ -243,5 +295,86 @@ fn push_command_candidates_from_dir(candidates: &mut Vec<PathBuf>, dir: &Path, c
     #[cfg(not(windows))]
     {
         candidates.push(dir.join(command));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::{Mutex, OnceLock};
+
+    fn env_lock() -> &'static Mutex<()> {
+        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+        LOCK.get_or_init(|| Mutex::new(()))
+    }
+
+    fn unique_test_dir(name: &str) -> PathBuf {
+        let unique = format!(
+            "codex-tools-utils-test-{name}-{}-{}",
+            std::process::id(),
+            now_unix_seconds()
+        );
+        env::temp_dir().join(unique)
+    }
+
+    fn restore_env_var(name: &str, original: Option<OsString>) {
+        if let Some(value) = original {
+            env::set_var(name, value);
+        } else {
+            env::remove_var(name);
+        }
+    }
+
+    #[cfg(windows)]
+    fn write_test_command(dir: &Path, command: &str) -> PathBuf {
+        let path = dir.join(format!("{command}.cmd"));
+        fs::write(&path, "@echo off\r\necho ok\r\n").expect("write test command");
+        path
+    }
+
+    #[cfg(unix)]
+    fn write_test_command(dir: &Path, command: &str) -> PathBuf {
+        use std::os::unix::fs::PermissionsExt;
+
+        let path = dir.join(command);
+        fs::write(&path, "#!/bin/sh\nexit 0\n").expect("write test command");
+        let mut permissions = fs::metadata(&path).expect("read metadata").permissions();
+        permissions.set_mode(0o755);
+        fs::set_permissions(&path, permissions).expect("set execute bit");
+        path
+    }
+
+    #[test]
+    fn find_command_path_uses_cargo_home_when_path_is_missing() {
+        let _guard = env_lock().lock().expect("lock env");
+        let sandbox = unique_test_dir("cargo-home");
+        let cargo_home = sandbox.join("cargo-home");
+        let bin_dir = cargo_home.join("bin");
+        let command_name = "codex-tools-test-probe";
+        fs::create_dir_all(&bin_dir).expect("create cargo bin dir");
+        let cargo_path = write_test_command(&bin_dir, command_name);
+
+        let original_path = env::var_os("PATH");
+        let original_cargo_home = env::var_os("CARGO_HOME");
+
+        env::set_var("PATH", "");
+        env::set_var("CARGO_HOME", &cargo_home);
+
+        let resolved = find_command_path(command_name);
+
+        restore_env_var("PATH", original_path);
+        restore_env_var("CARGO_HOME", original_cargo_home);
+        let _ = fs::remove_dir_all(&sandbox);
+
+        assert_eq!(resolved, Some(cargo_path));
+    }
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    #[test]
+    fn preferred_candidates_include_common_unix_system_dirs() {
+        let dirs = preferred_executable_dir_candidates();
+        assert!(dirs.contains(&PathBuf::from("/usr/local/bin")));
+        assert!(dirs.contains(&PathBuf::from("/usr/bin")));
+        assert!(dirs.contains(&PathBuf::from("/snap/bin")));
     }
 }

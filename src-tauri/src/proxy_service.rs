@@ -868,6 +868,9 @@ fn normalize_openai_responses_request(mut request: Value) -> Result<(Value, bool
         }
     }
 
+    // Cursor may attach OpenAI-compatible metadata, but Codex upstream rejects it.
+    object.remove("metadata");
+
     Ok((request, downstream_stream))
 }
 
@@ -2866,6 +2869,22 @@ mod tests {
             payload.get("model").and_then(|value| value.as_str()),
             Some("gpt-5.4")
         );
+    }
+
+    #[test]
+    fn strips_metadata_from_responses_style_requests() {
+        let request = json!({
+            "model": "gpt-5-4",
+            "input": "hello",
+            "metadata": {
+                "ide": "cursor"
+            }
+        });
+
+        let (payload, _) =
+            normalize_openai_responses_request(request).expect("request should normalize");
+
+        assert!(payload.get("metadata").is_none());
     }
 
     #[test]

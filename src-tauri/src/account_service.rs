@@ -171,7 +171,9 @@ pub(crate) async fn export_accounts_zip_internal(
         let _guard = state.store_lock.lock().await;
         let mut store = load_store(app)?;
         if let Some(account_key) = selected_account_key.as_ref() {
-            store.accounts.retain(|account| account.account_key() == *account_key);
+            store
+                .accounts
+                .retain(|account| account.account_key() == *account_key);
         }
         serde_json::to_vec_pretty(&store).map_err(|error| format!("序列化账号列表失败: {error}"))?
     };

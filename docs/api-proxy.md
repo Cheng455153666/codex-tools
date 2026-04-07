@@ -358,6 +358,7 @@ OpenAI 里的：
 - 缺失时补 `reasoning.effort = medium`
 - 缺失时补 `reasoning.summary = auto`
 - 确保 `include` 里有 `reasoning.encrypted_content`
+- 丢弃上游不接受的 `metadata` 字段，避免 Cursor 等客户端报 `Unsupported parameter: metadata`
 
 ## 13. 上游 SSE 是怎么转回 OpenAI 的
 

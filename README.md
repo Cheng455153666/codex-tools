@@ -18,11 +18,21 @@
 
 3. 开启 OpenAI API Key，填入您的 API Key。
 
-4. 开启 Override OpenAI Base URL，填入地址。
+4. 开启 Override OpenAI Base URL，填入可被 Cursor 访问的地址。
 
 5. 在Add or search model文本框中，输入Coding Plan支持的模型中的模型名称，点击Add Custom Model。
 
 6. 添加模型名称为gpt-5-4 （目前只支持这个一个）
+
+### Cursor 接入注意事项
+
+- `ChatWise`、本地脚本、`curl` 这类本机直连客户端，可以直接使用本地 `Base URL`，例如 `http://127.0.0.1:8787/v1`
+- `Cursor` 不建议填写 `127.0.0.1`、`localhost`、`192.168.x.x`、`10.x.x.x` 这类本地或私网地址
+- 如果在 Cursor 里看到 `ssrf_blocked` 或 `connection to private IP is blocked`，通常不是代理本身报错，而是 Cursor 的模型提供方拦截了私网地址
+- 给 Cursor 使用时，请改用以下任意一种地址：
+- 使用应用内 `cloudflared` 生成的公网 `Public URL`
+- 使用“远程 Linux 反代”部署出来的公网服务器地址
+- 使用你自己的公网域名反向代理到本地或远程反代
 
 ## 应用截图
 
