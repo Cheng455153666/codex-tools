@@ -1,0 +1,3126 @@
+{
+  "common": {
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "saving": "جارِ الحفظ...",
+    "delete": "حذف",
+    "refresh": "تحديث",
+    "loading": "جارِ التحميل...",
+    "success": "نجاح",
+    "failed": "فشل",
+    "enabled": "مفعل",
+    "disabled": "معطل",
+    "close": "إغلاق",
+    "open": "فتح",
+    "copy": "نسخ",
+    "add": "إضافة",
+    "enable": "تفعيل",
+    "disable": "تعطيل",
+    "none": "لا شيء",
+    "detail": "تفاصيل",
+    "editable": "قابل للتعديل",
+    "preview": "معاينة",
+    "shared": {
+      "addAccount": "إضافة حساب",
+      "columns": {
+        "actions": "إجراءات",
+        "plan": "الخطة",
+        "addOnPromptCredits": "أرصدة الأوامر الإضافية",
+        "credits": "الأرصدة",
+        "email": "البريد الإلكتروني",
+        "promptCredits": "أرصدة الأوامر",
+        "creditPackage": "حزمة الرصيد",
+        "sharedCreditPackage": "حزمة الرصيد المشتركة",
+        "account": "الحساب",
+        "createdAt": "وقت الإنشاء"
+      },
+      "empty": {
+        "title": "لا توجد حسابات"
+      },
+      "export": "تصدير",
+      "filter": {
+        "all": "الكل ({{count}})",
+        "enterprise": "المؤسسة ({{count}})",
+        "free": "مجاني ({{count}})",
+        "pro": "محترف ({{count}})",
+        "business": "الأعمال ({{count}})",
+        "individual": "فردي ({{count}})",
+        "validAccounts": "الحسابات الصالحة ({{count}})"
+      },
+      "filterLabel": "تصفية",
+      "import": {
+        "failedMsg": "فشل الاستيراد: {{error}}",
+        "label": "استيراد",
+        "importing": "جارٍ الاستيراد...",
+        "pickFile": "اختر ملف JSON للاستيراد",
+        "orJson": "أو الاستيراد من ملف JSON",
+        "progress": {
+          "overallLine": "التقدم الإجمالي {{percent}}% ({{completedPlatforms}}/{{totalPlatforms}} منصات، تمت معالجة {{processedAccounts}}/{{totalAccounts}} حسابات)",
+          "currentPlatformLine": "جارٍ الاستيراد: {{platform}} ({{count}} حسابات)",
+          "currentStatusLine": "حالة المنصة الحالية: {{status}}",
+          "platformDetailsTitle": "تفاصيل المنصات",
+          "statusProcessing": "جارٍ المعالجة...",
+          "statusRunning": "جارٍ الاستيراد...",
+          "statusSkipped": "تم التخطي",
+          "statusPending": "بانتظار الاستيراد"
+        }
+      },
+      "instances": {
+        "unsupported": {
+          "title": "غير مدعوم على هذا النظام"
+        },
+        "quota": {
+          "chat": "رسائل الدردشة",
+          "inline": "الاقتراحات المضمنة"
+        },
+        "subtitle": "إعدادات مستقلة لكل مثيل لتشغيل متوازٍ بعدة حسابات.",
+        "title": "مثيلات متعددة"
+      },
+      "noMatch": {
+        "desc": "حاول تعديل البحث أو المرشحات",
+        "title": "لا توجد حسابات مطابقة"
+      },
+      "oauth": {
+        "failed": "فشل التفويض",
+        "hint": "بعد إكمال التفويض سيتم تحديث هذه النافذة تلقائيًا",
+        "openBrowser": "فتح في المتصفح",
+        "success": "تم التفويض بنجاح",
+        "meta": "تنتهي الصلاحية خلال: {{expires}}s؛ فاصل الاستطلاع: {{interval}}s",
+        "preparing": "جارٍ تجهيز معلومات التفويض...",
+        "retry": "إعادة إنشاء معلومات التفويض",
+        "timeoutRetry": "تحديث رابط التفويض",
+        "waiting": "بانتظار التفويض...",
+        "manualCallbackLabel": "إدخال رابط رد النداء يدويًا",
+        "manualCallbackPlaceholder": "الصق رابط رد النداء الكامل، مثل: http://localhost:1455/auth/callback?code=...&state=..."
+      },
+      "refreshAll": "تحديث الكل",
+      "refreshQuota": "تحديث الحصة",
+      "search": "بحث في الحسابات...",
+      "sort": {
+        "ascTooltip": "تصاعدي (انقر للتبديل إلى تنازلي)",
+        "createdAt": "وقت الإنشاء",
+        "descTooltip": "تنازلي (انقر للتبديل إلى تصاعدي)",
+        "toggleDirection": "تبديل اتجاه الترتيب",
+        "credits": "حسب الأرصدة المتبقية",
+        "planEnd": "حسب نهاية الدورة"
+      },
+      "sortLabel": "ترتيب",
+      "token": {
+        "empty": "يرجى إدخال Token أو JSON",
+        "import": "استيراد",
+        "importFailedMsg": "فشل الاستيراد: {{error}}",
+        "importing": "جارٍ الاستيراد...",
+        "importSuccessMsg": "تم استيراد {{count}} حسابًا",
+        "placeholder": "مثال: ghu_xxx / sk-ws-xxx / {\"access_token\":\"eyJ...\",\"refresh_token\":\"rt_...\"} / [{...}]"
+      },
+      "view": {
+        "grid": "عرض البطاقات",
+        "list": "عرض القائمة"
+      },
+      "addModal": {
+        "import": "استيراد محلي",
+        "oauth": "تفويض OAuth",
+        "token": "الرمز المميز/JSON"
+      },
+      "overview": {
+        "title": "نظرة عامة على الحسابات"
+      },
+      "quota": {
+        "noData": "لا توجد بيانات للحصة",
+        "resetDone": "تمت إعادة الضبط",
+        "hourly": "الاقتراحات المضمنة",
+        "weekly": "رسائل الدردشة"
+      },
+      "subtitle": "مراقبة حالة الحصة لجميع الحسابات في الوقت الفعلي.",
+      "time": {
+        "lessThanMinute": "<1 دقيقة",
+        "relativeDays": "{{days}} يوم",
+        "relativeDaysHours": "{{days}} يوم {{hours}} ساعة",
+        "relativeHours": "{{hours}} ساعة",
+        "relativeHoursMinutes": "{{hours}} ساعة {{minutes}} دقيقة",
+        "relativeMinutes": "{{minutes}} دقيقة",
+        "relativeWithAbsolute": "{{relative}} ({{absolute}})"
+      },
+      "credits": {
+        "leftInline": "{{left}} متبقي",
+        "availableAiCredits": "أرصدة الذكاء الاصطناعي المتاحة",
+        "periodEndOnly": "نهاية الدورة: {{end}}",
+        "periodRange": "الدورة: {{start}} - {{end}}",
+        "planEndsIn": "تتم إعادة ضبط الدورة خلال {{days}} يومًا",
+        "planEndsUnknown": "توقيت الدورة غير متاح",
+        "usedLine": "تم استخدام {{used}} / {{total}}",
+        "planEndsInHours": "تتم إعادة الضبط خلال {{hours}} ساعة"
+      },
+      "flowNotice": {
+        "alternative": "بديل: استخدم العزل عبر المثيلات المتعددة (باستخدام --user-data-dir مختلف). سجّل الدخول مرة واحدة لكل مثيل، ثم شغّل حسب المثيل للتبديل السريع إلى بيئة الحساب المستهدف."
+      },
+      "injecting": "جارٍ الحقن...",
+      "usage": {
+        "resetLine": "تتم إعادة تعيين الحصة {{dateText}}.",
+        "resetUnknown": "إعادة تعيين الحصة بعد -"
+      },
+      "updated": {
+        "label": "تم التحديث قبل {{relative}}"
+      }
+    },
+    "topRightAd": {
+      "ariaLabel": "موضع إعلان عام أعلى اليمين",
+      "badge": "إعلان",
+      "title": "موضع الإعلان أعلى اليمين",
+      "desc": "تُثبَّت هذه المنطقة في أعلى يمين جميع الصفحات لعرض الحملات أو إعلانات العلامة التجارية.",
+      "action": "عرض التفاصيل"
+    }
+  },
+  "floatingCard": {
+    "selectPlatform": "تبديل المنصة",
+    "currentAccount": "الحالي",
+    "recommendedAccount": "الحساب الموصى به",
+    "accountPreview": "معاينة الحساب",
+    "plan": "الخطة",
+    "cycle": "الدورة",
+    "status": "الحالة",
+    "pager": "{{current}} / {{total}}",
+    "badges": {
+      "recommended": "موصى به"
+    },
+    "actions": {
+      "pin": "تثبيت",
+      "unpin": "إلغاء التثبيت",
+      "close": "إغلاق",
+      "previousAccount": "الحساب السابق",
+      "nextAccount": "الحساب التالي",
+      "viewRecommended": "عرض الحساب الموصى به",
+      "backToCurrent": "رجوع",
+      "switchToThisAccount": "تبديل",
+      "openDetails": "فتح التفاصيل",
+      "openCockpitTools": "فتح Cockpit Tools"
+    },
+    "empty": {
+      "title": "لا توجد حسابات",
+      "loading": "جارٍ تحميل معلومات الحساب للمنصة الحالية",
+      "desc": "لا توجد حسابات لعرضها على هذه المنصة حالياً"
+    },
+    "errors": {
+      "refreshFailed": "فشل التحديث: {{error}}",
+      "switchFailed": "فشل التبديل: {{error}}",
+      "pinFailed": "فشل تحديث حالة التثبيت: {{error}}",
+      "closeFailed": "فشل الإغلاق: {{error}}"
+    },
+    "hiddenNotification": {
+      "title": "تم إغلاق البطاقة العائمة",
+      "body": "يمكنك إعادة فتحها من قائمة الشريط، أو تعديلها من \"الإعدادات > عام\"."
+    },
+    "closeConfirm": {
+      "title": "إغلاق البطاقة العائمة؟",
+      "message": "بعد الإغلاق، يمكنك فتحها مجددًا من \"{{path}}\".",
+      "dontAskAgain": "عدم السؤال مرة أخرى"
+    },
+    "lockedPlatform": "المنصة مقفلة بواسطة المثيل"
+  },
+  "nav": {
+    "overview": "Antigravity",
+    "accounts": "إدارة الحسابات",
+    "wakeup": "مهام الاستيقاظ",
+    "fingerprints": "بصمات الجهاز",
+    "settings": "الإعدادات",
+    "codex": "Codex",
+    "githubCopilot": "GitHub Copilot",
+    "windsurf": "Windsurf",
+    "dashboard": "لوحة التحكم",
+    "morePlatforms": "المزيد من المنصات",
+    "instances": "مثيلات متعددة",
+    "manual": "دليل الاستخدام",
+    "quickUpdate": {
+      "update": "تحديث",
+      "restart": "إعادة التشغيل",
+      "installing": "جارٍ التثبيت"
+    },
+    "gemini": "Gemini Cli",
+    "codebuddy": "CodeBuddy",
+    "qoder": "Qoder",
+    "trae": "Trae",
+    "codebuddyCn": "CodeBuddy CN",
+    "zed": "منصة Zed",
+    "expandSidebar": "توسيع الشريط الجانبي",
+    "collapseSidebar": "طي الشريط الجانبي",
+    "logs": "السجلات",
+    "switchClassicLayoutEntry": "التبديل إلى التخطيط الكلاسيكي",
+    "switchClassicLayoutTitle": "التبديل إلى تخطيط الشريط الجانبي الكلاسيكي",
+    "switchClassicLayoutDesc": "يعرض التخطيط الكلاسيكي جميع عناصر التنقل الخاصة بالمنصات ويدعم طي الشريط الجانبي. يمكنك الرجوع في أي وقت من الإعدادات > عام > تخطيط الشريط الجانبي.",
+    "switchClassicLayoutDontAskAgain": "عدم إظهار هذا التنبيه مرة أخرى",
+    "switchClassicLayoutConfirm": "التبديل الآن",
+    "2faManager": "إدارة 2FA"
+  },
+  "platformLayout": {
+    "title": "تخطيط المنصات",
+    "sidebarSelected": "المحدد في الشريط الجانبي {{count}}/{{max}}",
+    "reset": "إعادة إلى الافتراضي",
+    "tip": "اسحب لإعادة الترتيب. يمكن عرض منصتين كحد أقصى في الشريط الجانبي. إذا تم اختيار منصة واحدة فقط، فستُعرض منصة واحدة فقط.",
+    "sidebarToggle": "إظهار في الشريط الجانبي",
+    "dashboardToggle": "إظهار في لوحة المعلومات",
+    "trayToggle": "إظهار في شريط النظام",
+    "hiddenBadge": "مخفي",
+    "openFromMore": "إدارة تخطيط المنصات",
+    "dragHandleLabel": "اسحب لإعادة الترتيب",
+    "tipWithGroups": "اسحب لإعادة الترتيب. يمكن عرض مدخلين كحد أقصى في الشريط الجانبي. عناصر المجموعة الفرعية لا تدعم تبديل الشريط الجانبي/لوحة المعلومات وتُستخدم فقط لعرض شريط القوائم وتبديل المنصة الافتراضية.",
+    "addGroup": "إضافة مجموعة",
+    "editGroup": "تحرير المجموعة",
+    "deleteGroup": "حذف المجموعة",
+    "groupBadge": "مجموعة",
+    "groupDefault": "المنصة الافتراضية",
+    "groupName": "اسم المجموعة",
+    "groupNamePlaceholder": "مثال: مجموعة CodeBuddy",
+    "groupIcon": "أيقونة المجموعة",
+    "groupIconFromPlatform": "أيقونة المنصة",
+    "groupIconCustom": "صورة مخصصة",
+    "groupIconPreview": "معاينة الأيقونة",
+    "groupChildren": "المنصات الفرعية",
+    "groupNameRequired": "يرجى إدخال اسم المجموعة",
+    "groupChildrenRequired": "اختر منصة فرعية واحدة على الأقل",
+    "groupCustomIconRequired": "يرجى رفع أيقونة مخصصة",
+    "groupSwitchLabel": "التبديل بين منصات المجموعة",
+    "collapseAllChildren": "طي جميع المنصات الفرعية",
+    "expandAllChildren": "توسيع جميع المنصات الفرعية",
+    "addChildPlatform": "إضافة منصة فرعية",
+    "collapseChildren": "طي المنصات الفرعية",
+    "expandChildren": "توسيع المنصات الفرعية",
+    "noAvailableChildren": "لا توجد منصات متاحة للإضافة",
+    "customIconDeleteConfirm": "هل تريد حذف هذه الأيقونة المخصصة؟",
+    "editChildPlatform": "تحرير المنصة الفرعية",
+    "setAsDefaultInGroup": "تعيينها كمنصة افتراضية في هذه المجموعة",
+    "removeFromGroup": "إزالة من المجموعة",
+    "sidebarSelectedUnlimited": "محدد ({count})",
+    "tipWithGroupsUnlimited": "فرز المنصات والمجموعات المحددة يدوياً"
+  },
+  "privacy": {
+    "hideSensitive": "إخفاء البريد الإلكتروني",
+    "showSensitive": "إظهار البريد الإلكتروني"
+  },
+  "instances": {
+    "title": "مثيلات متعددة",
+    "subtitle": "تكوين مستقل لكل مثيل، تشغيل متوازٍ بحسابات متعددة.",
+    "defaultName": "المثيل الافتراضي",
+    "search": "بحث المثيلات",
+    "sort": {
+      "label": "الترتيب",
+      "createdAt": "حسب وقت الإنشاء",
+      "lastLaunchedAt": "حسب وقت التشغيل",
+      "ascTooltip": "الحالي: تصاعدي، انقر للتبديل إلى تنازلي",
+      "descTooltip": "الحالي: تنازلي، انقر للتبديل إلى تصاعدي",
+      "toggleDirection": "تبديل اتجاه الترتيب"
+    },
+    "actions": {
+      "create": "إنشاء مثيل",
+      "refresh": "تحديث",
+      "startAll": "تشغيل الكل",
+      "restartAll": "إعادة تشغيل الكل",
+      "stopAll": "إيقاف الكل",
+      "start": "تشغيل",
+      "stop": "إيقاف",
+      "openFolder": "فتح المجلد",
+      "edit": "تعديل",
+      "openRootDir": "فتح المجلد",
+      "selectPath": "اختيار المجلد",
+      "openWindow": "فتح النافذة",
+      "showFloatingCard": "إظهار البطاقة العائمة",
+      "showFloatingCardDisabled": "يجب ربط حساب قبل إظهار البطاقة العائمة",
+      "showFloatingCardMissing": "الحساب المرتبط غير موجود، لذلك لا يمكن إظهار البطاقة العائمة",
+      "syncThreads": "مزامنة السلاسل",
+      "syncThreadsDisabled": "يلزم وجود مثيلين على الأقل لمزامنة السلاسل"
+    },
+    "bulkConfirm": {
+      "startAll": "تشغيل جميع المثيلات المتوقفة؟",
+      "restartAll": "إعادة تشغيل جميع المثيلات قيد التشغيل؟",
+      "stopAll": "إيقاف جميع المثيلات؟",
+      "syncThreads": "سيتم فحص جميع مثيلات Codex وملء السلاسل المفقودة تلقائيًا. لن تتم كتابة السلاسل الموجودة مرة أخرى، وسيتم نسخ ملفات المثيل الهدف احتياطيًا قبل أي كتابة. هل تريد المتابعة؟"
+    },
+    "status": {
+      "running": "قيد التشغيل",
+      "stopped": "متوقف",
+      "restarting": "إعادة التشغيل",
+      "starting": "البدء"
+    },
+    "labels": {
+      "path": "المجلد",
+      "args": "معاملات التشغيل",
+      "argsEmpty": "لا يوجد",
+      "bindAccount": "ربط الحساب",
+      "unbound": "غير مرتبط",
+      "pendingInit": "بانتظار التهيئة (شغّل مرة واحدة أولاً)",
+      "quota": "الحصة",
+      "lastLaunched": "آخر تشغيل"
+    },
+    "columns": {
+      "instance": "المثيل",
+      "email": "الحساب",
+      "quota": "حالة الحصة",
+      "actions": "إجراءات"
+    },
+    "empty": {
+      "title": "لا توجد مثيلات",
+      "desc": "قم بإنشاء مجلد تكوين مستقل لبدء مثيلات متعددة."
+    },
+    "modal": {
+      "createTitle": "إنشاء مثيل",
+      "editTitle": "تحرير مثيل"
+    },
+    "form": {
+      "name": "اسم المثيل",
+      "namePlaceholder": "مثال: حساب العمل",
+      "path": "مجلد المثيل",
+      "pathPlaceholder": "اختر مجلد المثيل",
+      "pathReadOnly": "لا يمكن تعديل المسار أثناء التحرير",
+      "pathAutoHint": "يتم تحديث المسار تلقائيًا عند تغيير الاسم، أو يمكنك اختياره يدويًا",
+      "copyLogin": "نسخ حالة تسجيل الدخول الحالية",
+      "copyLoginDesc": "نسخ التكوين ومعلومات تسجيل الدخول من المجلد الافتراضي",
+      "initMode": "طريقة التهيئة",
+      "initModeCopy": "نسخ من مثيل المصدر (افتراضي)",
+      "initModeEmpty": "مثيل فارغ (بدون نسخ)",
+      "initModeExistingDir": "استخدام مجلد موجود",
+      "pathExistingDirHint": "المسار يحدده الاختيار ولا يمكن تعديله",
+      "existingDirHint": "استخدم مجلداً موجوداً كمجلد المثيل؛ المسار المحدد نهائي ولا يمكن تعديله.",
+      "bindExistingDirHint": "اختياري؛ يمكنك ربط حساب بعد إضافة المجلد إلى القائمة",
+      "emptyInitHint": "عند اختيار عدم النسخ سيتم إنشاء مجلد فارغ فقط. يجب تشغيله مرة واحدة قبل ربط الحساب.",
+      "copySource": "نسخ مثيل المصدر",
+      "copySourceDesc": "نسخ الإعدادات وبيانات تسجيل الدخول من المثيل المحدد",
+      "copySourcePlaceholder": "اختر مثيلًا كمصدر",
+      "copySourceRequired": "يرجى اختيار مثيل كمصدر",
+      "copySourceRunningHint": "مثيل المصدر قيد التشغيل. يُنصح بإغلاقه أولًا لتجنب عدم اتساق البيانات.",
+      "bindInject": "ربط الحساب",
+      "bindAfterInit": "يمكن الربط بعد التهيئة",
+      "bindDisabledHint": "في المثيل الفارغ، شغّل المثيل مرة واحدة لإنشاء البيانات ثم اربط الحساب.",
+      "followCurrent": "متابعة الحساب الحالي",
+      "selectAccount": "اختيار الحساب",
+      "bindAccount": "ربط الحساب",
+      "unbound": "بدون ربط",
+      "extraArgs": "معاملات تشغيل مخصصة",
+      "extraArgsPlaceholder": "مثال: --disable-gpu --log-level=2",
+      "extraArgsDesc": "فصل المعاملات بمسافات، يدعم التضمين بعلامات الاقتباس",
+      "nameRequired": "يرجى إدخال اسم المثيل",
+      "pathRequired": "يرجى اختيار مجلد المثيل",
+      "bindRequired": "يرجى اختيار الحساب للربط"
+    },
+    "quota": {
+      "unbound": "حساب غير مرتبط",
+      "accountMissing": "الحساب غير موجود",
+      "empty": "لا يوجد ذاكرة تخزين مؤقت للحصة"
+    },
+    "messages": {
+      "created": "تم إنشاء المثيل",
+      "emptyCreated": "تم إنشاء مثيل فارغ. شغّله مرة واحدة أولاً ثم اربط الحساب.",
+      "existingDirCreated": "تم إنشاء المثيل باستخدام المجلد المحدد.",
+      "updated": "تم تحديث المثيل",
+      "deleted": "تم حذف المثيل",
+      "started": "تم تشغيل المثيل",
+      "stopped": "تم إيقاف المثيل",
+      "startedAll": "تم تشغيل جميع المثيلات المتوقفة",
+      "restartedAll": "تم إعادة تشغيل المثيلات قيد التشغيل",
+      "closedAll": "تم إيقاف جميع المثيلات",
+      "allAlreadyRunning": "جميع المثيلات قيد التشغيل بالفعل",
+      "noneRunning": "لا توجد مثيلات قيد التشغيل حاليًا",
+      "syncThreadsNeedTwo": "يلزم وجود مثيلين على الأقل لمزامنة السلاسل"
+    },
+    "runningDialog": {
+      "title": "المثيل قيد التشغيل",
+      "desc": "المثيل قيد التشغيل بالفعل، يمكنك الانتقال إليه أو إعادة تشغيله وفقًا للاستراتيجية الحالية.",
+      "current": "الاستراتيجية الحالية: {{name}}",
+      "pathLabel": "مجلد المثيل",
+      "go": "الانتقال الآن",
+      "restart": "إغلاق وإعادة التشغيل"
+    },
+    "initGuide": {
+      "title": "المثيل غير مُهيّأ بعد",
+      "desc": "هذا مثيل فارغ. تم إنشاء المجلد فقط ولم يتم توليد بيانات المثيل بعد.",
+      "tip": "يرجى تشغيل المثيل مرة واحدة أولاً، وبعد اكتمال التهيئة يمكنك ربط الحساب.",
+      "startNow": "تشغيل الآن"
+    },
+    "restartStrategy": {
+      "button": "استراتيجية إعادة التشغيل",
+      "title": "استراتيجية إعادة التشغيل",
+      "desc": "اختر طريقة إعادة تشغيل المثيل، تؤثر الطرق المختلفة على نطاق الإنهاء والاستقرار.",
+      "recommended": "موصى به",
+      "labels": {
+        "principle": "المبدأ التقني",
+        "command": "الأمر",
+        "pros": "المزايا",
+        "cons": "العيوب"
+      },
+      "safe": {
+        "title": "إعادة تشغيل آمنة (موصى به)",
+        "principle": "إرسال SIGTERM إلى جميع عمليات Antigravity، يطلب من التطبيق الحفظ والخروج ذاتيًا، ثم تشغيل المثيل المستهدف (سيتم الإنهاء القسري إذا لزم الأمر).",
+        "commandMac": "macOS/Linux: kill -15 <pid> (جميع عمليات Antigravity)",
+        "commandWin": "Windows: taskkill /F /PID <pid> (جميع عمليات Antigravity)",
+        "pros": "أقرب إلى الخروج الطبيعي، أقل عرضة لتحذيرات الانهيار، البيانات أكثر أمانًا.",
+        "cons": "يمكن الخروج وإعادة التشغيل بالكامل فقط، لا يمكن إعادة تشغيل مثيل واحد فقط."
+      },
+      "force": {
+        "title": "إعادة تشغيل قسرية",
+        "principle": "مطابقة العملية بواسطة --user-data-dir والإنهاء القسري (SIGKILL / taskkill /F)، ثم تشغيل المثيل المستهدف.",
+        "commandMac": "نظام التشغيل MacOS/Linux: pkill -9 -f \"--user-data-dir <dir>\"",
+        "commandWin": "Windows: taskkill /F /PID <pid> (مطابقة --user-data-dir)",
+        "pros": "يمكن إعادة تشغيل مثيل واحد بدقة.",
+        "cons": "قد يؤدي إلى تحذير \"إنهاء غير متوقع\"، خطر فقدان البيانات غير المحفوظة."
+      }
+    },
+    "stop": {
+      "title": "إيقاف المثيل قسرًا",
+      "message": "سيتم إرسال إشارة إنهاء (SIGTERM) إلى عملية المثيل للإيقاف القسري، قد يؤدي ذلك إلى فقدان البيانات غير المحفوظة. هل تريد المتابعة؟"
+    },
+    "delete": {
+      "title": "حذف المثيل",
+      "message": "هل تريد حذف نسخة {{name}}؟ سيؤدي ذلك إلى إزالة التكوين وحذف مجلد النسخة."
+    },
+    "import": {
+      "btnTitle": "استيراد مجلد موجود",
+      "title": "استيراد مجلد موجود",
+      "dirLabel": "اختر مجلد المثيل",
+      "dirPlaceholder": "انقر لاختيار مجلد",
+      "dirHint": "يسجّل مجلداً محلياً موجوداً كمثيل دون نقل أي ملفات أو تعديلها",
+      "changeDir": "تغيير",
+      "bindLabel": "ربط حساب (اختياري)",
+      "bindHint": "يمكنك ربط حساب لاحقاً من قائمة المثيلات",
+      "pathRequired": "يرجى اختيار مجلد أولاً",
+      "submit": "استيراد"
+    }
+  },
+  "settings": {
+    "title": "إعدادات التطبيق",
+    "subtitle": "قم بتخصيص تجربة Antigravity Cockpit Tools الخاصة بك.",
+    "tabs": {
+      "general": "عام",
+      "network": "خدمات الشبكة",
+      "about": "حول"
+    },
+    "general": {
+      "appearance": "المظهر",
+      "language": "لغة العرض",
+      "languageDesc": "اختر لغة عرض الواجهة",
+      "theme": "سمة التطبيق",
+      "themeDesc": "التبديل بين الوضع الداكن أو الفاتح",
+      "themeLight": "فاتح (Light)",
+      "themeDark": "داكن (Dark)",
+      "themeSystem": "حسب النظام",
+      "uiScale": "مقياس الواجهة",
+      "uiScaleDesc": "اضبط مقياس الواجهة",
+      "accountManagement": "إدارة الحسابات",
+      "autoRefresh": "تحديث تلقائي لحصة Antigravity",
+      "codexAutoRefresh": "تحديث تلقائي لحصة Codex",
+      "autoRefreshDesc": "تردد التحديث التلقائي في الخلفية",
+      "codexAutoRefreshDesc": "تردد التحديث التلقائي في الخلفية",
+      "autoRefreshDisabled": "معطل",
+      "autoRefreshCustom": "مخصص...",
+      "every15min": "كل 15 دقيقة",
+      "every30min": "كل 30 دقيقة",
+      "every1hour": "كل ساعة واحدة",
+      "minutes": "دقيقة",
+      "refreshIntervalLimited": "ميزة الاستيقاظ عند إعادة تعيين الحصة مفعلة، لذا فإن الحد الأدنى لفاصل التحديث هو دقيقتان.",
+      "closeBehavior": "سلوك الإغلاق",
+      "closeBehaviorDesc": "اختر الإجراء عند إغلاق النافذة",
+      "closeBehaviorAsk": "اسأل في كل مرة",
+      "closeBehaviorMinimize": "تصغير إلى الدرج",
+      "closeBehaviorQuit": "إنهاء التطبيق",
+      "minimizeBehavior": "سلوك تصغير النافذة (macOS فقط)",
+      "minimizeBehaviorDesc": "اختر ما إذا كانت النافذة عند تصغيرها تبقى في Dock وشريط القوائم، أو في شريط القوائم فقط",
+      "minimizeBehaviorDockAndTray": "Dock + شريط القوائم (موصى به)",
+      "minimizeBehaviorTrayOnly": "شريط القوائم فقط",
+      "hideDockIcon": "هل تريد إخفاء أيقونة Dock؟ (macOS فقط)",
+      "hideDockIconDesc": "تحكم مستقل في ظهور أيقونة Dock دون التأثر بسلوك تصغير النافذة",
+      "hideDockIconOff": "لا (إظهار أيقونة Dock)",
+      "hideDockIconOn": "نعم (إخفاء أيقونة Dock)",
+      "floatingCardStartup": "إظهار البطاقة العائمة عند التشغيل",
+      "floatingCardStartupDesc": "عرض بطاقة الحساب العائمة تلقائياً بعد تشغيل التطبيق",
+      "floatingCardAlwaysOnTop": "إبقاء البطاقة العائمة في الأعلى افتراضياً",
+      "floatingCardAlwaysOnTopDesc": "تبقى نوافذ البطاقة العائمة الجديدة في الأعلى عند فتحها",
+      "floatingCardShowNow": "إظهار البطاقة العائمة الآن",
+      "floatingCardShowNowDesc": "بعد إغلاقها، يمكنك إعادة فتحها من هنا أو من قائمة الشريط",
+      "floatingCardShowNowAction": "إظهار البطاقة العائمة",
+      "dataDir": "مجلد البيانات",
+      "dataDirDesc": "موقع تخزين الحسابات وملفات التكوين.",
+      "fpDir": "مجلد تخزين Antigravity",
+      "fpDirDesc": "موقع تخزين ملفات بيانات Antigravity.",
+      "opencodeTitle": "تكامل OpenCode",
+      "opencodeRestart": "إعادة تشغيل OpenCode عند تبديل Codex",
+      "opencodeRestartDesc": "مزامنة معلومات حساب Codex في OpenCode",
+      "opencodeAppPath": "مسار تشغيل OpenCode",
+      "opencodeAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "opencodeAppPathPlaceholder": "المسار الافتراضي",
+      "opencodePathReset": "إعادة التعيين إلى الافتراضي",
+      "opencodePathSelect": "اختيار",
+      "codexTitle": "تشغيل Codex",
+      "codexAppPath": "مسار تطبيق Codex",
+      "codexAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "codexAppPathPlaceholder": "المسار الافتراضي",
+      "codexPathSelect": "اختيار",
+      "codexPathReset": "إعادة التعيين إلى الافتراضي",
+      "vscodeTitle": "تشغيل VS Code",
+      "vscodeAppPath": "مسار تطبيق VS Code",
+      "vscodeAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "vscodeAppPathPlaceholder": "المسار الافتراضي",
+      "vscodePathSelect": "اختيار",
+      "vscodePathReset": "إعادة التعيين إلى الافتراضي",
+      "antigravityAppPath": "مسار تطبيق Antigravity",
+      "antigravityTitle": "تشغيل Antigravity",
+      "commonTitle": "عام",
+      "antigravitySettingsTitle": "إعدادات Antigravity",
+      "codexSettingsTitle": "إعدادات Codex",
+      "githubCopilotSettingsTitle": "إعدادات GitHub Copilot",
+      "ghcpAutoRefresh": "تحديث حصة GitHub Copilot تلقائيا",
+      "ghcpAutoRefreshDesc": "تكرار التحديث في الخلفية",
+      "windsurfSettingsTitle": "إعدادات Windsurf",
+      "windsurfAutoRefresh": "تحديث تلقائي لحصة Windsurf",
+      "windsurfAutoRefreshDesc": "تردد التحديث التلقائي في الخلفية",
+      "windsurfAppPath": "مسار تطبيق Windsurf",
+      "windsurfAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "windsurfAppPathPlaceholder": "المسار الافتراضي",
+      "windsurfPathSelect": "اختيار",
+      "windsurfPathReset": "إعادة التعيين إلى الافتراضي",
+      "kiroSettingsTitle": "إعدادات كيرو",
+      "kiroAutoRefresh": "حصة التحديث التلقائي لـ Kiro",
+      "kiroAutoRefreshDesc": "تردد تحديث الخلفية",
+      "kiroAppPath": "مسار تطبيق كيرو",
+      "kiroAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "kiroAppPathPlaceholder": "المسار الافتراضي",
+      "kiroPathSelect": "يختار",
+      "kiroPathReset": "إعادة التعيين إلى الوضع الافتراضي",
+      "cursorPathReset": "إعادة تعيين الافتراضي",
+      "codexLaunchOnSwitch": "تشغيل تطبيق Codex App تلقائيًا عند تبديل Codex",
+      "codexLaunchOnSwitchDesc": "تشغيل أو إعادة تشغيل تطبيق Codex App تلقائيًا بعد تبديل الحساب",
+      "autoUpdate": "التحديث التلقائي في الخلفية",
+      "autoUpdateDesc": "عند اكتشاف إصدار جديد، يتم التحديث بصمت في الخلفية ثم يُطلب إعادة التشغيل عند الجاهزية.",
+      "autoUpdateOff": "إيقاف (تحديث يدوي)",
+      "autoUpdateOn": "تشغيل (تحديث صامت)",
+      "opencodeAuthOverwrite": "استبدال تسجيل دخول OpenCode عند تبديل Codex",
+      "opencodeAuthOverwriteDesc": "عند التعطيل، يتم تبديل Codex فقط ويحتفظ OpenCode بحالة تسجيل الدخول الحالية",
+      "opencodeRestartRequiresOverwrite": "فعّل أولاً \"استبدال تسجيل دخول OpenCode عند تبديل Codex\"",
+      "codebuddySettingsTitle": "إعدادات CodeBuddy",
+      "codebuddyAutoRefresh": "التحديث التلقائي لحصة CodeBuddy",
+      "codebuddyAutoRefreshDesc": "فاصل التحديث التلقائي في الخلفية",
+      "codebuddyAppPath": "مسار تشغيل CodeBuddy",
+      "codebuddyAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "codebuddyAppPathPlaceholder": "المسار الافتراضي",
+      "codebuddyPathSelect": "اختيار",
+      "codebuddyPathReset": "إعادة إلى الافتراضي",
+      "qoderPathReset": "إعادة إلى الافتراضي",
+      "traeAutoRefresh": "التحديث التلقائي لحصة Trae",
+      "traeAutoRefreshDesc": "فاصل التحديث التلقائي في الخلفية",
+      "traeAppPath": "مسار تشغيل Trae",
+      "traeAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "traeAppPathPlaceholder": "المسار الافتراضي",
+      "traePathSelect": "اختيار",
+      "traePathReset": "إعادة إلى الافتراضي",
+      "workbuddyAppPath": "مسار تشغيل WorkBuddy",
+      "workbuddyAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "workbuddyAppPathPlaceholder": "المسار الافتراضي",
+      "workbuddyPathSelect": "اختيار",
+      "workbuddyPathReset": "إعادة إلى الافتراضي",
+      "openclawAuthOverwrite": "استبدال تسجيل دخول OpenClaw عند تبديل Codex",
+      "openclawAuthOverwriteDesc": "عند التعطيل، يتم تبديل Codex فقط ويحتفظ OpenClaw بحالة تسجيل الدخول الحالية",
+      "ghcpOpencodeAuthOverwrite": "استبدال تسجيل دخول OpenCode عند تبديل GitHub Copilot",
+      "ghcpOpencodeRestart": "إعادة تشغيل OpenCode عند تبديل GitHub Copilot",
+      "ghcpLaunchOnSwitch": "تشغيل تطبيق GitHub Copilot App تلقائيًا عند تبديل GitHub Copilot",
+      "zedAutoRefresh": "تحديث حصة Zed تلقائيًا",
+      "zedAutoRefreshDesc": "تكرار التحديث في الخلفية",
+      "zedAppPath": "مسار تشغيل Zed",
+      "zedAppPathDesc": "اتركه فارغًا لاستخدام المسار الافتراضي",
+      "zedAppPathPlaceholder": "المسار الافتراضي",
+      "zedPathSelect": "اختر",
+      "zedPathReset": "إعادة التعيين إلى الافتراضي",
+      "updateReminder": "تذكيرات التحديث",
+      "updateReminderDesc": "عند اكتشاف إصدار جديد، اعرض تنبيه التحديث والمدخل السريع في الشريط الجانبي.",
+      "updateReminderOff": "إيقاف (بدون تذكيرات)",
+      "updateReminderOn": "تشغيل (إظهار التذكيرات)",
+      "sideNavLayout": "تخطيط الشريط الجانبي",
+      "sideNavLayoutDesc": "التبديل بين التخطيط الأصلي والكلاسيكي للشريط الجانبي",
+      "sideNavLayoutOriginal": "التخطيط الأصلي",
+      "sideNavLayoutClassic": "التخطيط الكلاسيكي",
+      "antigravityDualSwitchNoRestart": "تبديل ثنائي بدون إعادة تشغيل",
+      "antigravityDualSwitchNoRestartDesc": "عند تبديل الحساب، يتم تنفيذ كتابة بيانات الحساب محليًا والتبديل السلس عبر الإضافة في تدفق واحد، دون إعادة تشغيل Antigravity.",
+      "appAutoLaunch": "تشغيل Cockpit Tools عند تسجيل الدخول",
+      "appAutoLaunchDesc": "تشغيل التطبيق تلقائيًا بعد تسجيل الدخول إلى النظام",
+      "startupWakeupDisabled": "معطل",
+      "startupWakeupImmediate": "تنبيه فوري",
+      "startupWakeupDelayed": "تنبيه بعد تأخير",
+      "antigravityStartupWakeup": "تشغيل إيقاظ Antigravity بعد بدء التشغيل",
+      "antigravityStartupWakeupDesc": "تشغيل مهام إيقاظ Antigravity المفعلة مرة واحدة بعد بدء التطبيق",
+      "codexStartupWakeup": "تشغيل إيقاظ Codex بعد بدء التشغيل",
+      "codexStartupWakeupDesc": "تشغيل مهام إيقاظ Codex المفعلة مرة واحدة بعد بدء التطبيق",
+      "currentAccountRefreshTitle": "تحديث الحساب الحالي",
+      "currentAccountRefreshItemDesc": "تحديث الحساب الحالي فقط. الافتراضي دقيقة واحدة.",
+      "autoSwitchAccountScope": "نطاق التبديل التلقائي للحساب",
+      "autoSwitchAccountScopeDesc": "تتم المراقبة والتبديل فقط ضمن هذا النطاق.",
+      "autoSwitchAccountScopeAll": "كل الحسابات",
+      "autoSwitchAccountScopeSelected": "حسابات محددة",
+      "autoSwitchAccountScopeChoose": "اختيار الحسابات",
+      "autoSwitchAccountScopeManage": "إدارة الحسابات",
+      "autoSwitchAccountScopeAllSummary": "النطاق الحالي: كل الحسابات (الإجمالي {{total}})",
+      "autoSwitchAccountScopeSummary": "تم اختيار {{selected}} من {{total}} حسابًا",
+      "autoSwitchAccountScopeDialogTitle": "اختيار نطاق حسابات التبديل التلقائي",
+      "autoSwitchAccountScopeAllHint": "النطاق الحالي هو كل الحسابات. سيشارك {{total}} حسابًا في التبديل التلقائي.",
+      "codexAutoSwitchAccountScope": "نطاق التبديل التلقائي لحسابات Codex",
+      "codexAutoSwitchAccountScopeDesc": "حالة التبديل التلقائي الحالية لـ Codex: {{status}}. سيتم النظر فقط في الحسابات ضمن هذا النطاق.",
+      "defaultTerminal": "المحطة الافتراضية",
+      "defaultTerminalDesc": "المحطة المستخدمة عند فتح Gemini CLI",
+      "terminalSystem": "افتراضي النظام",
+      "currentAccountRefreshRequiresAutoRefresh": "فعّل أولاً \"التحديث التلقائي للحصة\" حتى تتمكن من إعداد تحديث الحساب الحالي."
+    },
+    "network": {
+      "apiTitle": "واجهة برمجة تطبيقات قمرة القيادة المضادة للجاذبية",
+      "wsService": "خدمة WebSocket",
+      "wsServiceDesc": "يسمح للبرامج الخارجية (مثل ملحق VS Code) بالاتصال والتحكم",
+      "preferredPort": "المنفذ المفضل",
+      "preferredPortDesc": "الافتراضي هو {{port}}، التعديل يتطلب إعادة تشغيل التطبيق",
+      "currentPort": "المنفذ الحالي",
+      "portNormal": "الخدمة تعمل بشكل طبيعي",
+      "portFallback": "المنفذ المكون {{configured}} مشغول، تم استخدام {{actual}} تلقائياً",
+      "restartRequired": "تغيرت الإعدادات، يرجى إعادة تشغيل التطبيق للتفعيل",
+      "saveSuccess": "تم حفظ الإعدادات!",
+      "saveSuccessRestart": "تم حفظ الإعدادات! نظراً لتغير تكوين المنفذ، يرجى إعادة تشغيل التطبيق.",
+      "saveFailed": "فشل الحفظ: {{error}}",
+      "reportTitle": "خدمة الاستعلام عبر الويب",
+      "reportService": "خدمة تقرير HTTP",
+      "reportServiceDesc": "يوفّر نقطة نهاية HTTP محمية بالرمز لملخصات الاستخدام",
+      "reportPort": "منفذ التقرير",
+      "reportPortDesc": "القيمة الافتراضية {{port}}، يلزم إعادة التشغيل بعد التغيير",
+      "reportToken": "رمز الوصول",
+      "reportTokenDesc": "مطلوب عند طلب /report، يرجى الحفاظ على سريته",
+      "reportTokenRequired": "لا يمكن أن يكون رمز الوصول فارغًا عند تمكين خدمة الاستعلام عبر الويب.",
+      "generateToken": "إنشاء",
+      "reportUrlPreview": "معاينة نقطة النهاية",
+      "reportUrlPreviewDesc": "يدعم format=md / format=yaml و render=true لعرض HTML",
+      "reportUrlRaw": "المخرجات الخام",
+      "reportUrlRendered": "العرض المرئي",
+      "firewallHintTitle": "تلميح جدار الحماية",
+      "firewallHint": "إذا تعذر الوصول إلى الرابط، فتحقق من إعدادات جدار الحماية في النظام.",
+      "proxyTitle": "وكيل عام",
+      "proxyEnabled": "تفعيل الوكيل العام",
+      "proxyEnabledDesc": "إدخال متغيرات بيئة الوكيل في عمليات المنصات المُدارة التي يشغّلها Cockpit.",
+      "proxyUrl": "عنوان الوكيل",
+      "proxyUrlDesc": "مثال: http://127.0.0.1:7890 أو socks5://127.0.0.1:7890",
+      "proxyUrlPlaceholder": "مثال: http://127.0.0.1:7890",
+      "proxyNoProxy": "قائمة NO_PROXY",
+      "proxyNoProxyDesc": "مفصولة بفواصل؛ المضيفون المطابقون يتجاوزون الوكيل.",
+      "proxyNoProxyPlaceholder": "مثال: 127.0.0.1,localhost,::1",
+      "proxyUrlRequired": "لا يمكن أن يكون عنوان الوكيل فارغًا عند تفعيل الوكيل العام."
+    },
+    "about": {
+      "appName": "Cockpit Tools",
+      "slogan": "حل احترافي لإدارة الحسابات",
+      "author": "المؤلف الرئيسي",
+      "wechat": "حساب WeChat الرسمي",
+      "github": "مستودع GitHub",
+      "alipay": "أليباي",
+      "wechatpay": "وي شات الدفع",
+      "sponsor": "رعاية المشروع",
+      "sponsorDesc": "دعم التنمية",
+      "feedback": "تعليقات",
+      "feedbackDesc": "الإبلاغ عن المشكلات/الاقتراحات",
+      "supportDev": "دعم التطوير",
+      "checkUpdate": "التحقق من التحديثات",
+      "checking": "جاري التحقق...",
+      "upToDate": "محدث",
+      "newVersion": "v{{version}} متاح",
+      "download": "تنزيل",
+      "checkFailed": "فشل التحقق من التحديثات"
+    },
+    "saveSettings": "حفظ الإعدادات"
+  },
+  "appPath": {
+    "missing": {
+      "title": "لم يتم العثور على مسار التطبيق",
+      "desc": "تعذر العثور على مسار تطبيق {{app}}. الرجاء تعيينه الآن للمتابعة.",
+      "action": "تعيين الآن",
+      "codexLaunchHint": "عند إيقافه، يستمر تبديل الحساب واستبدال تسجيل الدخول، لكن لن يتم تشغيل تطبيق Codex بعد الآن ولن يظهر هذا التنبيه لمسار التشغيل مرة أخرى."
+    }
+  },
+  "accounts": {
+    "title": "إدارة الحسابات",
+    "subtitle": "إدارة قائمة حسابات Antigravity الخاصة بك.",
+    "total": "إجمالي {{count}} حسابات",
+    "search": "البحث عن حساب...",
+    "addAccount": "إضافة حساب",
+    "refreshAll": "تحديث الكل",
+    "export": "تصدير",
+    "import": "استيراد",
+    "switchLogin": "تبديل تسجيل الدخول",
+    "refreshQuota": "تحديث الحصة",
+    "copyToken": "نسخ التوكن",
+    "deleteAccount": "حذف الحساب",
+    "confirmDelete": "هل أنت متأكد من حذف الحساب {{email}}؟",
+    "columns": {
+      "email": "البريد الإلكتروني",
+      "subscription": "نوع الاشتراك",
+      "quota": "حالة الحصة",
+      "fingerprint": "البصمة",
+      "lastUsed": "آخر استخدام",
+      "actions": "الإجراءات"
+    },
+    "status": {
+      "current": "الحالي",
+      "disabled": "معطل",
+      "authInvalid": "بيانات اعتماد غير صالحة",
+      "refreshFailed": "فشل التحديث",
+      "normal": "طبيعي",
+      "forbidden": "403",
+      "forbidden_tooltip": "أرجعت API خطأ 403 Forbidden، الحساب لا يملك صلاحية استخدام Gemini Code Assist",
+      "forbidden_msg": "الحساب لا يملك صلاحية، تم تخطي التحديث التلقائي"
+    },
+    "tier": {
+      "pro": "PRO",
+      "ultra": "ULTRA"
+    },
+    "credits": {
+      "label": "رصيد الذكاء الاصطناعي"
+    },
+    "empty": {
+      "title": "لا توجد حسابات",
+      "desc": "انقر فوق \"إضافة\" للبدء",
+      "btn": "إضافة حساب"
+    },
+    "noMatch": {
+      "title": "لا توجد حسابات مطابقة",
+      "desc": "لا توجد حسابات تطابق عوامل التصفية الحالية"
+    },
+    "view": {
+      "compact": "عرض مضغوط",
+      "list": "عرض القائمة",
+      "grid": "عرض البطاقات"
+    },
+    "filterLabel": "تصفية الحسابات",
+    "filter": {
+      "all": "الكل ({{count}})",
+      "pro": "محترف ({{count}})",
+      "ultra": "الترا ({{count}})"
+    },
+    "sortLabel": "فرز",
+    "sort": {
+      "default": "افتراضي",
+      "overall": "حسب الكوتا الإجمالية",
+      "createdAt": "حسب وقت الإنشاء",
+      "byGroup": "حسب كوتا {{group}}",
+      "byGroupReset": "حسب وقت إعادة ضبط {{group}}",
+      "descTooltip": "تنازلي، انقر للتبديل إلى تصاعدي",
+      "ascTooltip": "تصاعدي، انقر للتبديل إلى تنازلي",
+      "toggleDirection": "تبديل اتجاه الترتيب",
+      "plan": "حسب الخطة",
+      "quota": "حسب الحصة"
+    },
+    "filterTags": "تصفية العلامات",
+    "filterTagsCount": "العلامات",
+    "noAvailableTags": "لا توجد علامات متاحة",
+    "clearFilter": "مسح التصفية",
+    "editTags": "تحرير العلامات",
+    "tagModal": {
+      "title": "علامات الحساب",
+      "hint": "حتى {{max}} علامات. يمكن أن يتكون كل وسم من {{maxLength}} حرفًا كحد أقصى.",
+      "empty": "لا توجد علامات",
+      "suggestionsTitle": "العلامات الموجودة",
+      "suggestionsEmpty": "لا توجد علامات متاحة",
+      "inputPlaceholder": "أدخل وسمًا (متبقٍ {{remaining}})",
+      "inputDisabledPlaceholder": "تم الوصول إلى حد العلامات",
+      "add": "إضافة",
+      "save": "حفظ الأوسمة",
+      "error": {
+        "empty": "لا يمكن أن تكون العلامة فارغة",
+        "tooLong": "يجب ألا يتجاوز الوسم {{max}} حرفًا",
+        "duplicate": "الوسم موجود بالفعل",
+        "tooMany": "يمكنك إضافة حتى {{max}} أوسمة"
+      },
+      "notesLabel": "ملاحظات",
+      "notesPlaceholder": "أدخل ملاحظات. اتركه فارغًا للمسح"
+    },
+    "groupByTag": "تجميع حسب العلامة",
+    "untagged": "غير موسوم",
+    "deleteTagAria": "حذف العلامة {{tag}}",
+    "confirmDeleteTag": "هل تريد حذف العلامة \"{{tag}}\"؟ ستتم إزالة هذه العلامة من {{count}} حسابات.",
+    "defaultGroup": "مجموعة افتراضية",
+    "actions": {
+      "viewDetails": "عرض التفاصيل",
+      "viewError": "عرض الخطأ",
+      "fingerprint": "البصمة",
+      "switch": "تبديل الحساب",
+      "switchTo": "التبديل إلى هذا الحساب",
+      "selectFingerprint": "اختيار البصمة"
+    },
+    "tabs": {
+      "oauth": "تفويض OAuth",
+      "token": "رمز التحديث",
+      "import": "استيراد"
+    },
+    "oauth": {
+      "authorizing": "جارِ تفويض OAuth...",
+      "success": "تم تفويض OAuth",
+      "failed": "فشل تفويض OAuth: {{error}}",
+      "hint": "نوصي بإكمال تفويض Google OAuth في المتصفح.",
+      "start": "بدء تفويض OAuth",
+      "continue": "تم التفويض، متابعة",
+      "linkLabel": "رابط التفويض",
+      "generatingLink": "جارِ إنشاء رابط التفويض..."
+    },
+    "token": {
+      "desc": "الصق refresh_token أو JSON للحسابات للاستيراد الجماعي.",
+      "placeholder": "الصيغة المدعومة: [{\"email\":\"xxx\",\"refresh_token\":\"1//...\"}] أو الصق refresh_token مباشرة",
+      "importStart": "بدء الاستيراد",
+      "invalid": "لم يتم العثور على refresh_token صالح",
+      "importProgress": "جارِ الاستيراد {{current}}/{{total}}...",
+      "importSuccess": "تم استيراد {{count}} حسابات",
+      "importPartial": "تم استيراد {{success}} حسابات، فشل {{fail}}",
+      "importFailed": "فشل الاستيراد، يرجى التحقق من refresh_token",
+      "importPartialFailed": "{{failCount}} فشل: {{failList}}",
+      "refreshingQuota": "جارٍ تحديث الحصة {{done}}/{{total}} (يمكنك إغلاق هذا الحوار)",
+      "quotaRefreshDone": "اكتمل تحديث الحصة"
+    },
+    "groups": {
+      "manageTitle": "إدارة المجموعات",
+      "title": "مجموعات الحسابات",
+      "create": "إنشاء",
+      "newPlaceholder": "أدخل اسم المجموعة...",
+      "empty": "لا توجد مجموعات. أنشئ واحدة للبدء",
+      "accountCount": "{{count}} حساب",
+      "rename": "إعادة تسمية",
+      "addToGroup": "إضافة إلى المجموعة",
+      "moveToGroup": "نقل إلى مجموعة أخرى",
+      "createAndAdd": "إنشاء مجموعة وإضافة...",
+      "removeFromGroup": "إزالة من المجموعة",
+      "deleteTitle": "حذف المجموعة",
+      "deleteConfirm": "هل تريد حذف المجموعة \"{{name}}\"؟ لن يتم حذف الحسابات.",
+      "allGroups": "جميع المجموعات",
+      "noGroups": "لا توجد مجموعات",
+      "noGroupsDesc": "أنشئ مجموعات لإدارة حساباتك",
+      "manage": "إدارة",
+      "error": {
+        "duplicate": "اسم المجموعة موجود بالفعل",
+        "createFailed": "فشل إنشاء المجموعة: {{error}}",
+        "renameFailed": "فشل إعادة تسمية المجموعة: {{error}}",
+        "deleteFailed": "فشل حذف المجموعة: {{error}}",
+        "addFailed": "فشل الإضافة إلى المجموعة: {{error}}",
+        "createAndAddFailed": "فشل الإنشاء والإضافة: {{error}}"
+      },
+      "addAccounts": "إضافة حسابات",
+      "editTitle": "تحرير المجموعة",
+      "ungrouped": "غير مجمّع",
+      "currentGroupLabel": "المجموعة الحالية",
+      "accountPickerEmpty": "لا توجد حسابات مطابقة",
+      "filterHint": "تم تحديد {{count}} مجموعة للتصفية",
+      "filterToggle": "حدّد للتصفية حسب هذه المجموعة"
+    },
+    "switchHistory": {
+      "title": "سجل التبديل",
+      "empty": "لا يوجد سجل تبديل حتى الآن",
+      "success": "نجاح",
+      "failed": "فشل",
+      "target": "الحساب الهدف: {{email}}",
+      "trigger": "المُشغِّل: {{trigger}}",
+      "triggerManual": "تبديل يدوي",
+      "triggerAuto": "تبديل تلقائي",
+      "triggerUnknown": "غير معروف",
+      "origin": "جهة التنفيذ: {{origin}}",
+      "originDesktop": "سطح المكتب",
+      "originPlugin": "الإضافة",
+      "originUnknown": "غير معروف",
+      "autoReasonLabel": "سبب التبديل التلقائي: {{reason}}",
+      "autoReason": "القاعدة: {{rule}}؛ العتبة: {{threshold}}%؛ النطاق: {{scope}}؛ المجموعات المراقبة: {{selectedGroups}}؛ المجموعات المطابِقة: {{hitGroups}}؛ الحسابات المرشحة: {{candidates}}",
+      "autoReasonUnknown": "تم تشغيل التبديل التلقائي، لكن لم يتم تسجيل سبب مفصل",
+      "autoReasonRuleCurrentDisabled": "الحساب الحالي معطّل",
+      "autoReasonRuleQuotaForbidden": "حصة الحساب الحالي مقيّدة",
+      "autoReasonRuleGroupBelowThreshold": "مجموعة النماذج أقل من العتبة",
+      "autoReasonScopeAnyGroup": "أي مجموعة نماذج",
+      "autoReasonScopeSelectedGroups": "مجموعات نماذج محددة",
+      "stageResult": "محلي: {{local}} / سلس: {{seamless}}",
+      "duration": "المدة: الإجمالي {{total}}ms، المحلي {{local}}ms، السلس {{seamless}}ms",
+      "error": "فشل في المرحلة {{stage}} ({{code}}): {{message}}",
+      "stageLocal": "كتابة محلية",
+      "stageClientStart": "تشغيل العميل",
+      "stageSeamless": "التبديل السلس عبر الإضافة",
+      "stageUnknown": "مرحلة غير معروفة",
+      "clear": "مسح السجل",
+      "clearConfirm": "هل تريد مسح كل سجلات التبديل؟",
+      "loadFailed": "فشل تحميل سجل التبديل: {{error}}",
+      "clearFailed": "فشل مسح سجل التبديل: {{error}}"
+    }
+  },
+  "overview": {
+    "title": "نظرة عامة على الحسابات",
+    "subtitle": "مراقبة حالة حصة النماذج لجميع الحسابات في الوقت الفعلي.",
+    "total": "إجمالي {{count}} حسابات",
+    "accountDisabled": "الحساب معطل",
+    "noQuotaData": "لا توجد بيانات حصة",
+    "currentAccount": "قيد الاستخدام حالياً",
+    "switchTo": "التبديل إلى هذا الحساب",
+    "switching": "جارِ التبديل...",
+    "fingerprint": "البصمة",
+    "bound": "مرتبط",
+    "brandTitle": "إدارة حساب Antigravity"
+  },
+  "fingerprints": {
+    "title": "بصمات الجهاز",
+    "subtitle": "إدارة بصمات الأجهزة المرتبطة بالحسابات.",
+    "toolbar": {
+      "generate": "توليد بصمة جديدة",
+      "capture": "التقاط البصمة الحالية",
+      "import": "استيراد",
+      "folder": "مجلد",
+      "delete": "حذف",
+      "deleteUnbound": "حذف غير المرتبط"
+    },
+    "table": {
+      "name": "اسم البصمة",
+      "machineId": "معرف الجهاز",
+      "accounts": "الحسابات المرتبطة",
+      "actions": "الإجراءات",
+      "accountCount": "{{count}} حساب",
+      "apply": "تطبيق",
+      "noData": "لا توجد بيانات للبصمات",
+      "preview": "معاينة",
+      "rename": "إعادة تسمية"
+    },
+    "modals": {
+      "generate": {
+        "title": "توليد بصمة جديدة",
+        "btn": "توليد"
+      },
+      "capture": {
+        "title": "التقاط البصمة الحالية",
+        "btn": "التقاط"
+      },
+      "rename": {
+        "title": "إعادة تسمية البصمة",
+        "label": "اسم البصمة"
+      },
+      "import": {
+        "title": "استيراد بصمات",
+        "fromTools": "استيراد بصمات Antigravity Tools",
+        "desc": "الاستيراد من مجلد ~/.antigravity_tools/",
+        "fromJsonBtn": "استيراد من JSON",
+        "jsonExample": "مثال التنسيق:",
+        "jsonPlaceholder": "بصمة العمل",
+        "orPasteJson": "أو لصق JSON"
+      },
+      "bound": {
+        "title": "إدارة الحسابات المرتبطة",
+        "add": "إضافة حساب",
+        "empty": "لا توجد حسابات مرتبطة بهذه البصمة",
+        "emptyAll": "جميع الحسابات مرتبطة بالفعل بهذه البصمة",
+        "select": "اختر الحساب المراد إضافته",
+        "from": "من: {{name}}",
+        "back": "رجوع"
+      },
+      "detail": {
+        "title": "تفاصيل البصمة",
+        "created": "تم الإنشاء في {{time}}"
+      }
+    },
+    "messages": {
+      "deleteConfirm": "هل أنت متأكد من حذف هذه البصمة؟ الحسابات المرتبطة بها ستعود تلقائياً إلى البصمة الأصلية.",
+      "batchDeleteConfirm": "هل أنت متأكد من حذف {{count}} بصمات مختارة؟ الحسابات المرتبطة ستعود تلقائياً إلى البصمة الأصلية.",
+      "generated": "تم توليد بصمة جديدة",
+      "captured": "تم التقاط البصمة الحالية",
+      "renamed": "تمت إعادة التسمية",
+      "deleted": "تم حذف البصمة",
+      "imported": "تم استيراد {{count}} بصمات",
+      "addedAccounts": "تمت إضافة {{count}} حسابات",
+      "enterName": "يرجى إدخال اسم البصمة",
+      "previewNotReady": "المعاينة غير جاهزة، يرجى المحاولة لاحقاً",
+      "duplicate": "البصمة موجودة بالفعل: {{name}}، لا حاجة للإضافة مجدداً.",
+      "autoGeneratedSuffix": "（غير موجود، تم إنشاؤه تلقائياً）",
+      "readOnly": "للقراءة فقط",
+      "current": "الحالي",
+      "addCount": "تمت إضافة {{count}} حساب",
+      "addFailed": "فشل الإضافة",
+      "adding": "جارٍ الإضافة...",
+      "applyFailed": "فشل التطبيق",
+      "boundCount": "تم ربط {{count}} حساب",
+      "captureFailed": "فشل الالتقاط",
+      "count": "{{count}}",
+      "deleteFailed": "فشل الحذف",
+      "fpLabel": "البصمة:",
+      "generateFailed": "فشل الإنشاء",
+      "importFailed": "فشل الاستيراد",
+      "importPartialFailed": "{{failCount}} فشل: {{failList}}",
+      "refreshingQuota": "جارٍ تحديث الحصة {{done}}/{{total}} (يمكنك إغلاق هذا الحوار)",
+      "quotaRefreshDone": "اكتمل تحديث الحصة",
+      "importing": "جارٍ الاستيراد...",
+      "loadFailed": "فشل تحميل قائمة البصمات",
+      "processing": "جارٍ المعالجة...",
+      "renameFailed": "فشل إعادة التسمية",
+      "serviceMachineIdEmpty": "فارغ",
+      "deleteUnboundConfirm": "حذف {{count}} بصمة غير مرتبطة بأي حساب؟",
+      "deletedUnbound": "تم حذف {{count}} بصمة غير مرتبطة",
+      "noUnboundToDelete": "لا توجد بصمات غير مرتبطة للحذف"
+    }
+  },
+  "modals": {
+    "addAccount": {
+      "title": "إضافة حساب",
+      "desc": "أضف حساب Antigravity الخاص بك عبر تفويض Google OAuth",
+      "loginBtn": "تسجيل الدخول Google OAuth",
+      "waiting": "في انتظار التفويض..."
+    },
+    "import": {
+      "title": "استيراد الحسابات",
+      "desc": "يرجى اختيار طريقة الاستيراد",
+      "local": "استيراد حساب محلي",
+      "localDesc": "استيراد الحساب المسجل دخوله حالياً من عميل Antigravity",
+      "tools": "استيراد Antigravity Tools",
+      "toolsDesc": "الاستيراد من مجلد ~/.antigravity_tools/",
+      "jsonDivider": "أو الصق JSON",
+      "orJson": "أو الصق JSON",
+      "jsonPlaceholder": "الصق محتوى JSON للحساب",
+      "jsonBtn": "استيراد من JSON",
+      "importing": "جارِ الاستيراد...",
+      "importBtn": "استيراد",
+      "oauthAction": "تفويض OAuth",
+      "fromExtension": "استيراد من الملحق",
+      "syncBadge": "مزامنة حسابات ملحق Antigravity Cockpit",
+      "fromLocalDB": "استيراد من قاعدة البيانات المحلية",
+      "localDBDesc": "قراءة حسابات تسجيل الدخول من عميل Antigravity على هذا الجهاز",
+      "toolsDescMigrate": "ترحيل الحسابات من ~/.antigravity_tools/",
+      "importingTools": "جارِ الاستيراد من Antigravity Tools...",
+      "importingLocal": "جارِ استيراد الحساب المحلي...",
+      "importingExtension": "جارِ استيراد حساب الملحق...",
+      "noAccountsFound": "لم يتم العثور على حسابات قابلة للاستيراد",
+      "fromFiles": "استيراد من ملفات محلية",
+      "fromFilesDesc": "اختر ملفات JSON لاستيراد الحسابات (تنسيقات متعددة مدعومة)",
+      "importingFiles": "جاري استيراد {{count}} ملف(ات)..."
+    },
+    "fingerprint": {
+      "title": "اختر البصمة",
+      "desc": "اختر بصمة للحساب <1>{{email}}</1>",
+      "original": "البصمة الأصلية",
+      "new": "إضافة بصمة جديدة",
+      "bind": "تأكيد الربط",
+      "selectLabel": "اختر البصمة",
+      "boundCount": "حسابات"
+    },
+    "quota": {
+      "title": "تفاصيل الحصة",
+      "noData": "لا توجد بيانات حصة",
+      "close": "إغلاق",
+      "resetTime": "وقت إعادة التعيين"
+    },
+    "errors": {
+      "title": "تفاصيل الخطأ",
+      "empty": "لا توجد تفاصيل للخطأ",
+      "account": "الحساب",
+      "code": "رمز الخطأ",
+      "time": "وقت الحدوث"
+    }
+  },
+  "pagination": {
+    "info": "عرض {{start}} - {{end}} من إجمالي {{total}}",
+    "perPage": "{{count}} / صفحة",
+    "prev": "السابق",
+    "next": "التالي",
+    "page": "صفحة {{current}} / {{total}}"
+  },
+  "messages": {
+    "deleteConfirm": "هل أنت متأكد من حذف هذا الحساب؟",
+    "batchDeleteConfirm": "هل أنت متأكد من حذف {{count}} حسابات مختارة؟",
+    "switched": "تم التبديل إلى {{email}}",
+    "switchFailed": "فشل التبديل: {{error}}",
+    "importSuccess": "تم استيراد {{count}} حسابات بنجاح",
+    "importLocalSuccess": "تم استيراد الحساب بنجاح: {{email}}",
+    "importFailed": "فشل الاستيراد: {{error}}",
+    "importPartialFailed": "{{failCount}} فشل: {{failList}}",
+    "refreshingQuota": "جارٍ تحديث الحصة {{done}}/{{total}} (يمكنك إغلاق هذا الحوار)",
+    "quotaRefreshDone": "اكتمل تحديث الحصة",
+    "exportFailed": "فشل التصدير: {{error}}",
+    "bindFailed": "فشل الربط: {{error}}",
+    "jsonRequired": "يرجى إدخال أو لصق محتوى JSON",
+    "example": "مثال",
+    "actionRunning": "{{action}}...",
+    "actionSuccess": "{{action}} تم بنجاح",
+    "actionFailed": "{{action}} فشل: {{error}}"
+  },
+  "wakeup": {
+    "title": "مهام الاستيقاظ",
+    "subtitle": "إدارة مهام الاستيقاظ التلقائية المتعددة مع ضوابط مستقلة.",
+    "verification": {
+      "title": "مطلوب التحقق",
+      "columns": {
+        "verifiedAt": "وقت التحقق"
+      },
+      "filters": {
+        "all": "الكل",
+        "typeShort": "النوع",
+        "tagsShort": "الوسوم",
+        "groupsShort": "المجموعات"
+      },
+      "actions": {
+        "selectAllAccounts": "تحديد الكل",
+        "clearSelectedAccounts": "إلغاء تحديد الكل",
+        "runCheckNow": "إكمال التحقق",
+        "retryFiltered": "إعادة محاولة التصفية الحالية ({{count}})",
+        "retryMissingModel": "تفتقد هذه الدفعة معلومات النموذج، لذلك لا يمكن إعادة المحاولة.",
+        "retryMissingAccount": "لا توجد حسابات قابلة لإعادة المحاولة في التصفية الحالية."
+      },
+      "runHint": {
+        "title": "ملاحظات التحقق",
+        "line1": "يقوم خيار «الفحص الآن» بإرسال طلب محادثة مصغّر عبر محاكاة عميل Antigravity باستخدام البوابة المحلية وبروتوكول Language Server الرسمي.",
+        "line2": "تستهلك العملية مقدارًا صغيرًا من الرموز (عادةً محادثة قصيرة واحدة)، ويعتمد الاستهلاك الفعلي على النموذج وسياسة الحساب.",
+        "line3": "لا تعدّل هذه العملية إعدادات مهام الإيقاظ؛ فهي تفحص فقط توفر الحساب وتكتب سجل الفحص.",
+        "line4": "إذا تم إرجاع 403 يجب إكمال التحقق من الحساب أو تقديم استئناف أولا ستتضمن النتيجة العنوان والإجراءات السريعة."
+      },
+      "deleteConfirm": "هل تريد تأكيد الحذف؟"
+    },
+    "globalToggle": "مفتاح الاستيقاظ العام",
+    "newTask": "مهمة جديدة",
+    "runTest": "اختبار فوري",
+    "history": "سجل التشغيل",
+    "gotoAddAccount": "إضافة حسابات",
+    "emptyTitle": "لا توجد مهام استيقاظ بعد",
+    "emptyDesc": "ستقوم المهام بتنشيط الاستيقاظ تلقائياً وفقاً للقواعد.",
+    "statusEnabled": "مفعل",
+    "statusDisabled": "معطل",
+    "statusRunning": "قيد التشغيل",
+    "edit": "تعديل",
+    "defaultTaskName": "مهمة استيقاظ",
+    "newTaskName": "مهمة استيقاظ جديدة",
+    "historyCount": "سجل التشغيل ({{count}})",
+    "historyEmpty": "لا يوجد سجل بعد",
+    "historyClear": "مسح السجل",
+    "historyPromptLabel": "المحفز: {{prompt}}",
+    "errorUi": {
+      "verificationRequiredTitle": "مطلوب التحقق",
+      "quotaTitle": "حد الحصة",
+      "temporaryTitle": "خطأ مؤقت",
+      "genericTitle": "خطأ في التنفيذ",
+      "validationUrlLabel": "رابط التحقق (قابل للنسخ)",
+      "completeVerification": "إكمال التحقق",
+      "copyValidationUrl": "نسخ رابط التحقق",
+      "tosViolationTitle": "انتهاك شروط الخدمة",
+      "submitAppeal": "تقديم استئناف",
+      "copyAppealUrl": "نسخ الرابط",
+      "copyDebugInfo": "نسخ معلومات التصحيح",
+      "errorCode": "رمز الخطأ: {{code}}",
+      "trajectoryId": "معرّف المسار: {{id}}",
+      "copySuccess": "تم النسخ",
+      "copyFailed": "فشل النسخ",
+      "openFailed": "تعذر فتح الرابط. تمت محاولة فتحه في المتصفح."
+    },
+    "format": {
+      "noReply": "(بدون رد)",
+      "durationMs": "{{ms}} مللي ثانية",
+      "tokens": "الرموز={{prompt}}+{{completion}}={{total}}",
+      "traceId": "معرف التتبع={{traceId}}",
+      "detailJoiner": "، ",
+      "message": "[[{{model}}]]: {{reply}}{{suffix}}",
+      "none": "--",
+      "today": "اليوم {{time}}",
+      "tomorrow": "غداً {{time}}",
+      "weekdayWithTime": "{{day}} {{time}}",
+      "notSelected": "غير محدد",
+      "joiner": "، ",
+      "moreItems": "{{items}} ({{total}} عناصر)",
+      "quotaReset": "إعادة الاستيقاظ تلقائياً عند إعادة تعيين الحصة",
+      "crontab": "كرونتاب: {{expr}}",
+      "daily": "يوميًا {{times}}{{suffix}}",
+      "weekly": "أسبوعيًا {{days}} {{times}}{{suffix}}",
+      "interval": "كل {{hours}} ساعة ({{start}}-{{end}})",
+      "invalidCrontab": "Crontab غير صالح"
+    },
+    "weekdays": {
+      "sun": "الأحد",
+      "mon": "الاثنين",
+      "tue": "الثلاثاء",
+      "wed": "الأربعاء",
+      "thu": "الخميس",
+      "fri": "الجمعة",
+      "sat": "السبت"
+    },
+    "notice": {
+      "modelsFetchFailed": "فشل جلب النماذج، يرجى التحقق من حالة الحساب",
+      "featureDisabled": "ميزة الاستيقاظ معطلة",
+      "taskMissingModels": "المهمة بدون نموذج محدد",
+      "taskMissingAccounts": "المهمة بدون حساب محدد",
+      "taskFailed": "فشلت المهمة \"{{name}}\" لعدد {{count}} من الطلبات",
+      "taskCompleted": "اكتملت المهمة \"{{name}}\"",
+      "testMissingModel": "يرجى اختيار نموذج للاختبار",
+      "testMissingAccount": "يرجى اختيار حساب للاختبار",
+      "testFailed": "فشل الاختبار لعدد {{count}} من الطلبات",
+      "testCancelled": "تم إلغاء الاختبار",
+      "testCompleted": "اكتمل الاختبار",
+      "nameRequired": "يرجى إدخال اسم المهمة",
+      "accountRequired": "اختر حساباً واحداً على الأقل",
+      "modelRequired": "اختر نموذجاً واحداً على الأقل",
+      "crontabRequired": "يرجى إدخال تعبير crontab",
+      "crontabValid": "تعبير crontab صالح",
+      "crontabInvalid": "تعبير crontab غير صالح",
+      "taskSaved": "تم حفظ المهمة \"{{name}}\"",
+      "featureOff": "تم تعطيل الاستيقاظ",
+      "featureOn": "تم تفعيل الاستيقاظ",
+      "refreshIntervalAdjusted": "تم تعديل فاصل تحديث الحصة: {{old}} ← {{new}}"
+    },
+    "refreshInterval": {
+      "disabled": "معطل",
+      "minutes": "دقيقة"
+    },
+    "triggerSource": {
+      "scheduled": "مجدول",
+      "crontab": "كرونتاب",
+      "quotaReset": "إعادة تعيين الحصة",
+      "manual": "اختبار فوري",
+      "unknown": "غير معروف",
+      "startup": "بعد بدء التشغيل"
+    },
+    "taskCard": {
+      "accountsCount": "حسابات {{count}}",
+      "modelsCount": "نماذج {{count}}",
+      "accountsLabel": "الحسابات: {{preview}}",
+      "modelsLabel": "النماذج: {{preview}}",
+      "lastRun": "آخر تشغيل {{time}}",
+      "nextRun": "التشغيل التالي {{time}}"
+    },
+    "dialogs": {
+      "deleteConfirm": "حذف المهمة \"{{name}}\"؟",
+      "testTitle": "اختبار فوري",
+      "historyTitle": "سجل التشغيل",
+      "taskTitleEdit": "تعديل مهمة الاستيقاظ",
+      "taskTitleNew": "مهمة استيقاظ جديدة",
+      "riskWarning": "⚠️ تحذير من المخاطر\nبسبب تشديد Google الأخير لإجراءات التحكم في المخاطر، قد يؤدي استخدام ميزة الاستيقاظ إلى زيادة احتمال تفعيل إجراءات التحكم على الحساب (بما في ذلك على سبيل المثال لا الحصر التحقق الإضافي أو القيود المؤقتة).\nيرجى الاستخدام بحذر وفق حالة الحساب وتقييم المخاطر بنفسك.\n\nهل تريد المتابعة؟"
+    },
+    "form": {
+      "taskName": "اسم المهمة",
+      "taskStatus": "حالة المهمة",
+      "triggerMode": "وضع التشغيل",
+      "triggerModeHint": "1. مجدول: يتم التشغيل في الأوقات المحددة.\n2. Crontab: تحديد بواسطة تعبير.\n3. إعادة تعيين الحصة: تشغيل مرة واحدة عند امتلاء الحصة.",
+      "modeScheduled": "📅 مجدول",
+      "modeCrontab": "🧩 كرونتاب",
+      "modeQuotaReset": "🔄 إعادة تعيين الحصة",
+      "modelSelect": "اختيار النموذج",
+      "modelHint": "ضمن نفس مجموعة الحصة يُنصح باختيار نموذج واحد. تعدد النماذج سيُشغَّل بالتتابع.",
+      "modelsEmpty": "لا توجد نماذج موصى بها",
+      "accountSelect": "اختيار الحسابات",
+      "accountHint": "يمكن اختيار عدة حسابات، وسيتم استخدامها بالتتابع.",
+      "accountsEmpty": "لا توجد حسابات",
+      "customPrompt": "محفز مخصص",
+      "promptPlaceholder": "الافتراضي {{word}}",
+      "promptHint": "اتركه فارغاً لاستخدام المحفز الافتراضي {{word}}.",
+      "maxTokens": "أقصى عدد للرموز",
+      "maxTokensHint": "الافتراضي 0 (غير محدود).",
+      "repeatMode": "وضع التكرار",
+      "repeatDaily": "يومي",
+      "repeatWeekly": "أسبوعي",
+      "repeatInterval": "فاصل",
+      "selectTime": "اختيار الوقت",
+      "customTime": "وقت مخصص",
+      "selectWeekday": "اختيار يوم الأسبوع",
+      "quickWorkdays": "أيام العمل",
+      "quickWeekend": "عطلة نهاية الأسبوع",
+      "quickAll": "الكل",
+      "intervalSetting": "إعدادات الفاصل",
+      "intervalEvery": "كل",
+      "intervalHours": "ساعات",
+      "intervalStart": "البداية",
+      "intervalEnd": "النهاية",
+      "nextRuns": "المواعيد القادمة",
+      "nextRunsEmpty": "يرجى اختيار أوقات التشغيل",
+      "crontab": "تعبير Crontab",
+      "crontabPlaceholder": "مثال: 0 8,12,17 * * *",
+      "crontabValidate": "تحقق",
+      "crontabValidateHint": "سيتم التحقق من التعبير عند الحفظ",
+      "crontabPreviewEmpty": "يرجى إدخال تعبير Crontab صالح",
+      "timeWindowEnabled": "تفعيل نافذة زمنية",
+      "timeWindowHint": "عند التفعيل، يعمل إعادة تعيين الحصة داخل النافذة فقط؛ وخارجها تُستخدم الأوقات الثابتة.",
+      "timeWindow": "نافذة إعادة تعيين الحصة",
+      "timeWindowFrom": "من",
+      "timeWindowTo": "إلى",
+      "fallbackTimes": "أوقات بديلة",
+      "saveTask": "حفظ المهمة"
+    },
+    "test": {
+      "modelsLabel": "النماذج المراد تشغيلها",
+      "accountsLabel": "حسابات الاختبار",
+      "accountsHint": "اختر عدة حسابات للاختبار.",
+      "start": "بدء الاختبار",
+      "testing": "جارِ الاختبار..."
+    }
+  },
+  "update_notification": {
+    "title": "التحديث متاح",
+    "message": "الإصدار الحالي v{{current}}، يتوفر إصدار جديد.",
+    "action": "تنزيل الآن",
+    "whatsNew": "ما الجديد",
+    "updateNow": "حدّث الآن",
+    "downloading": "جارٍ التنزيل...",
+    "restarting": "جارٍ إعادة التشغيل...",
+    "installSuccess": "تم تثبيت التحديث! جارٍ إعادة التشغيل...",
+    "autoUpdateFailed": "فشل التحديث التلقائي. يمكنك التنزيل يدويًا.",
+    "versionJumpTitle": "🎉 تم التحديث بنجاح!",
+    "versionJumpMessage": "تم التحديث من v{{previous}} إلى v{{current}}",
+    "gotIt": "حسنًا",
+    "silentReady": "الإصدار v{{version}} جاهز. أعد التشغيل لتطبيقه.",
+    "later": "لاحقًا",
+    "restartNow": "إعادة التشغيل",
+    "checkRetrying": "الشبكة غير مستقرة، جارٍ إعادة محاولة فحص التحديث ({{attempt}}/{{total}})...",
+    "downloadRetrying": "الشبكة غير مستقرة، جارٍ إعادة محاولة تنزيل التحديث ({{attempt}}/{{total}})...",
+    "retryDownload": "إعادة محاولة التنزيل",
+    "cancelUpdate": "إلغاء التحديث",
+    "showErrorDetails": "عرض التفاصيل",
+    "hideErrorDetails": "إخفاء التفاصيل",
+    "autoUpdateFailedAfterRetries": "فشل التحديث التلقائي بعد {{count}} محاولات. يمكنك المحاولة لاحقًا أو التنزيل يدويًا.",
+    "updateCancelled": "تم إلغاء التحديث.",
+    "cancelDownload": "إلغاء التنزيل",
+    "installing": "جارٍ التثبيت...",
+    "authorizing": "بانتظار تفويض النظام...",
+    "installFailed": "فشل التثبيت على النظام. حاول لاحقًا أو نزّل الحزمة يدويًا.",
+    "restartRequiredAfterInstall": "تم تثبيت التحديث. أعد تشغيل التطبيق يدويًا لإكمال التبديل.",
+    "skipThisVersion": "تخطي هذا الإصدار",
+    "skipFailed": "تعذر تخطي هذا التحديث: {{error}}"
+  },
+  "closeDialog": {
+    "title": "إغلاق النافذة",
+    "description": "اختر إجراءً عند إغلاق النافذة",
+    "minimize": "تصغير إلى شريط المهام",
+    "minimizeDesc": "سيستمر التطبيق في العمل في الخلفية",
+    "quit": "إنهاء التطبيق",
+    "quitDesc": "إغلاق التطبيق بالكامل",
+    "remember": "تذكّر اختياري ولا تسأل مرة أخرى"
+  },
+  "group_settings": {
+    "title": "إدارة المجموعات",
+    "group_list": "قائمة المجموعات",
+    "group_name_placeholder": "اسم المجموعة",
+    "save": "حفظ المجموعات",
+    "other_group": "نماذج أخرى"
+  },
+  "codex": {
+    "title": "إدارة حسابات Codex",
+    "subtitle": "إدارة حسابات OpenAI Codex",
+    "instances": {
+      "subtitle": "تكوين مستقل لكل مثيل، تشغيل متوازٍ بحسابات متعددة.",
+      "comingSoon": "ميزة المثيلات المتعددة قادمة قريبًا",
+      "comingSoonDesc": "تشغيل عدة مثيلات Codex.app بحسابات مختلفة في وقت واحد، ترقبوا.",
+      "unsupported": {
+        "desc": "مثيلات Codex المتعددة متاحة حاليًا على macOS فقط."
+      },
+      "quota": {
+        "hourly": "5 ساعات",
+        "weekly": "أسبوعي"
+      },
+      "restartStrategy": {
+        "safe": {
+          "principle": "إرسال SIGTERM إلى جميع عمليات Codex، يطلب من التطبيق الحفظ والخروج ذاتيًا، ثم تشغيل المثيل المستهدف (سيتم الإنهاء القسري إذا لزم الأمر).",
+          "commandMac": "macOS: kill -15 <pid> (جميع عمليات Codex)",
+          "commandWin": "Windows: taskkill /F /PID <pid> (جميع عمليات Codex)"
+        },
+        "force": {
+          "principle": "مطابقة العملية بواسطة CODEX_HOME والإنهاء القسري (SIGKILL / taskkill /F)، ثم تشغيل المثيل المستهدف.",
+          "commandMac": "ماك: pkill -9 -f \"CODEX_HOME=<dir>\"",
+          "commandWin": "Windows: taskkill /F /PID <pid> (مطابقة CODEX_HOME)"
+        }
+      }
+    },
+    "refreshSuccess": "تم تحديث الحصة",
+    "refreshFailed": "فشل تحديث الحصة: {{error}}",
+    "refreshAllSuccess": "اكتمل التحديث، نجح {{count}} حساب",
+    "refreshAllPartialFailed": "اكتمل التحديث، نجح {{success}} / {{total}} حساب وفشل بعضها",
+    "switch": "تبديل",
+    "switched": "تم التبديل إلى {{email}}",
+    "switchFailed": "فشل التبديل: {{error}}",
+    "current": "الحالي",
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" للبدء"
+    },
+    "addModal": {
+      "title": "إضافة حساب Codex",
+      "oauth": "تفويض OAuth",
+      "token": "استيراد JSON",
+      "local": "استيراد محلي"
+    },
+    "oauth": {
+      "desc": "انقر أدناه وأكمل تفويض OpenAI في المتصفح",
+      "preparing": "جارٍ إعداد رابط التفويض...",
+      "exchanging": "جارٍ تبادل الرمز...",
+      "portInUse": "المنفذ {{port}} قيد الاستخدام بالفعل. أغلق التطبيق الذي يستخدمه ثم حاول مرة أخرى.",
+      "portInUseTitle": "المنفذ قيد الاستخدام",
+      "portInUseConfirm": "المنفذ {{port}} قيد الاستخدام. هل تريد إغلاق العملية التي تستخدم هذا المنفذ؟",
+      "portCloseFailed": "فشل إغلاق المنفذ: {{error}}",
+      "portStillInUse": "المنفذ {{port}} ما يزال قيد الاستخدام.",
+      "portInUseAction": "إغلاق المنفذ وإعادة المحاولة"
+    },
+    "token": {
+      "desc": "الصق محتوى auth.json أو بيانات JSON للحساب",
+      "placeholder": "مثال: {\"tokens\":{\"id_token\":\"eyJ...\",\"access_token\":\"eyJ...\"}}"
+    },
+    "local": {
+      "desc": "استيراد الحساب الحالي من ~/.codex/auth.json",
+      "import": "جلب الحساب المحلي"
+    },
+    "import": {
+      "localDesc": "استيراد حسابات Codex من الجلسات المسجلة محليًا.",
+      "importing": "جارٍ استيراد الحساب المحلي...",
+      "successMsg": "تم الاستيراد بنجاح: {{email}}"
+    },
+    "quota": {
+      "hourly": "حصة 5 ساعات",
+      "weekly": "الحصة الأسبوعية",
+      "reset": "إعادة ضبط"
+    },
+    "quotaError": {
+      "badge": "خطأ في الحصة",
+      "generic": "فشل تحديث الحصة، يرجى المحاولة لاحقا",
+      "deactivatedWorkspace": "تم تعطيل مساحة العمل، بدّل الحساب أو أعد التفويض",
+      "requestFailedManualRetry": "فشل الطلب، يُرجى إعادة المحاولة يدويًا: {{error}}"
+    },
+    "plan": {
+      "free": "FREE",
+      "plus": "PLUS",
+      "pro": "PRO",
+      "team": "TEAM",
+      "enterprise": "ENTERPRISE"
+    },
+    "list": {
+      "showCodeReviewQuota": "إظهار حصة Code Review"
+    },
+    "time": {
+      "today": "اليوم {{time}}",
+      "tomorrow": "غدًا {{time}}",
+      "dateTime": "{{date}} {{time}}"
+    },
+    "view": {
+      "compact": "عرض مضغوط"
+    },
+    "filter": {
+      "plus": "زائد ({{count}})",
+      "team": "الفريق ({{count}})"
+    },
+    "sort": {
+      "weekly": "الحصة الأسبوعية",
+      "hourly": "حصة 5 ساعات",
+      "weeklyReset": "وقت إعادة الضبط الأسبوعي",
+      "hourlyReset": "وقت إعادة الضبط لمدة 5 ساعات"
+    },
+    "opencodeSwitch": "مفتاح تبديل OpenCode",
+    "opencodeSwitchDesc": "مزامنة تبديل معلومات حساب Codex في OpenCode",
+    "opencodeSwitchFailed": "فشل تحديث مفتاح OpenCode: {{error}}",
+    "columns": {
+      "hourly": "حصة 5 ساعات",
+      "weekly": "حصة أسبوعية"
+    },
+    "filterTags": "تصفية العلامات",
+    "filterTagsCount": "العلامات",
+    "noAvailableTags": "لا توجد علامات متاحة",
+    "clearFilter": "مسح التصفية",
+    "editTags": "تحرير العلامات",
+    "account": {
+      "personal": "حساب شخصي"
+    },
+    "usage": {
+      "open": "فتح استخدام OpenAI",
+      "hint": "لرصيد API Key، راجع صفحة استخدام OpenAI.",
+      "openFailed": "تعذر فتح صفحة الاستخدام: {{error}}"
+    },
+    "wakeup": {
+      "tab": "مهام الإيقاظ",
+      "subtitle": "جدولة مهام إيقاظ Codex، واختبار مسار CLI، ومراجعة سجل التنفيذ.",
+      "heroTitle": "مهام إيقاظ Codex",
+      "heroSubtitle": "أنشئ مهام إيقاظ مجدولة لحسابات Codex عبر OAuth، وشغّل اختبارات فورية، وراجع كل عملية تشغيل في مكان واحد.",
+      "runtimeReady": "Codex CLI جاهز",
+      "runtimeMissing": "يلزم Codex CLI",
+      "runtimeCardTitle": "واجهة Codex CLI",
+      "runtimeUnknownPath": "لم يتم اكتشاف المسار",
+      "runtimeUnchecked": "أعد الفحص لجلب أحدث حالة",
+      "runtimeVersion": "الإصدار {{version}}",
+      "installTitle": "ثبّت Codex CLI أولاً",
+      "installSubtitle": "قبل الاختبار أو تشغيل المهام، يجب أن يتمكن التطبيق من العثور على أمر `codex`.",
+      "installFootnote": "أعد الفحص بعد التثبيت. ويمكنك أيضاً تحديد الملف التنفيذي عبر متغير البيئة CODEX_CLI_PATH.",
+      "copyCommand": "نسخ الأمر",
+      "copied": "تم النسخ",
+      "addTask": "إضافة مهمة",
+      "testNow": "اختبار الإيقاظ",
+      "enableAll": "تشغيل جميع المهام",
+      "disableAll": "إيقاف جميع المهام",
+      "refreshRuntime": "إعادة فحص CLI",
+      "statsEnabledTasks": "المهام المفعلة",
+      "statsHistory": "سجلات التاريخ",
+      "statsSuccess": "عمليات التشغيل الناجحة",
+      "tasksTitle": "قائمة المهام",
+      "tasksSubtitle": "تستهدف كل مهمة حساباً واحداً أو أكثر وتعمل دائماً وفق إعداد Codex الحالي لذلك الحساب.",
+      "emptyTitle": "لا توجد مهام إيقاظ بعد",
+      "emptyDesc": "أنشئ أول مهمة لبدء تشغيل إيقاظ Codex تلقائياً.",
+      "taskEnabled": "مفعلة",
+      "taskPaused": "متوقفة",
+      "nextRunLabel": "التشغيل التالي {{time}}",
+      "lastRunLabel": "آخر تشغيل {{time}}",
+      "lastStatusLabel": "أحدث نتيجة",
+      "lastStatusIdle": "لم يتم التشغيل بعد",
+      "lastStatusSuccessSummary": "نجح {{count}} حساب/حسابات",
+      "lastStatusFailedSummary": "فشل {{count}} حساب/حسابات",
+      "lastStatusMixedSummary": "نجح {{success}} وفشل {{failed}}",
+      "lastDurationLabel": "أحدث مدة",
+      "pauseOne": "إيقاف",
+      "resumeOne": "استئناف",
+      "createTaskTitle": "إنشاء مهمة إيقاظ Codex",
+      "editTaskTitle": "تعديل مهمة إيقاظ Codex",
+      "taskNameLabel": "اسم المهمة",
+      "taskNamePlaceholder": "مثال: إيقاظ صباح أيام العمل",
+      "taskNameRequired": "يرجى إدخال اسم المهمة.",
+      "taskAccountsLabel": "الحسابات",
+      "taskAccountsHint": "تدعم فقط حسابات Codex عبر OAuth. تُشغَّل الحسابات المتعددة بالتتابع.",
+      "taskAccountsRequired": "يرجى اختيار حساب واحد على الأقل.",
+      "scheduleLabel": "الجدولة",
+      "schedule": {
+        "daily": "يومي",
+        "weekly": "أسبوعي",
+        "interval": "فاصل",
+        "quota_reset": "بعد إعادة تعيين الحصة"
+      },
+      "dailyTimeLabel": "وقت التشغيل اليومي",
+      "weeklyDaysLabel": "التشغيل في",
+      "weeklyDaysRequired": "يرجى اختيار يوم واحد على الأقل من الأسبوع.",
+      "weeklyTimeLabel": "وقت التشغيل الأسبوعي",
+      "intervalHoursLabel": "ساعات الفاصل",
+      "weekdays": {
+        "0": "الأحد",
+        "1": "الاثنين",
+        "2": "الثلاثاء",
+        "3": "الأربعاء",
+        "4": "الخميس",
+        "5": "الجمعة",
+        "6": "السبت"
+      },
+      "weekdaysFallback": "لم يتم اختيار أي يوم",
+      "scheduleDailySummary": "كل يوم في {{time}}",
+      "scheduleWeeklySummary": "{{days}} في {{time}}",
+      "scheduleIntervalSummary": "كل {{hours}} ساعة",
+      "promptLabel": "موجه الإيقاظ",
+      "promptPlaceholder": "اتركه فارغاً لاستخدام الموجه الافتراضي: {{prompt}}",
+      "accountSearchPlaceholder": "ابحث بالبريد الإلكتروني...",
+      "accountFilterEmpty": "لا توجد حسابات مطابقة",
+      "accountFilteredCount": "{{count}} حساباً ضمن التصفية الحالية",
+      "testTitle": "اختبار إيقاظ Codex",
+      "testAccountsLabel": "حسابات الاختبار",
+      "testAccountsRequired": "يرجى اختيار حساب اختبار واحد على الأقل.",
+      "startTest": "بدء الاختبار",
+      "testing": "جارٍ الاختبار...",
+      "executionStatusPending": "قيد الانتظار",
+      "executionStatusRunning": "قيد التنفيذ",
+      "executionStatusCompleted": "اكتمل",
+      "executionPendingDesc": "ينتظر انتهاء الحسابات السابقة قبل أن يبدأ.",
+      "executionRunningDesc": "يتم الآن تنفيذ أمر الإيقاظ. يرجى الانتظار.",
+      "resultsTitle": "نتائج التنفيذ",
+      "resultsTotal": "الإجمالي",
+      "resultsSuccess": "نجاح",
+      "resultsFailed": "فشل",
+      "historyTitle": "سجل التشغيل",
+      "historySubtitle": "تُسجَّل هنا الاختبارات اليدوية والتشغيلات المجدولة مع نتائجها الفعلية.",
+      "clearHistory": "مسح السجل",
+      "clearHistoryConfirm": "هل تريد مسح كل سجل إيقاظ Codex؟",
+      "historyCleared": "تم مسح السجل.",
+      "historyEmptyTitle": "لا يوجد سجل تشغيل بعد",
+      "historyEmptyDesc": "شغّل اختباراً يدوياً أو انتظر مهمة مجدولة وستظهر السجلات هنا تلقائياً.",
+      "historySuccess": "نجاح",
+      "historyFailed": "فشل",
+      "historyNoReply": "انتهى الأمر من دون رد قابل للقراءة.",
+      "historyUnknownError": "لم يتم إرجاع تفاصيل الخطأ.",
+      "triggerTest": "اختبار",
+      "triggerManualTask": "تشغيل يدوي للمهمة",
+      "triggerScheduled": "مجدول",
+      "manualRunConfirm": "هل تريد تشغيل المهمة \"{{name}}\" الآن؟ سيتم إيقاظ {{count}} حسابًا بالتسلسل.",
+      "noticeSavedEnabled": "تم حفظ المهام. إجمالي المهام: {{count}}.",
+      "noticeSavedDisabled": "تم حفظ إعدادات المهام. جميع المهام متوقفة حالياً.",
+      "noticeTaskFinished": "اكتملت المهمة. نجح {{count}} حساب/حسابات.",
+      "noticeTaskFinishedWithError": "اكتملت المهمة. نجح {{success}} وفشل {{failed}}.",
+      "noticeTestFinished": "اكتمل الاختبار. نجح {{count}} حساب/حسابات.",
+      "noticeTestFinishedWithError": "اكتمل الاختبار. نجح {{success}} وفشل {{failed}}.",
+      "deleteConfirm": "حذف المهمة \"{{name}}\"؟",
+      "executedCommandLabel": "الأمر المنفذ فعلياً",
+      "accountInfoLabel": "معلومات الحساب",
+      "managePresets": "إعدادات النماذج",
+      "presetManagerTitle": "إدارة إعدادات النماذج",
+      "presetListLabel": "قائمة الإعدادات",
+      "addPreset": "إضافة إعداد",
+      "presetEmpty": "لا توجد إعدادات نماذج بعد. أضف واحداً لبدء اختيار النماذج لمهام الإيقاظ.",
+      "presetNameLabel": "اسم الإعداد",
+      "presetNamePlaceholder": "مثال: إيقاظ GPT-5.4 القياسي",
+      "presetNameRequired": "يرجى إدخال اسم الإعداد.",
+      "presetModelLabel": "قيمة النموذج",
+      "presetModelPlaceholder": "مثال: gpt-5.4",
+      "presetModelRequired": "يرجى إدخال قيمة النموذج.",
+      "presetModelDuplicate": "قيمة النموذج موجودة بالفعل في إعداد آخر.",
+      "presetAllowedReasoningLabel": "مستويات الاستدلال المسموح بها",
+      "presetDefaultReasoningLabel": "مستوى الاستدلال الافتراضي",
+      "presetReasoningEffortsRequired": "اختر مستوى استدلال واحداً على الأقل.",
+      "presetDefaultReasoningRequired": "اختر مستوى استدلال افتراضياً من القائمة المسموح بها.",
+      "presetDeleteConfirm": "هل تريد حذف إعداد النموذج \"{{name}}\"؟",
+      "noticePresetCreated": "تم إنشاء إعداد النموذج.",
+      "noticePresetUpdated": "تم تحديث إعداد النموذج.",
+      "noticePresetDeleted": "تم حذف إعداد النموذج.",
+      "taskModelLabel": "إعداد النموذج",
+      "taskModelHint": "اختر الإعداد أولاً ثم مستوى الاستدلال لهذه المهمة.",
+      "taskModelRequired": "يرجى اختيار إعداد نموذج لهذه المهمة.",
+      "testModelLabel": "إعداد نموذج الاختبار",
+      "testModelHint": "اختر الإعداد ومستوى الاستدلال لهذا الاختبار اليدوي.",
+      "testModelRequired": "يرجى اختيار إعداد نموذج لهذا الاختبار.",
+      "reasoningEffortLabel": "مستوى الاستدلال",
+      "reasoningEffortEmpty": "اختر إعداد نموذج أولاً لعرض مستويات الاستدلال المتاحة.",
+      "taskReasoningEffortRequired": "يرجى اختيار مستوى استدلال لهذه المهمة.",
+      "testReasoningEffortRequired": "يرجى اختيار مستوى استدلال لهذا الاختبار.",
+      "selectPresetPlaceholder": "اختر إعداداً",
+      "selectReasoningPlaceholder": "اختر مستوى الاستدلال",
+      "modelValuePreview": "قيمة النموذج الفعلية: {{model}}",
+      "modelSummaryLabel": "النموذج: {{model}} · الاستدلال: {{reasoning}}",
+      "modelDefault": "الافتراضي",
+      "reasoningEfforts": {
+        "low": "منخفض",
+        "medium": "متوسط",
+        "high": "عالٍ",
+        "xhigh": "عالٍ جداً"
+      },
+      "scheduleQuotaResetHint": "عند تفعيل الإيقاظ بعد إعادة تعيين الحصة، سيتم ضبط التحديث التلقائي ليعمل كل دقيقتين.",
+      "scheduleQuotaResetSummary": "التشغيل بعد إعادة تعيين الحصة",
+      "quotaResetWindowLabel": "شرط تفعيل نافذة إعادة التعيين",
+      "quotaResetWindowHint": "عادةً ما يشير primary_window إلى حصة 5 ساعات. لدى المستخدم المجاني قد يشير primary_window إلى الحصة الأسبوعية، وقد يختلف حسب الاشتراك.",
+      "quotaResetWindowOptions": {
+        "either": "التفعيل عند إعادة تعيين أيٍّ من primary_window أو secondary_window",
+        "primary_window": "التفعيل فقط عند إعادة تعيين primary_window",
+        "secondary_window": "التفعيل فقط عند إعادة تعيين secondary_window"
+      },
+      "nextRunsQuotaResetHint": "تعتمد عمليات التشغيل بعد إعادة تعيين الحصة على أحدث بيانات الحصة، لذا لا تتوفر معاينة بوقت ثابت.",
+      "triggerQuotaReset": "تشغيل بعد إعادة تعيين الحصة",
+      "noticeSavedEnabledWithQuotaReset": "تم حفظ المهام. الإجمالي: {{count}}. تم ضبط التحديث التلقائي لـ Codex ليعمل كل {{minutes}} دقيقة.",
+      "runtimeConfigTitle": "تخصيص مسارات بيئة التشغيل",
+      "runtimeConfigHint": "يمكن إدخال مسار ملف تنفيذي أو مجلد. اتركه فارغًا لاكتشافه تلقائيًا من PATH.",
+      "runtimeConfigCodexCliLabel": "مسار Codex CLI",
+      "runtimeConfigCodexCliPlaceholder": "مثال: /opt/homebrew/bin/codex",
+      "runtimeConfigNodeLabel": "مسار node",
+      "runtimeConfigNodePlaceholder": "مثال: /opt/homebrew/bin/node",
+      "runtimeConfigApplyHint": "بعد التعديل، انقر \"إعادة فحص CLI\" للحفظ والتطبيق فورًا."
+    },
+    "sessionManager": {
+      "title": "إدارة الجلسات",
+      "desc": "هنا تتم المزامنة والتنظيف معًا: استخدم الإجراء العلوي للمزامنة إلى جميع المثيلات، ثم وسّع كل مشروع لمراجعة الجلسات ونقلها إلى سلة المهملات.",
+      "actions": {
+        "moveToTrash": "نقل إلى المهملات",
+        "syncSessions": "مزامنة الجلسات",
+        "expand": "توسيع",
+        "collapse": "طي",
+        "repairVisibility": "إصلاح الظهور"
+      },
+      "confirm": {
+        "title": "نقل إلى المهملات",
+        "message": "سيتم نقل الجلسات المحددة إلى سلة المهملات من المثيلات المقابلة لتسهيل استعادتها لاحقًا؛ قد تحتاج المثيلات قيد التشغيل إلى إعادة تشغيل قبل ظهور التغييرات. هل تريد المتابعة؟",
+        "syncMessage": "ستتم مزامنة السلاسل والجلسات المفقودة إلى جميع المثيلات. لن تتم كتابة المحتوى الموجود مرة أخرى، وسيتم نسخ ملفات المثيل الهدف احتياطيًا قبل أي كتابة. هل تريد المتابعة؟",
+        "repairVisibilityMessage": "سيؤدي هذا إلى إصلاح بيانات تعريف المزوّد في ملفات rollout وملف state_5.sqlite باستخدام قيمة model_provider من ملف config.toml الجذري لكل مثيل (وسيُستخدم openai افتراضيًا إذا كانت مفقودة). ستؤخذ نسخة احتياطية من الملفات التي سيجري تعديلها قبل الكتابة. قد تحتاج المثيلات قيد التشغيل إلى إعادة التشغيل قبل ظهور التغيير. هل تريد المتابعة؟"
+      },
+      "empty": {
+        "title": "لا توجد جلسات لإدارتها",
+        "desc": "لم يتم العثور على سجلات جلسات في مجموعة المثيلات الحالية."
+      },
+      "messages": {
+        "pickOne": "يرجى تحديد جلسة واحدة على الأقل",
+        "syncNeedTwo": "يلزم وجود مثيلين على الأقل لمزامنة الجلسات"
+      },
+      "groupCount": "{{count}} جلسة",
+      "updatedAt": "تم التحديث",
+      "locationRunning": " (قيد التشغيل)",
+      "untitled": "جلسة بدون عنوان"
+    },
+    "api": {
+      "baseUrl": "عنوان URL الأساسي",
+      "baseUrlPlaceholder": "اتركه فارغًا لاستخدام الإعداد الرسمي الافتراضي",
+      "validation": {
+        "apiKeyCannotBeUrl": "لا يمكن أن يكون مفتاح API عبارة عن عنوان URL. يرجى التحقق مما إذا تم تبديل الحقول.",
+        "baseUrlInvalid": "عنوان Base URL غير صالح. يرجى إدخال رابط كامل يبدأ بـ http:// أو https://.",
+        "apiKeyEqualsBaseUrl": "لا يمكن أن يكون مفتاح API مطابقًا لـ Base URL."
+      },
+      "addAndSwitchSuccess": "تمت الإضافة والتبديل: {{email}}",
+      "actions": {
+        "addAndSwitch": "إضافة وتبديل"
+      },
+      "provider": {
+        "label": "المزوّد",
+        "custom": "مخصّص",
+        "endpoint": "نقطة نهاية المزوّد",
+        "hint": "تم ملء Base URL متوافق تلقائيًا، وما زال بإمكانك تعديله يدويًا.",
+        "website": "الموقع الإلكتروني",
+        "apiKeyPage": "صفحة مفتاح API"
+      },
+      "providers": {
+        "openai_official": {
+          "name": "OpenAI Official"
+        },
+        "azure_openai": {
+          "name": "Azure OpenAI"
+        },
+        "packycode": {
+          "name": "PackyCode"
+        },
+        "cubence": {
+          "name": "Cubence"
+        },
+        "aigocode": {
+          "name": "AIGoCode"
+        },
+        "rightcode": {
+          "name": "RightCode"
+        },
+        "sssaicode": {
+          "name": "SSSAiCode"
+        },
+        "micu": {
+          "name": "Micu"
+        },
+        "x_code_api": {
+          "name": "X-Code API"
+        },
+        "ctok_ai": {
+          "name": "CTok.ai"
+        },
+        "aihubmix": {
+          "name": "AiHubMix"
+        },
+        "dmxapi": {
+          "name": "DMXAPI"
+        },
+        "compshare": {
+          "name": "Compshare"
+        },
+        "openrouter": {
+          "name": "OpenRouter"
+        },
+        "aicodemirror": {
+          "name": "AICodeMirror"
+        },
+        "aicoding": {
+          "name": "AICoding"
+        },
+        "crazyrouter": {
+          "name": "CrazyRouter"
+        },
+        "deepseek": {
+          "name": "DeepSeek"
+        },
+        "moonshot": {
+          "name": "Moonshot"
+        },
+        "siliconflow": {
+          "name": "SiliconFlow"
+        }
+      }
+    },
+    "modelProviders": {
+      "tab": "موفرو النماذج",
+      "desc": "أدر موفري النماذج وعدة مفاتيح API في مكان واحد، ثم أعد استخدامها مباشرة عند إضافة حسابات Codex بمفتاح API.",
+      "add": "إضافة مزوّد",
+      "loadFailed": "فشل تحميل موفري النماذج: {{error}}",
+      "emptyTitle": "لا يوجد موفرو نماذج بعد",
+      "emptyDesc": "انقر على \"إضافة مزوّد\" في أعلى اليمين للبدء.",
+      "baseUrl": "عنوان URL الأساسي",
+      "website": "الموقع الإلكتروني",
+      "apiKeyPage": "صفحة مفتاح API",
+      "apiKeysCount": "{{count}} من مفاتيح API",
+      "referencesCount": "{{count}} من الحسابات المرتبطة",
+      "unnamedKey": "مفتاح بلا اسم",
+      "createTitle": "إضافة مزوّد نموذج",
+      "editTitle": "تعديل مزوّد النموذج",
+      "existingApiKeys": "مفاتيح API الحالية",
+      "fields": {
+        "name": "اسم المزوّد",
+        "baseUrl": "عنوان URL الأساسي",
+        "website": "الموقع الإلكتروني (اختياري)",
+        "apiKeyUrl": "صفحة مفتاح API (اختياري)",
+        "newApiKeyName": "اسم المفتاح الجديد (اختياري)",
+        "newApiKey": "مفتاح API جديد"
+      },
+      "validation": {
+        "nameRequired": "اسم المزوّد مطلوب.",
+        "baseUrlInvalid": "Base URL غير صالح.",
+        "baseUrlExists": "Base URL هذا موجود بالفعل.",
+        "providerNotFound": "لم يتم العثور على المزوّد.",
+        "apiKeyRequiredOnCreate": "يجب إدخال مفتاح API واحد على الأقل عند إنشاء مزوّد.",
+        "apiKeyRequiredWhenEmpty": "لا يملك هذا المزوّد أي مفتاح API بعد. أضف واحدًا أولاً."
+      },
+      "saveSuccess": "تم حفظ مزوّد النموذج.",
+      "deleteBlocked": "هذا المزوّد مرتبط بـ {{count}} حساب(ات)، ولا يمكن حذفه.",
+      "confirmDelete": "هل تريد حذف المزوّد \"{{name}}\"؟",
+      "deleteFailed": "فشل حذف المزوّد: {{error}}",
+      "deleteApiKeyFailed": "فشل حذف مفتاح API: {{error}}",
+      "selectSavedProvider": "المزوّدون المحفوظون",
+      "selectSavedApiKey": "مفاتيح API المحفوظة",
+      "noSavedProviders": "لا يوجد مزوّدون محفوظون بعد. يمكنك تعبئة الحقول مباشرةً وسيتم الحفظ تلقائيًا.",
+      "newProviderName": "اسم المزوّد (اختياري، يُستخدم للحفظ التلقائي)",
+      "newProviderNamePlaceholder": "إذا تُرك فارغًا، فسيُستخدم اسم المضيف تلقائيًا"
+    },
+    "quickSwitch": {
+      "action": "تبديل المزوّد سريعًا",
+      "inlineAction": "تبديل",
+      "title": "تبديل المزوّد سريعًا",
+      "desc": "بدّل حساب مفتاح API هذا بسرعة إلى مزوّد محفوظ ومفتاح API محفوظ.",
+      "currentAccount": "الحساب الحالي: {{name}}",
+      "noProviders": "لا يوجد مزوّدون محفوظون بعد. أضف واحدًا أولاً في موفري النماذج.",
+      "providerHasNoKeys": "لا يملك هذا المزوّد أي مفتاح API متاح بعد. أضف واحدًا أولاً في موفري النماذج.",
+      "gotoProviders": "إدارة المزوّدين",
+      "apply": "بدّل الآن",
+      "success": "تم التبديل إلى المزوّد: {{provider}}",
+      "failed": "فشل تبديل المزوّد: {{error}}",
+      "validation": {
+        "providerRequired": "يرجى اختيار مزوّد.",
+        "apiKeyRequired": "يرجى اختيار مفتاح API."
+      }
+    }
+  },
+  "githubCopilot": {
+    "title": "إدارة حسابات GitHub Copilot",
+    "instances": {
+      "unsupported": {
+        "desc": "ميزة المثيلات المتعددة لـ GitHub Copilot متاحة على macOS فقط."
+      }
+    },
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" لبدء إدارة حسابات GitHub Copilot"
+    },
+    "addModal": {
+      "title": "إضافة حساب GitHub Copilot"
+    },
+    "oauth": {
+      "desc": "انقر الزر أدناه وأكمل تفويض GitHub Copilot في المتصفح."
+    },
+    "token": {
+      "desc": "الصق رمز وصول GitHub Copilot أو بيانات JSON المصدّرة."
+    },
+    "import": {
+      "localDesc": "استيراد بيانات حسابات GitHub Copilot من ملف JSON."
+    },
+    "sort": {
+      "weekly": "حسب استخدام رسائل الدردشة",
+      "hourly": "حسب استخدام الاقتراحات المضمنة",
+      "premium": "حسب استخدام الطلبات المميزة",
+      "weeklyReset": "حسب وقت إعادة ضبط رسائل الدردشة",
+      "hourlyReset": "حسب وقت إعادة ضبط الاقتراحات المضمنة"
+    },
+    "columns": {
+      "hourly": "الاقتراحات المضمنة",
+      "weekly": "رسائل الدردشة",
+      "premium": "الطلبات المميزة"
+    },
+    "usage": {
+      "included": "مضمّن"
+    },
+    "injectToVSCode": "التبديل إلى VS Code",
+    "injectSuccess": "تم حقن الرمز في VS Code بنجاح. يتم الآن تشغيل VS Code.",
+    "injectRequireClose": "يرجى إغلاق VS Code قبل الحقن.",
+    "flowNotice": {
+      "title": "دليل حسابات GitHub Copilot (انقر للتوسيع/الطي)",
+      "desc": "يتطلب تبديل الحساب قراءة مخزن المصادقة المحلي في VS Code واستخدام خدمة بيانات الاعتماد في النظام لفك التشفير وإعادة الكتابة؛ وتتم معالجة البيانات محليًا فقط.",
+      "inject": "تبديل بنقرة واحدة: تقرأ هذه الأداة مواد التشفير المحلية في VS Code (DPAPI/Keychain/Secret Service)، وتفك تشفير جلسة المصادقة في state.vscdb، وتستبدل رمز GitHub Copilot ثم تعيد التشفير — وكل ذلك محليًا على جهازك.",
+      "reason": "نطاق الأذونات: قراءة قاعدة بيانات مصادقة VS Code ‏(state.vscdb) واستدعاء قدرات التشفير في النظام (Windows DPAPI / macOS Keychain / Linux Secret Service) لفك التشفير وإعادة الكتابة.",
+      "storage": "نطاق القراءة: تتم معالجة بيانات جلسات تسجيل الدخول المرتبطة بـ GitHub فقط، وجميع العمليات تُنفّذ محليًا."
+    }
+  },
+  "dashboard": {
+    "title": "لوحة حسابات",
+    "summary": {
+      "label": "نظرة عامة",
+      "title": "لمحة عن الحسابات",
+      "desc": "عرض Antigravity و Codex في لمحة"
+    },
+    "stats": {
+      "antigravity": "حسابات Antigravity",
+      "codex": "حسابات Codex",
+      "currentAntigravity": "Antigravity الحالي",
+      "currentCodex": "Codex الحالي",
+      "providers": "المزوّدون",
+      "totalAccounts": "إجمالي الحسابات"
+    },
+    "panels": {
+      "antigravity": "Antigravity",
+      "codex": "Codex",
+      "githubCopilot": "GitHub Copilot",
+      "planDistribution": "توزيع الخطط",
+      "current": "الحساب الحالي",
+      "recommended": "الحساب الموصى به",
+      "empty": "لا توجد حسابات",
+      "emptyDesc": "أضف حسابًا لرؤية التفاصيل"
+    },
+    "quota": {
+      "remaining": "الحصة المتبقية {{value}}%",
+      "codex": "٥ ساعات {{hourly}}% · أسبوعي {{weekly}}%"
+    },
+    "emptyAccount": "لا يوجد حساب",
+    "sections": {
+      "antigravity": "حسابات Antigravity",
+      "codex": "حسابات Codex"
+    },
+    "actions": {
+      "refresh": "تحديث البطاقات",
+      "viewAll": "كل الحسابات"
+    },
+    "badges": {
+      "recommended": "موصى به"
+    },
+    "totalAccounts": "إجمالي الحسابات",
+    "current": "الحساب الحالي",
+    "recommended": "الحساب الموصى به",
+    "noAccount": "لا يوجد حساب",
+    "switch": "تبديل",
+    "switchTo": "التبديل إلى هذا الحساب",
+    "noRecommendation": "لا توجد توصية أفضل",
+    "noData": "لا توجد بيانات",
+    "viewAllAccounts": "عرض كل الحسابات"
+  },
+  "error": {
+    "fileCorrupted": {
+      "title": "فشل قراءة الملف",
+      "description": "الملف {{fileName}} تالف ولا يمكن تحليله.",
+      "errorInfo": "تفاصيل الخطأ",
+      "filePath": "موقع الملف",
+      "helpText": "يرجى فتح المجلد للإصلاح يدويًا أو حذف الملف، ثم إعادة تشغيل التطبيق.",
+      "openFolder": "فتح المجلد",
+      "openFolderFailed": "فشل فتح المجلد: {{error}}"
+    }
+  },
+  "quickSettings": {
+    "antigravity": {
+      "title": "إعدادات Antigravity",
+      "appPath": "مسار التطبيق"
+    },
+    "codex": {
+      "title": "إعدادات Codex",
+      "appPath": "مسار التطبيق",
+      "configToml": "ملف إعدادات Codex",
+      "openConfigToml": "فتح الملف",
+      "openConfigHint": "افتح بسرعة ملف config.toml النشط الخاص بـ Codex."
+    },
+    "githubCopilot": {
+      "title": "إعدادات GitHub Copilot",
+      "appPath": "مسار VS Code"
+    },
+    "refreshInterval": "تحديث الحصة تلقائياً",
+    "codexRefreshInterval": "تحديث الحصة تلقائياً",
+    "ghcpRefreshInterval": "تحديث الحصة تلقائياً",
+    "autoSwitch": {
+      "title": "التبديل التلقائي",
+      "enable": "التبديل التلقائي",
+      "threshold": "عتبة التبديل",
+      "thresholdDesc": "يتم تشغيل التبديل التلقائي عندما تصل مجموعات النماذج المُراقبة إلى هذه العتبة المئوية",
+      "hint": "يتم التبديل تلقائيًا إلى الحساب صاحب أعلى حصة عندما تصل مجموعات النماذج المُراقبة إلى العتبة.",
+      "triggerModel": "نموذج التفعيل",
+      "scopeAnyGroup": "أي مجموعة نماذج",
+      "scopeSelectedGroups": "مجموعات نماذج محددة",
+      "selectedGroups": "المجموعات المحددة",
+      "selectedGroupsEmpty": "لا توجد مجموعات نماذج متاحة"
+    },
+    "quotaAlert": {
+      "title": "تنبيه الحصة",
+      "enable": "تفعيل تنبيه الحصة",
+      "threshold": "عتبة التنبيه",
+      "thresholdDesc": "يتم تشغيل التنبيه عندما تنخفض حصة أي نموذج عن هذه النسبة المئوية",
+      "hint": "عندما تنخفض حصة أي نموذج في الحساب الحالي عن العتبة، يتم إرسال إشعار أصلي وإظهار إجراء تبديل سريع داخل التطبيق."
+    },
+    "customInput": "مخصص",
+    "apply": "تطبيق",
+    "inputMinutes": "أدخل الدقائق",
+    "inputPercent": "أدخل النسبة المئوية",
+    "windsurf": {
+      "title": "إعدادات Windsurf",
+      "appPath": "مسار Windsurf"
+    },
+    "windsurfRefreshInterval": "تحديث الحصة تلقائياً",
+    "kiro": {
+      "title": "إعدادات Kiro",
+      "appPath": "مسار Kiro"
+    },
+    "kiroRefreshInterval": "تحديث الحصة تلقائياً",
+    "cursor": {
+      "title": "إعدادات Cursor",
+      "appPath": "مسار Cursor"
+    },
+    "cursorRefreshInterval": "تحديث الحصة تلقائيًا",
+    "gemini": {
+      "title": "إعدادات Gemini Cli",
+      "appPath": "مسار Gemini Cli"
+    },
+    "geminiRefreshInterval": "تحديث الحصة تلقائيًا",
+    "codebuddy": {
+      "title": "إعدادات CodeBuddy",
+      "appPath": "مسار CodeBuddy"
+    },
+    "error": {
+      "loadFailed": "فشل تحميل الإعدادات: {{error}}",
+      "saveFailed": "فشل حفظ الإعدادات: {{error}}",
+      "pickPathFailed": "فشل اختيار المسار: {{error}}",
+      "resetPathFailed": "فشل إعادة تعيين المسار: {{error}}",
+      "openCodexConfigFailed": "فشل فتح ملف Codex config.toml: {{error}}"
+    },
+    "qoder": {
+      "title": "إعدادات Qoder",
+      "appPath": "مسار Qoder"
+    },
+    "trae": {
+      "title": "إعدادات Trae",
+      "appPath": "مسار Trae"
+    },
+    "codebuddyCn": {
+      "appPath": "مسار CodeBuddy CN"
+    },
+    "workbuddy": {
+      "title": "إعدادات WorkBuddy",
+      "appPath": "مسار WorkBuddy"
+    },
+    "zed": {
+      "title": "إعدادات Zed",
+      "appPath": "مسار Zed"
+    }
+  },
+  "quotaAlert": {
+    "bannerText": "تنبيه حصة للحساب {{email}} (العتبة {{threshold}}%، الأدنى {{lowest}}%، النماذج: {{models}})",
+    "switchAction": "تبديل سريع: {{email}}",
+    "switching": "جارٍ التبديل...",
+    "switchFailed": "فشل التبديل السريع: {{error}}",
+    "modal": {
+      "title": "تنبيه الحصة",
+      "desc": "وصلت حصة الحساب الحالي إلى عتبة التنبيه. يُرجى المعالجة قريبًا.",
+      "unknownModel": "نموذج غير معروف",
+      "platform": "المنصة",
+      "account": "الحساب الحالي",
+      "threshold": "عتبة التنبيه",
+      "lowest": "أدنى قيمة حاليًا",
+      "models": "النماذج المُشغِّلة",
+      "recommended": "التبديل المقترح",
+      "noRecommendation": "لا يوجد حساب بديل متاح",
+      "later": "لاحقًا",
+      "openSettings": "تعديل إعدادات التنبيه",
+      "switchNow": "تبديل سريع إلى {{email}}",
+      "switchFailedTitle": "فشل التبديل",
+      "switchFailedBody": "فشل التبديل السريع: {{error}}"
+    }
+  },
+  "windsurf": {
+    "title": "إدارة حسابات Windsurf",
+    "instances": {
+      "unsupported": {
+        "desc": "ميزة المثيلات المتعددة لـ Windsurf متاحة على macOS فقط."
+      }
+    },
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" لبدء إدارة حسابات Windsurf"
+    },
+    "addModal": {
+      "title": "إضافة حساب Windsurf",
+      "password": "البريد الإلكتروني وكلمة المرور"
+    },
+    "oauth": {
+      "desc": "انقر الزر أدناه وأكمل تفويض Windsurf في المتصفح."
+    },
+    "token": {
+      "desc": "الصق رمز وصول Windsurf أو بيانات JSON المصدّرة."
+    },
+    "import": {
+      "localDesc": "استيراد بيانات حسابات Windsurf من ملف JSON.",
+      "localClient": "استيراد من Windsurf المحلي"
+    },
+    "credits": {
+      "title": "الباقة",
+      "renewMonthly": "تتجدد الاعتمادات كل شهر",
+      "left": "{{value}} رصيدًا متبقيًا",
+      "leftUnknown": "الأرصدة المتبقية -",
+      "promptLeft": "متبقي {{remaining}}/{{total}} من أرصدة الأوامر",
+      "promptLeftNoTotal": "متبقي {{remaining}} من أرصدة الأوامر",
+      "promptLeftUnknown": "أرصدة الأوامر المتبقية -",
+      "addOnAvailable": "{{count}} رصيد إضافي متاح",
+      "promptCreditsLeftLabel": "اعتمادات المطالبات المتبقية",
+      "addOnCreditsAvailableLabel": "الاعتمادات الإضافية المتاحة"
+    },
+    "columns": {
+      "plan": "الوسم"
+    },
+    "usageSummary": {
+      "dailyQuota": "استخدام الحصة اليومية",
+      "weeklyQuota": "استخدام الحصة الأسبوعية",
+      "extraUsageBalance": "رصيد الاستخدام الإضافي",
+      "autoRecharge": "إعادة الشحن التلقائي",
+      "remaining": "متبقٍ {{value}}"
+    },
+    "injectToVSCode": "التبديل إلى Windsurf",
+    "injectSuccess": "اكتمل التبديل. جارٍ تشغيل Windsurf.",
+    "injectRequireClose": "يرجى إغلاق Windsurf قبل التبديل.",
+    "flowNotice": {
+      "title": "دليل حسابات Windsurf (انقر للتوسيع/الطي)",
+      "desc": "يتطلب تبديل الحساب قراءة مخزن المصادقة المحلي في Windsurf واستخدام خدمة بيانات الاعتماد في النظام لفك التشفير وإعادة الكتابة؛ وتتم معالجة البيانات محليًا فقط.",
+      "inject": "تبديل بنقرة واحدة: تقرأ هذه الأداة مواد التشفير المحلية في Windsurf (DPAPI/Keychain/Secret Service)، وتفك تشفير جلسة المصادقة في state.vscdb، وتستبدل رمز Windsurf ثم تعيد التشفير — وكل ذلك محليًا على جهازك.",
+      "reason": "نطاق الأذونات: قراءة قاعدة بيانات مصادقة Windsurf ‏(state.vscdb) واستدعاء قدرات التشفير في النظام (Windows DPAPI / macOS Keychain / Linux Secret Service) لفك التشفير وإعادة الكتابة.",
+      "storage": "نطاق القراءة: تتم معالجة بيانات جلسات تسجيل الدخول المرتبطة بـ Windsurf فقط، وجميع العمليات تُنفّذ محليًا."
+    },
+    "password": {
+      "desc": "سجّل الدخول ببريد حساب Windsurf وكلمة المرور لجلب مفتاح API ومعلومات الحساب تلقائيًا.",
+      "emailPlaceholder": "عنوان البريد الإلكتروني",
+      "passwordPlaceholder": "كلمة المرور",
+      "login": "تسجيل الدخول",
+      "logging": "جارٍ تسجيل الدخول...",
+      "empty": "يرجى إدخال البريد الإلكتروني وكلمة المرور",
+      "success": "تم تسجيل الدخول: {{login}}",
+      "failed": "فشل تسجيل الدخول: {{error}}"
+    }
+  },
+  "kiro": {
+    "account": {
+      "signedInWith": "تم تسجيل الدخول باستخدام {{provider}}",
+      "providerUnknown": "مجهول",
+      "userId": "معرف المستخدم"
+    },
+    "credits": {
+      "estimatedResetOn": "إعادة تعيين الاستخدام المقدر على {{date}}",
+      "bonusUsageLine": "{{used}} مستخدم / {{total}} إجمالي",
+      "planUsageCoveredLine": "{{used}} مستخدم / {{total}} مغطى في الخطة",
+      "expiryDays": "{{days}} يوم",
+      "expiryUnknown": "—",
+      "resetNow": "سيُعاد التعيين قريبًا",
+      "resetInHours": "تتم إعادة الضبط خلال {{hours}} ساعة",
+      "resetInMinutes": "تتم إعادة الضبط خلال {{minutes}} دقيقة"
+    },
+    "columns": {
+      "bonusCredits": "اعتمادات المكافأة",
+      "estimatedUsage": "الاستخدام المقدر",
+      "expiry": "انتهاء الصلاحية",
+      "estUsage": "EST. الاستخدام"
+    },
+    "plan": {
+      "free": "Kiro Free",
+      "individual": "Kiro Individual",
+      "pro": "Kiro Pro",
+      "business": "Kiro Business",
+      "enterprise": "Kiro Enterprise",
+      "unknown": "مجهول"
+    },
+    "flowNotice": {
+      "title": "دليل إدارة حساب Kiro (انقر للتوسيع/الطي)",
+      "desc": "يقرأ تبديل الحساب ويكتب ملفات مصادقة Kiro المحلية وإعدادات المثيل على هذا الجهاز؛ كما يستدعي واجهات Kiro الرسمية أثناء تسجيل الدخول عبر OAuth أو تحديث الحصص. وبالنسبة لحسابات Enterprise/IdC، فإن عملية التحديث تستدعي أيضًا واجهات OIDC الخاصة بـ AWS IAM Identity Center.",
+      "reason": "تشمل مسارات المعالجة: ~/.aws/sso/cache/kiro-auth-token.json، وملف profile.json الخاص بالمثيل، والبند kiro.kiroAgent داخل state.vscdb.",
+      "storage": "تشمل البيانات المعالجة معلومات جلسة Kiro والحصة؛ وعند طلب واجهات Kiro الرسمية تُرسل حقول مصادقة لازمة (مثل code وrefreshToken وaccessToken وprofileArn). كما أن تحديث Enterprise/IdC يرسل حقول OIDC اللازمة (مثل client_id وclient_secret وrefresh_token)."
+    },
+    "title": "إدارة حسابات Kiro",
+    "instances": {
+      "unsupported": {
+        "descPlatform": "ميزة المثيلات المتعددة لـ Kiro متاحة على macOS وWindows وLinux فقط."
+      }
+    },
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" لبدء إدارة حسابات Kiro"
+    },
+    "addModal": {
+      "title": "إضافة حساب Kiro"
+    },
+    "oauth": {
+      "desc": "انقر الزر أدناه وأكمل تفويض Kiro في المتصفح."
+    },
+    "token": {
+      "desc": "الصق رمز وصول Kiro أو بيانات JSON المصدّرة."
+    },
+    "import": {
+      "localDesc": "يدعم استيراد بيانات حساب Kiro من عميل Kiro المحلي أو ملف JSON.",
+      "localClient": "استيراد من Kiro المحلي"
+    },
+    "injectToVSCode": "التبديل إلى Kiro"
+  },
+  "cursor": {
+    "subscription": "الاشتراك",
+    "injectToCursor": "التبديل إلى Cursor",
+    "quota": {
+      "onDemand": "حسب الطلب"
+    },
+    "title": "إدارة حسابات Cursor",
+    "instances": {
+      "unsupported": {
+        "descPlatform": "تعدد مثيلات Cursor مدعوم فقط على macOS وWindows وLinux."
+      }
+    },
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" لبدء إدارة حسابات Cursor الخاصة بك"
+    },
+    "addModal": {
+      "title": "إضافة حساب Cursor"
+    },
+    "token": {
+      "desc": "الصق رمز الوصول الخاص بك من Cursor (JWT) أو بيانات JSON المصدّرة.",
+      "formatHint": "الحقول المطلوبة والأمثلة (انقر للتوسيع)",
+      "formatRequired": "رمز مفرد: الصق JWT مباشرة؛ استيراد دفعي: استخدم تنسيق مصفوفة JSON",
+      "singleExample": "مثال مفرد (JWT)",
+      "batchExample": "مثال دفعي (JSON)"
+    },
+    "import": {
+      "localDesc": "استيراد بيانات الحساب من عميل Cursor المحلي أو ملف JSON.",
+      "localClient": "الاستيراد من Cursor المحلي"
+    },
+    "flowNotice": {
+      "title": "دليل حساب Cursor (انقر للتوسيع/الطي)",
+      "desc": "إدارة حسابات Cursor عن طريق الاستيراد من تثبيت Cursor المحلي أو لصق رموز JWT. تتم معالجة البيانات محليًا فقط.",
+      "reason": "نطاق الصلاحيات: قراءة تخزين المصادقة المحلي لـ Cursor لاستيراد الحساب وحقن الرمز.",
+      "storage": "نطاق البيانات: يتم قراءة/تحديث إدخالات جلسة المصادقة المتعلقة بـ Cursor فقط؛ لا يتم رفع أي مفتاح/رمز."
+    },
+    "oauth": {
+      "desc": "انقر الزر أدناه لإكمال تفويض Cursor في المتصفح."
+    }
+  },
+  "breakout": {
+    "gameOver": "انتهت اللعبة",
+    "gameOverRank": "ترتيبك المحلي الحالي #{{rank}}",
+    "startGame": "ابدأ اللعبة",
+    "startHint": "اضغط بدء أو مفتاح المسافة",
+    "rankTitle": "التصنيف المحلي التاريخي",
+    "rankCurrent": "الحالي",
+    "rankNoData": "--",
+    "restart": "إعادة البدء",
+    "pause": "إيقاف مؤقت",
+    "resume": "متابعة",
+    "paused": "متوقف مؤقتًا",
+    "level": "المستوى {{level}}",
+    "levelScore": "نقاط المستوى {{score}}",
+    "levelCleared": "تم إنهاء المستوى",
+    "nextLevel": "المستوى التالي",
+    "history": "السجل",
+    "historyShort": "سجل",
+    "historyEmpty": "لا توجد سجلات بعد",
+    "historyClear": "مسح",
+    "historyScoreShort": "النقاط {{score}}",
+    "historyLevelShort": "م {{level}}",
+    "historyDurationShort": "الوقت {{duration}}",
+    "historyReasonGameOver": "انتهت اللعبة",
+    "historyReasonManualExit": "خروج يدوي",
+    "serveHint": "اضغط على مفتاح المسافة لإطلاق الكرة",
+    "ranking": "السجل المحلي",
+    "rankingShort": "محلي",
+    "rankingEmpty": "لا توجد سجلات محلية بعد",
+    "rankingClear": "مسح السجل المحلي",
+    "rankingRankShort": "#{{rank}}",
+    "minimize": "تصغير",
+    "resumeGameNav": "متابعة اللعبة",
+    "closeConfirmTitle": "إنهاء هذه الجولة؟",
+    "closeConfirmDesc": "عند الإغلاق ستنتهي هذه الجولة ولن يتم الاحتفاظ بالتقدم.",
+    "closeContinue": "متابعة اللعب",
+    "closeMinimize": "تصغير مع الاحتفاظ",
+    "closeEnd": "إنهاء وإغلاق"
+  },
+  "announcement": {
+    "title": "الإشعارات",
+    "empty": "لا توجد إشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "gotIt": "حسنًا",
+    "later": "لاحقاً",
+    "new": "جديد",
+    "timeAgo": {
+      "justNow": "الآن",
+      "minutesAgo": "منذ {count} دقيقة",
+      "hoursAgo": "منذ {count} ساعة",
+      "daysAgo": "منذ {count} يوم"
+    },
+    "type": {
+      "feature": "✨ ميزة جديدة",
+      "warning": "⚠️ تحذير",
+      "info": "ℹ️ معلومات",
+      "urgent": "🚨 عاجل"
+    },
+    "refreshed": "تم تحديث الإعلانات ({count} إجمالي)",
+    "clickToClose": "انقر للإغلاق",
+    "clickToEnlarge": "انقر للتكبير",
+    "imageLoadFailed": "فشل تحميل الصورة"
+  },
+  "manual": {
+    "actions": {
+      "collapseAll": "طي الكل",
+      "expandAll": "توسيع الكل",
+      "goAntigravity": "اذهب إلى Antigravity",
+      "goCodex": "اذهب إلى Codex",
+      "goDashboard": "اذهب إلى لوحة المعلومات",
+      "goFingerprints": "اذهب إلى بصمات الجهاز",
+      "goGitHubCopilot": "اذهب إلى GitHub Copilot",
+      "goInstances": "اذهب إلى المثيلات المتعددة",
+      "goKiro": "اذهب إلى Kiro",
+      "goSettings": "اذهب إلى الإعدادات",
+      "goVerification": "اذهب إلى تحقق الإيقاظ",
+      "goWakeup": "اذهب إلى مهام الإيقاظ",
+      "goWindsurf": "اذهب إلى Windsurf",
+      "openLayout": "فتح تخطيط المنصات"
+    },
+    "antigravity": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في إدارة حساب Antigravity."
+      },
+      "keywords": {
+        "0": "إدارة حساب Antigravity",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه إدارة حساب Antigravity.",
+        "1": "استخدم التدفق المقترح في إدارة حساب Antigravity لتقليل الأخطاء."
+      },
+      "steps": {
+        "0": "افتح صفحة إدارة حساب Antigravity.",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في إدارة حساب Antigravity.",
+        "2": "نفّذ عملية يدوية واحدة في إدارة حساب Antigravity للتحقق من النتيجة."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام إدارة حساب Antigravity ضمن سير العمل اليومي.",
+      "title": "إدارة حساب Antigravity"
+    },
+    "blocks": {
+      "cautions": "تنبيهات ومخاطر شائعة",
+      "outcomes": "ما الذي تساعدك عليه هذه الميزة",
+      "steps": "خطوات مقترحة"
+    },
+    "dashboard": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في لوحة المعلومات."
+      },
+      "keywords": {
+        "0": "لوحة المعلومات",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه لوحة المعلومات.",
+        "1": "استخدم التدفق المقترح في لوحة المعلومات لتقليل الأخطاء."
+      },
+      "steps": {
+        "0": "افتح صفحة لوحة المعلومات.",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في لوحة المعلومات.",
+        "2": "نفّذ عملية يدوية واحدة في لوحة المعلومات للتحقق من النتيجة."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام لوحة المعلومات ضمن سير العمل اليومي.",
+      "title": "لوحة المعلومات"
+    },
+    "dataPrivacy": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في الاستيراد والتصدير والخصوصية واستكشاف الأخطاء.",
+        "1": "تحقق من المرشحات والهدف قبل التنفيذ في الاستيراد والتصدير والخصوصية واستكشاف الأخطاء.",
+        "2": "احذف البيانات الحساسة قبل مشاركة السجلات (token وcookie والبريد)."
+      },
+      "keywords": {
+        "0": "الاستيراد والتصدير والخصوصية واستكشاف الأخطاء",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب",
+        "4": "إعدادات",
+        "5": "استكشاف أخطاء",
+        "6": "سجلات",
+        "7": "بيانات"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه الاستيراد والتصدير والخصوصية واستكشاف الأخطاء.",
+        "1": "استخدم التدفق المقترح في الاستيراد والتصدير والخصوصية واستكشاف الأخطاء لتقليل الأخطاء.",
+        "2": "تحقق من نجاح تشغيل واحد في الاستيراد والتصدير والخصوصية واستكشاف الأخطاء قبل التوسع.",
+        "3": "عند حدوث مشكلة في الاستيراد والتصدير والخصوصية واستكشاف الأخطاء راجع السجلات أولاً واجمع الأدلة."
+      },
+      "steps": {
+        "0": "افتح صفحة الاستيراد والتصدير والخصوصية واستكشاف الأخطاء.",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في الاستيراد والتصدير والخصوصية واستكشاف الأخطاء.",
+        "2": "نفّذ عملية يدوية واحدة في الاستيراد والتصدير والخصوصية واستكشاف الأخطاء للتحقق من النتيجة.",
+        "3": "لاستكشاف الأخطاء: الإعدادات -> دليل البيانات -> فتح ثم ادخل logs.",
+        "4": "افحص أحدث ملف app.log أو app.log.* أولاً.",
+        "5": "عند الإبلاغ، أرفق الوقت والمنصة وخطوات التكرار وسجلات منزوعة الحساسية."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام الاستيراد والتصدير والخصوصية واستكشاف الأخطاء ضمن سير العمل اليومي.",
+      "title": "الاستيراد والتصدير والخصوصية واستكشاف الأخطاء"
+    },
+    "empty": {
+      "desc": "جرّب كلمات مثل: مثيل، تبديل، إعدادات، تصدير.",
+      "title": "لا يوجد محتوى مطابق"
+    },
+    "fingerprints": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في بصمات الجهاز."
+      },
+      "keywords": {
+        "0": "بصمات الجهاز",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه بصمات الجهاز.",
+        "1": "استخدم التدفق المقترح في بصمات الجهاز لتقليل الأخطاء."
+      },
+      "steps": {
+        "0": "افتح صفحة بصمات الجهاز.",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في بصمات الجهاز.",
+        "2": "نفّذ عملية يدوية واحدة في بصمات الجهاز للتحقق من النتيجة."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام بصمات الجهاز ضمن سير العمل اليومي.",
+      "title": "بصمات الجهاز"
+    },
+    "instances": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في المثيلات المتعددة (أساسي).",
+        "1": "تحقق من المرشحات والهدف قبل التنفيذ في المثيلات المتعددة (أساسي)."
+      },
+      "keywords": {
+        "0": "المثيلات المتعددة (أساسي)",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب",
+        "4": "إعدادات"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه المثيلات المتعددة (أساسي).",
+        "1": "استخدم التدفق المقترح في المثيلات المتعددة (أساسي) لتقليل الأخطاء.",
+        "2": "تحقق من نجاح تشغيل واحد في المثيلات المتعددة (أساسي) قبل التوسع."
+      },
+      "steps": {
+        "0": "افتح صفحة المثيلات المتعددة (أساسي).",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في المثيلات المتعددة (أساسي).",
+        "2": "نفّذ عملية يدوية واحدة في المثيلات المتعددة (أساسي) للتحقق من النتيجة."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام المثيلات المتعددة (أساسي) ضمن سير العمل اليومي.",
+      "title": "المثيلات المتعددة (أساسي)"
+    },
+    "navTitle": "دليل الاستخدام",
+    "providers": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في Codex / GitHub Copilot / Windsurf / Kiro.",
+        "1": "تحقق من المرشحات والهدف قبل التنفيذ في Codex / GitHub Copilot / Windsurf / Kiro."
+      },
+      "keywords": {
+        "0": "منصات Codex / GitHub Copilot / Windsurf / Kiro",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب",
+        "4": "إعدادات",
+        "5": "استكشاف أخطاء"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه Codex / GitHub Copilot / Windsurf / Kiro.",
+        "1": "استخدم التدفق المقترح في Codex / GitHub Copilot / Windsurf / Kiro لتقليل الأخطاء.",
+        "2": "تحقق من نجاح تشغيل واحد في Codex / GitHub Copilot / Windsurf / Kiro قبل التوسع."
+      },
+      "steps": {
+        "0": "افتح صفحة Codex / GitHub Copilot / Windsurf / Kiro.",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في Codex / GitHub Copilot / Windsurf / Kiro.",
+        "2": "نفّذ عملية يدوية واحدة في Codex / GitHub Copilot / Windsurf / Kiro للتحقق من النتيجة."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام Codex / GitHub Copilot / Windsurf / Kiro ضمن سير العمل اليومي.",
+      "title": "منصات Codex / GitHub Copilot / Windsurf / Kiro"
+    },
+    "quickStart": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في البدء السريع (5 دقائق).",
+        "1": "تحقق من المرشحات والهدف قبل التنفيذ في البدء السريع (5 دقائق)."
+      },
+      "keywords": {
+        "0": "البدء السريع (5 دقائق)",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه البدء السريع (5 دقائق).",
+        "1": "استخدم التدفق المقترح في البدء السريع (5 دقائق) لتقليل الأخطاء.",
+        "2": "تحقق من نجاح تشغيل واحد في البدء السريع (5 دقائق) قبل التوسع."
+      },
+      "steps": {
+        "0": "افتح صفحة البدء السريع (5 دقائق).",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في البدء السريع (5 دقائق).",
+        "2": "نفّذ عملية يدوية واحدة في البدء السريع (5 دقائق) للتحقق من النتيجة.",
+        "3": "لاستكشاف الأخطاء: الإعدادات -> دليل البيانات -> فتح ثم ادخل logs."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام البدء السريع (5 دقائق) ضمن سير العمل اليومي.",
+      "title": "البدء السريع (5 دقائق)"
+    },
+    "resultCount": "إجمالي {{count}} أقسام",
+    "searchAria": "بحث في الدليل",
+    "searchPlaceholder": "ابحث عن ميزة أو سيناريو أو كلمة مفتاحية (مثل: مثيلات متعددة، حقن، إيقاظ، بصمة)",
+    "settings": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في الإعدادات وإمكانات النظام.",
+        "1": "تحقق من المرشحات والهدف قبل التنفيذ في الإعدادات وإمكانات النظام."
+      },
+      "keywords": {
+        "0": "الإعدادات وإمكانات النظام",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب",
+        "4": "إعدادات",
+        "5": "استكشاف أخطاء"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه الإعدادات وإمكانات النظام.",
+        "1": "استخدم التدفق المقترح في الإعدادات وإمكانات النظام لتقليل الأخطاء.",
+        "2": "تحقق من نجاح تشغيل واحد في الإعدادات وإمكانات النظام قبل التوسع."
+      },
+      "steps": {
+        "0": "افتح صفحة الإعدادات وإمكانات النظام.",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في الإعدادات وإمكانات النظام.",
+        "2": "نفّذ عملية يدوية واحدة في الإعدادات وإمكانات النظام للتحقق من النتيجة."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام الإعدادات وإمكانات النظام ضمن سير العمل اليومي.",
+      "title": "الإعدادات وإمكانات النظام"
+    },
+    "subtitle": "إرشادات منظمة حسب سيناريو العمل. افهم الهدف أولاً ثم اتبع الخطوات المقترحة.",
+    "title": "دليل الاستخدام",
+    "wakeup": {
+      "cautions": {
+        "0": "انسخ البيانات احتياطيًا قبل الإجراءات الخطرة أو المجمعة في مهام الإيقاظ والتحقق.",
+        "1": "تحقق من المرشحات والهدف قبل التنفيذ في مهام الإيقاظ والتحقق."
+      },
+      "keywords": {
+        "0": "مهام الإيقاظ والتحقق",
+        "1": "دليل",
+        "2": "سير عمل",
+        "3": "حساب",
+        "4": "إعدادات"
+      },
+      "outcomes": {
+        "0": "افهم ما الذي يمكن أن يقدمه مهام الإيقاظ والتحقق.",
+        "1": "استخدم التدفق المقترح في مهام الإيقاظ والتحقق لتقليل الأخطاء."
+      },
+      "steps": {
+        "0": "افتح صفحة مهام الإيقاظ والتحقق.",
+        "1": "أكمل الإعداد الأساسي والربط المطلوب في مهام الإيقاظ والتحقق.",
+        "2": "نفّذ عملية يدوية واحدة في مهام الإيقاظ والتحقق للتحقق من النتيجة."
+      },
+      "summary": "يوضح هذا القسم كيفية استخدام مهام الإيقاظ والتحقق ضمن سير العمل اليومي.",
+      "title": "مهام الإيقاظ والتحقق"
+    }
+  },
+  "gemini": {
+    "injectToGemini": "التبديل إلى Gemini Cli",
+    "updated": {
+      "label": "تم التحديث قبل {{relative}}"
+    },
+    "quota": {
+      "pro": "PRO",
+      "flash": "FLASH",
+      "left": "متبقٍ {{value}}%",
+      "resetsIn": "إعادة التعيين خلال {{relative}}",
+      "resetsSoon": "إعادة التعيين قريبًا",
+      "resetsUnknown": "وقت إعادة التعيين غير معروف",
+      "onDemand": "عند الطلب"
+    },
+    "title": "إدارة حسابات Gemini Cli",
+    "instances": {
+      "unsupported": "إدارة تعدد مثيلات Gemini Cli غير مدعومة حاليًا.",
+      "unsupportedDescPlatform": "تعدد مثيلات Gemini Cli مدعوم فقط على macOS وWindows وLinux.",
+      "launchDialogTitle": "تشغيل المثيل",
+      "launchHint": "انسخ الأمر وشغّله يدويًا، أو نفّذه مباشرة في الطرفية.",
+      "runInTerminal": "تشغيل في الطرفية",
+      "workingDir": "دليل العمل",
+      "workingDirPlaceholder": "الافتراضي المسار الحالي",
+      "workingDirDesc": "سوف ينتقل إلى هذا الدليل أولاً عند البدء",
+      "pickWorkingDir": "اختر دليل العمل"
+    },
+    "switch": {
+      "success": "تم تبديل الحساب بنجاح"
+    },
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" لبدء إدارة حسابات Gemini Cli الخاصة بك"
+    },
+    "addModal": {
+      "title": "إضافة حساب Gemini Cli"
+    },
+    "oauth": {
+      "desc": "انقر الزر أدناه لإكمال تفويض Gemini Cli في المتصفح."
+    },
+    "token": {
+      "desc": "الصق رمز الوصول الخاص بك من Gemini Cli (JWT) أو بيانات JSON المصدّرة.",
+      "formatHint": "الحقول المطلوبة والأمثلة (انقر للتوسيع)",
+      "formatRequired": "رمز مفرد: الصق JWT مباشرة؛ استيراد دفعي: استخدم تنسيق مصفوفة JSON",
+      "singleExample": "مثال مفرد (JWT)",
+      "batchExample": "مثال دفعي (JSON)"
+    },
+    "import": {
+      "localDesc": "استيراد بيانات الحساب من عميل Gemini Cli المحلي أو ملف JSON.",
+      "localClient": "الاستيراد من Gemini Cli المحلي"
+    },
+    "flowNotice": {
+      "title": "دليل حساب Gemini Cli (انقر للتوسيع/الطي)",
+      "desc": "إدارة حسابات Gemini Cli عن طريق الاستيراد من تثبيت Gemini Cli المحلي أو لصق رموز JWT. تتم معالجة البيانات محليًا فقط.",
+      "reason": "نطاق الأذونات: قراءة وكتابة oauth_creds.json وgoogle_accounts.json وsettings.json ضمن ~/.gemini الافتراضي أو مسار المثيل (GEMINI_CLI_HOME/.gemini) لاستيراد الحسابات وحقن بيانات الاعتماد محليًا (تبديل الحساب).",
+      "storage": "نطاق الشبكة: عمليات OAuth وتحديث الحصة تستدعي واجهات Google/Gemini الرسمية (مثل oauth2.googleapis.com وgoogleapis.com). يتم إرسال حقول المصادقة/الحصة الضرورية فقط؛ ولا تُرفع الملفات المحلية إلى خوادم طرف ثالث."
+    },
+    "projectConfig": {
+      "button": "تعيين مشروع GCP",
+      "title": "تعيين مشروع GCP",
+      "selectLabel": "اختر المشروع",
+      "loading": "جارٍ تحميل قائمة المشاريع...",
+      "auto": "اختيار تلقائي (بدون تحديد يدوي)",
+      "empty": "لم يتم العثور على مشاريع متاحة. تأكد من أن هذا الحساب لديه صلاحية الوصول إلى مشاريع GCP.",
+      "hint": "بعد الحفظ، سيتم تفضيل هذا المشروع في طلبات الحصة وسيتم حقنه كمتغير GOOGLE_CLOUD_PROJECT عند التشغيل.",
+      "current": "المشروع: {{projectId}}",
+      "saved": "تم حفظ المشروع: {{projectId}}",
+      "cleared": "تمت العودة إلى اكتشاف المشروع تلقائيًا",
+      "savedWithRefreshError": "تم حفظ المشروع، لكن فشل تحديث الحصة: {{error}}"
+    }
+  },
+  "codebuddy": {
+    "title": "إدارة حسابات CodeBuddy",
+    "noAccounts": "لا توجد حسابات CodeBuddy",
+    "addAccount": "إضافة حساب CodeBuddy",
+    "flowNotice": {
+      "title": "معلومات إدارة حسابات CodeBuddy (انقر للتوسيع/الطي)",
+      "desc": "يتطلب تبديل الحسابات قراءة تخزين مصادقة CodeBuddy المحلي واستدعاء خدمات بيانات الاعتماد في النظام لفك التشفير/إعادة التشفير. تتم معالجة البيانات محليًا فقط.",
+      "permission": "نطاق الأذونات: قراءة قاعدة بيانات مصادقة CodeBuddy (state.vscdb)، واستدعاء قدرات بيانات الاعتماد بالنظام (macOS Keychain / Windows DPAPI / Linux Secret Service) لفك التشفير/إعادة الكتابة.",
+      "network": "نطاق الشبكة: تسجيل دخول OAuth وتحديث الرمز يتطلبان طلبات شبكة إلى codebuddy.ai؛ واستعلامات الحصة تستدعي واجهات فوترة API. لا يتم رفع أي مفاتيح أو بيانات اعتماد محلية."
+    },
+    "nickname": "الاسم المستعار",
+    "enterprise": "المؤسسة",
+    "usage": "حالة الاستخدام",
+    "creditsBalance": "رصيد النقاط",
+    "usageNormal": "طبيعي",
+    "usageAbnormal": "غير طبيعي",
+    "usageViewDetail": "عرض التفاصيل",
+    "usageDetailTitle": "تفاصيل حالة الاستخدام",
+    "oauthWaiting": "بانتظار التفويض...",
+    "oauthDesc": "انقر الزر أدناه لفتح صفحة تفويض CodeBuddy في متصفحك.",
+    "oauthDescWebview": "انقر الزر أدناه لفتح صفحة تفويض CodeBuddy في WebView المدمج.",
+    "oauthFeature": {
+      "oauth": {
+        "title": "تسجيل دخول IDE فقط",
+        "item1": "أضف الحساب بعد إكمال OAuth في المتصفح، ثم استخدمه للتبديل داخل IDE.",
+        "item2": "لا يتم ربط معلمات استعلام الحصة تلقائيًا.",
+        "item3": "إذا احتجت عرض الحصة، شغّل \"استعلام الحصة\" يدويًا من بطاقة الحساب."
+      }
+    },
+    "oauthWebviewTab": "OAuth عبر WebView",
+    "oauthOpenWebview": "فتح في WebView",
+    "oauthOpenWebviewIncognito": "فتح في WebView المتخفي",
+    "oauthOpenWebviewFailed": "فشل فتح WebView: {{error}}",
+    "oauthOpenBrowserFallback": "فتح في المتصفح (بديل)",
+    "oauthOpenBrowserFailed": "فشل فتح المتصفح: {{error}}",
+    "oauthWebviewProgressHint": "يتم عرض شريط خطوات أفقي أعلى WebView لتحديد المرحلة المتوقفة.",
+    "oauthFlow": {
+      "prepare": "تحضير رابط OAuth",
+      "authorize": "فتح رابط التفويض وتأكيده",
+      "bind": "استطلاع نتيجة التفويض وربط الحساب",
+      "retryPrepare": "إعادة إنشاء رابط OAuth",
+      "retryAuthorize": "طلب رابط التفويض مرة أخرى",
+      "retryBind": "إعادة محاولة استطلاع التفويض",
+      "error": "خطأ في المسار: {{error}}"
+    },
+    "tokenDesc": "ألصق رمز الوصول الخاص بـ CodeBuddy:",
+    "jsonDesc": "اختر ملف JSON يحتوي على حسابات CodeBuddy:",
+    "import": {
+      "localDesc": "استيراد بيانات الحساب من عميل CodeBuddy المحلي أو من ملف JSON.",
+      "localClient": "استيراد من CodeBuddy المحلي"
+    },
+    "search": "ابحث في حسابات CodeBuddy...",
+    "quotaQuery": {
+      "failedRefreshCompact": "فشل تحديث الحصة",
+      "sectionTitle": "استعلام الحصة",
+      "empty": "لا توجد معلومات ربط لاستعلام الحصة بعد",
+      "packageUnknown": "باقة غير معروفة",
+      "quotaLabel": "الحصة المتبقية",
+      "updatedAt": "آخر استعلام: {{time}}",
+      "cycleRange": "الدورة: {{start}} - {{end}}",
+      "cycleUnknown": "معلومات الدورة غير متاحة",
+      "expireAt": "ينتهي في: {{time}}",
+      "expireUnknown": "وقت الانتهاء: غير متاح",
+      "packageTitle": {
+        "base": "حزمة التجربة الأساسية",
+        "activity": "حزمة هدية النشاط"
+      }
+    },
+    "extraCredit": {
+      "title": "باقة الرصيد"
+    },
+    "oauthUrlInputPlaceholder": "يمكنك إدخال رابط التفويض يدويًا",
+    "oauthInvalidUrl": "رابط تفويض غير صالح. يرجى إدخال رابط كامل.",
+    "oauthGotoWebview": "توجيه WebView المفتوح إلى الرابط المُدخل",
+    "oauthGotoWebviewSuccess": "تم طلب توجيه WebView إلى الرابط المُدخل.",
+    "oauthGotoWebviewFailed": "فشل توجيه WebView: {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "أدخل رابطًا للتنقل داخل WebView هذا",
+    "oauthWebviewInlineGo": "انتقال",
+    "oauthSuccessClosePrompt": "تمت إضافة الحساب بنجاح. هل تريد إغلاق WebView الآن؟\nاختر \"إغلاق WebView\" للإغلاق الآن، أو \"لاحقًا\" للإبقاء عليه مفتوحًا.",
+    "oauthSuccessCloseTitle": "تمت إضافة الحساب",
+    "oauthSuccessCloseNowLabel": "إغلاق WebView",
+    "oauthSuccessCloseLaterLabel": "لاحقًا",
+    "oauthSuccessCloseNowStatus": "✅ تمت إضافة الحساب. جارٍ إغلاق النافذة...",
+    "oauthSuccessCloseLaterStatus": "✅ تمت إضافة الحساب. سيبقى WebView مفتوحًا.",
+    "oauthWebviewOverlay": {
+      "steps": {
+        "prepare": "1 تحضير رابط OAuth",
+        "authorize": "2 فتح رابط التفويض وتأكيده",
+        "bind": "3 استطلاع نتيجة التفويض وربط الحساب",
+        "complete": "5 تم (إغلاق يدوي)"
+      },
+      "status": {
+        "loginConfirm": "يرجى إكمال تسجيل الدخول والتفويض في هذه الصفحة."
+      }
+    },
+    "quota": {
+      "usedOfTotal": "{{used}} / {{total}}"
+    }
+  },
+  "qoder": {
+    "title": "إدارة حسابات Qoder",
+    "comingSoon": {
+      "title": "ميزة المثيلات المتعددة قادمة قريبًا",
+      "desc": "تشغيل عدة مثيلات Qoder.app بحسابات مختلفة في وقت واحد، ترقبوا."
+    },
+    "instances": {
+      "unsupported": {
+        "descPlatform": "تعدد مثيلات Qoder مدعوم فقط على macOS وWindows وLinux."
+      }
+    },
+    "oauth": {
+      "hint": "يرجى إكمال تسجيل الدخول في صفحة المتصفح المفتوحة: إذا لم تُفتح صفحة تسجيل الدخول تلقائيًا، فانقر على \"نسخ رابط تسجيل الدخول\" ثم الصق الرابط في المتصفح لإكمال تسجيل الدخول.",
+      "copyLoginUrl": "نسخ رابط تسجيل الدخول"
+    },
+    "usageOverview": {
+      "title": "نظرة عامة على الاستخدام",
+      "viewDetails": "عرض التفاصيل",
+      "includedCredits": "الأرصدة ضمن الخطة",
+      "usedOfTotal": "{{used}} / {{total}}",
+      "usedEmpty": "-- / --",
+      "upgradeHint": "قم بترقية الخطة لزيادة الحصة الشهرية",
+      "upgradeAction": "ترقية"
+    },
+    "flowNotice": {
+      "title": "دليل حساب Qoder (انقر للتوسيع أو الطي)",
+      "desc": "يدعم تسجيل الدخول الرسمي عبر OAuth (مع الاستدعاء الراجع) والاستيراد المحلي واستيراد JSON وحقن تبديل الحساب وربط النوافذ المتعددة وعرض الحصة. يتبع تدفق تسجيل الدخول بيانات التخزين الفعلية لعميل Qoder.",
+      "permission": "نطاق الصلاحيات: يقرأ مخزن المصادقة المحلي الخاص بـ Qoder (بيانات اعتماد auth ومعلومات المستخدم) لاستخدامه في تبديل الحساب وحقن الجلسة؛ تتم معالجة جميع البيانات محليا على جهازك.",
+      "network": "نطاق الشبكة: يتطلب تسجيل الدخول عبر OAuth الاتصال بخدمات Qoder الرسمية لاكمال الاستدعاء الراجع؛ وتستعلم الحصة من واجهة Qoder API. لا يتم رفع المفاتيح او بيانات الاعتماد المحلية."
+    },
+    "addModal": {
+      "title": "إضافة حساب Qoder"
+    },
+    "import": {
+      "localDesc": "يقرأ حالة تسجيل الدخول الحالية من عميل Qoder المحلي، بما في ذلك معلومات المستخدم والخطة واستخدام الرصيد."
+    }
+  },
+  "trae": {
+    "title": "إدارة حسابات Trae",
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" لبدء إدارة حسابات Trae، أو استيرادها من بيانات Trae المحلية أو من ملف JSON."
+    },
+    "addModal": {
+      "title": "إضافة حساب Trae"
+    },
+    "oauth": {
+      "desc": "انقر الزر أدناه وأكمل تفويض Trae OAuth في المتصفح."
+    },
+    "import": {
+      "localDesc": "استورد الحساب المسجل حاليا ومعلومات الخطة وبيانات الحصة المخزنة مؤقتا من دليل إعدادات Trae المحلي.",
+      "jsonTab": "ملف JSON"
+    },
+    "quota": {
+      "usedOfTotal": "المستخدم $ {{used}} من $ {{total}}",
+      "usageUnknown": "الاستخدام: --",
+      "resetAt": "وقت إعادة التعيين: {{date}}",
+      "resetUnknown": "وقت إعادة التعيين غير معروف",
+      "statusUnknown": "الحالة: غير معروفة",
+      "statusNormal": "الحالة: طبيعي",
+      "statusExhaustedFree": "الحالة: تم استنفاد الاستخدام، نوصي بالترقية",
+      "statusExhaustedPro": "الحالة: تم استنفاد الاستخدام، قم بالترقية أو فعّل الاستخدام حسب الطلب",
+      "bonusUsed": "الرصيد الإضافي: +{{amount}}",
+      "bonusIncluded": "الرصيد الإضافي: متضمن",
+      "bonusEmpty": "الرصيد الإضافي: --",
+      "packageConsuming": "حزمة الاستخدام: قيد الاستهلاك",
+      "packageAvailable": "حزمة الاستخدام: متاحة",
+      "packageEmpty": "حزمة الاستخدام: --",
+      "payAsYouGoConsuming": "الاستخدام حسب الطلب: قيد الاستهلاك",
+      "payAsYouGoEnabled": "الاستخدام حسب الطلب: مفعل",
+      "payAsYouGoEmpty": "الاستخدام حسب الطلب: --",
+      "payAsYouGoLabel": "الاستخدام حسب الطلب"
+    },
+    "flowNotice": {
+      "title": "دليل حساب Trae (انقر للتوسيع أو الطي)",
+      "desc": "يدعم تسجيل الدخول الرسمي عبر OAuth والاستيراد المحلي واستيراد JSON وتبديل الحساب عبر الحقن المحلي. تتم إعادة الكتابة وفقا لقواعد التخزين الفعلية لعميل Trae.",
+      "permission": "نطاق الصلاحيات: قراءة وكتابة الحقول المرتبطة بتسجيل الدخول في ملف storage.json المحلي الخاص بـ Trae لاستخدامها في استيراد الحساب وحقن تبديل الحساب وعرض الخطة. تتم معالجة جميع البيانات محليا على جهازك.",
+      "network": "نطاق الشبكة: تسجيل الدخول عبر OAuth وتحديث الرمز المميز واستعلامات الخطة تستدعي واجهات Trae الرسمية. لا يتم رفع ملفات الحساب المحلية أو محتوى التخزين الخام إلى خدمات خارجية."
+    }
+  },
+  "codebuddyCn": {
+    "title": "إدارة حسابات CodeBuddy CN",
+    "noAccounts": "لا توجد حسابات CodeBuddy CN",
+    "addAccount": "إضافة حساب CodeBuddy CN",
+    "search": "ابحث في حسابات CodeBuddy CN...",
+    "oauthDesc": "انقر الزر أدناه لفتح صفحة تفويض CodeBuddy CN في متصفحك.",
+    "tokenDesc": "ألصق رمز الوصول الخاص بـ CodeBuddy CN:",
+    "flowNotice": {
+      "title": "معلومات إدارة حسابات CodeBuddy CN (انقر للتوسيع/الطي)",
+      "desc": "يتطلب تبديل الحسابات قراءة تخزين مصادقة CodeBuddy CN المحلي واستدعاء خدمات بيانات الاعتماد في النظام لفك التشفير/إعادة التشفير. تتم معالجة البيانات محليًا فقط.",
+      "permission": "نطاق الأذونات: قراءة قاعدة بيانات مصادقة CodeBuddy CN (state.vscdb)، واستدعاء قدرات بيانات الاعتماد بالنظام (macOS Keychain / Windows DPAPI / Linux Secret Service) لفك التشفير/إعادة الكتابة.",
+      "network": "نطاق الشبكة: تسجيل دخول OAuth وتحديث الرمز يتطلبان طلبات شبكة إلى codebuddy.cn / copilot.tencent.com؛ واستعلامات الحصة تستدعي واجهات فوترة API. لا يتم رفع أي مفاتيح أو بيانات اعتماد محلية."
+    },
+    "import": {
+      "localDesc": "استيراد بيانات الحساب من عميل CodeBuddy CN المحلي أو من ملف JSON.",
+      "localClient": "استيراد من CodeBuddy CN المحلي"
+    },
+    "instances": {
+      "unsupported": {
+        "descPlatform": "تعدد مثيلات CodeBuddy CN مدعوم فقط على macOS وWindows وLinux."
+      }
+    },
+    "checkin": {
+      "title": "التسجيل اليومي",
+      "modalTitle": "التسجيل اليومي",
+      "status": "حالة التسجيل",
+      "checkedIn": "تم التسجيل",
+      "notCheckedIn": "لم يتم التسجيل",
+      "button": "تسجيل",
+      "button.loading": "جاري التسجيل...",
+      "done": "تم",
+      "success": "تم التسجيل بنجاح! {{days}} يوم متتالي",
+      "failure": "فشل التسجيل: {{message}}",
+      "failure.network": "خطأ في الشبكة، يرجى المحاولة لاحقًا",
+      "lastCheckin": "آخر تسجيل: {{time}}",
+      "streak": "{{days}} يوم متتالي",
+      "reward": "المكافأة: {{reward}}",
+      "refreshStatus": "تحديث الحالة",
+      "checkAll": "تسجيل الكل",
+      "noAccounts": "لا توجد حسابات",
+      "querying": "جارٍ التحميل...",
+      "streakDays": "{{days}} يوم",
+      "streakRewardCountdown": "يتبقى {{days}} يومًا للحصول على المكافأة الإضافية",
+      "streakRewardToday": "المكافأة الإضافية متاحة اليوم!",
+      "recentDates": "الأيام الأخيرة: ",
+      "quotaCategory": {
+        "base": "الباقة الأساسية",
+        "activity": "مكافأة النشاط",
+        "extra": "أرصدة إضافية",
+        "other": "أخرى",
+        "empty": "لا توجد بيانات حصة"
+      }
+    }
+  },
+  "workbuddy": {
+    "title": "إدارة حسابات WorkBuddy",
+    "noAccounts": "لا توجد حسابات WorkBuddy",
+    "addAccount": "إضافة حساب WorkBuddy",
+    "flowNotice": {
+      "title": "معلومات إدارة حسابات WorkBuddy (انقر للتوسيع/الطي)",
+      "desc": "يتطلب تبديل الحسابات قراءة تخزين مصادقة WorkBuddy المحلي واستدعاء خدمات بيانات الاعتماد في النظام لفك التشفير/إعادة التشفير. تتم معالجة البيانات محليًا فقط.",
+      "permission": "نطاق الأذونات: قراءة قاعدة بيانات مصادقة WorkBuddy (state.vscdb)، واستدعاء قدرات بيانات الاعتماد بالنظام (macOS Keychain / Windows DPAPI / Linux Secret Service) لفك التشفير/إعادة الكتابة.",
+      "network": "نطاق الشبكة: تسجيل دخول OAuth وتحديث الرمز يتطلبان طلبات شبكة إلى WorkBuddy؛ واستعلامات الحصة تستدعي واجهات فوترة API. لا يتم رفع أي مفاتيح أو بيانات اعتماد محلية."
+    },
+    "nickname": "الاسم المستعار",
+    "enterprise": "المؤسسة",
+    "usage": "حالة الاستخدام",
+    "creditsBalance": "رصيد النقاط",
+    "usageNormal": "طبيعي",
+    "usageAbnormal": "غير طبيعي",
+    "usageViewDetail": "عرض التفاصيل",
+    "usageDetailTitle": "تفاصيل حالة الاستخدام",
+    "oauthWaiting": "بانتظار التفويض...",
+    "oauthDesc": "انقر الزر أدناه لفتح صفحة تفويض WorkBuddy في متصفحك.",
+    "oauthDescWebview": "انقر الزر أدناه لفتح صفحة تفويض WorkBuddy في WebView المدمج.",
+    "oauthFeature": {
+      "oauth": {
+        "title": "تسجيل دخول IDE فقط",
+        "item1": "أضف الحساب بعد إكمال OAuth في المتصفح، ثم استخدمه للتبديل داخل IDE.",
+        "item2": "لا يتم ربط معلمات استعلام الحصة تلقائيًا.",
+        "item3": "إذا احتجت عرض الحصة، شغّل \"استعلام الحصة\" يدويًا من بطاقة الحساب."
+      }
+    },
+    "oauthWebviewTab": "OAuth عبر WebView",
+    "oauthOpenWebview": "فتح في WebView",
+    "oauthOpenWebviewIncognito": "فتح في WebView المتخفي",
+    "oauthOpenWebviewFailed": "فشل فتح WebView: {{error}}",
+    "oauthOpenBrowserFallback": "فتح في المتصفح (بديل)",
+    "oauthOpenBrowserFailed": "فشل فتح المتصفح: {{error}}",
+    "oauthWebviewProgressHint": "يتم عرض شريط خطوات أفقي أعلى WebView لتحديد المرحلة المتوقفة.",
+    "oauthFlow": {
+      "prepare": "تحضير رابط OAuth",
+      "authorize": "فتح رابط التفويض وتأكيده",
+      "bind": "استطلاع نتيجة التفويض وربط الحساب",
+      "retryPrepare": "إعادة إنشاء رابط OAuth",
+      "retryAuthorize": "طلب رابط التفويض مرة أخرى",
+      "retryBind": "إعادة محاولة استطلاع التفويض",
+      "error": "خطأ في المسار: {{error}}"
+    },
+    "tokenDesc": "ألصق رمز الوصول الخاص بـ WorkBuddy:",
+    "jsonDesc": "اختر ملف JSON يحتوي على حسابات WorkBuddy:",
+    "import": {
+      "localDesc": "استيراد بيانات الحساب من عميل WorkBuddy المحلي أو من ملف JSON.",
+      "localClient": "استيراد من WorkBuddy المحلي"
+    },
+    "search": "ابحث في حسابات WorkBuddy...",
+    "quotaQuery": {
+      "failedRefreshCompact": "فشل تحديث الحصة",
+      "sectionTitle": "استعلام الحصة",
+      "empty": "لا توجد معلومات ربط لاستعلام الحصة بعد",
+      "packageUnknown": "باقة غير معروفة",
+      "quotaLabel": "الحصة المتبقية",
+      "updatedAt": "آخر استعلام: {{time}}",
+      "cycleRange": "الدورة: {{start}} - {{end}}",
+      "cycleUnknown": "معلومات الدورة غير متاحة",
+      "expireAt": "ينتهي في: {{time}}",
+      "expireUnknown": "وقت الانتهاء: غير متاح",
+      "packageTitle": {
+        "base": "حزمة التجربة الأساسية",
+        "activity": "حزمة هدية النشاط"
+      }
+    },
+    "extraCredit": {
+      "title": "باقة الرصيد"
+    },
+    "oauthUrlInputPlaceholder": "يمكنك إدخال رابط التفويض يدويًا",
+    "oauthInvalidUrl": "رابط تفويض غير صالح. يرجى إدخال رابط كامل.",
+    "oauthGotoWebview": "توجيه WebView المفتوح إلى الرابط المُدخل",
+    "oauthGotoWebviewSuccess": "تم طلب توجيه WebView إلى الرابط المُدخل.",
+    "oauthGotoWebviewFailed": "فشل توجيه WebView: {{error}}",
+    "oauthWebviewInlineUrlPlaceholder": "أدخل رابطًا للتنقل داخل WebView هذا",
+    "oauthWebviewInlineGo": "انتقال",
+    "oauthSuccessClosePrompt": "تمت إضافة الحساب بنجاح. هل تريد إغلاق WebView الآن؟\nاختر \"إغلاق WebView\" للإغلاق الآن، أو \"لاحقًا\" للإبقاء عليه مفتوحًا.",
+    "oauthSuccessCloseTitle": "تمت إضافة الحساب",
+    "oauthSuccessCloseNowLabel": "إغلاق WebView",
+    "oauthSuccessCloseLaterLabel": "لاحقًا",
+    "oauthSuccessCloseNowStatus": "✅ تمت إضافة الحساب. جارٍ إغلاق النافذة...",
+    "oauthSuccessCloseLaterStatus": "✅ تمت إضافة الحساب. سيبقى WebView مفتوحًا.",
+    "oauthWebviewOverlay": {
+      "steps": {
+        "prepare": "1 تحضير رابط OAuth",
+        "authorize": "2 فتح رابط التفويض وتأكيده",
+        "bind": "3 استطلاع نتيجة التفويض وربط الحساب",
+        "complete": "5 تم (إغلاق يدوي)"
+      },
+      "status": {
+        "loginConfirm": "يرجى إكمال تسجيل الدخول والتفويض في هذه الصفحة."
+      }
+    },
+    "instances": {
+      "unsupported": {
+        "descPlatform": "تعدد مثيلات WorkBuddy مدعوم فقط على macOS وWindows وLinux."
+      }
+    },
+    "quota": {
+      "usedOfTotal": "{{used}} / {{total}}"
+    }
+  },
+  "zed": {
+    "addModal": {
+      "title": "إضافة حساب Zed"
+    },
+    "empty": {
+      "description": "انقر على \"إضافة حساب\" لبدء إدارة حسابات Zed الخاصة بك، أو استيرادها من JSON أو من حالة تسجيل الدخول المحلية الحالية."
+    },
+    "import": {
+      "jsonDesc": "استورد ملف Zed JSON الذي صدّره هذا التطبيق.",
+      "localDesc": "استورد بيانات الحساب من حالة تسجيل دخول Zed المحلية الحالية أو من ملف JSON مُصدَّر."
+    },
+    "flowNotice": {
+      "title": "إرشادات ربط حساب Zed (انقر للتوسيع/الطي)",
+      "desc": "يدعم تسجيل الدخول الرسمي عبر OAuth، واستيراد JSON، واستيراد حالة تسجيل الدخول المحلية الحالية، وتطبيق الحساب المحفوظ مرة أخرى على عميل Zed الرسمي وفق قواعد التخزين الفعلية للعميل. تعرض هذه الصفحة فقط حقول الحالة التي يستطيع عميل سطح المكتب قراءتها مباشرة.",
+      "reason": "نطاق الصلاحيات: فتح تسجيل الدخول الرسمي المتطابق المصدر لـ Zed في المتصفح؛ قراءة بيانات اعتماد Zed المحلية الحالية للاستيراد؛ إعادة الكتابة إلى نفس موضع بيانات اعتماد النظام عند تطبيق الحساب؛ ويمكنها تشغيل Zed أو إعادة تشغيله عند الحاجة.",
+      "storage": "نطاق البيانات: يُحفَظ محليًا فقط ما تم استيراده أو تفويضه من سجلات الحسابات والعلامات ومحتوى التصدير. لا يتم رفع محتوى Keychain أو بيانات الاعتماد المحلية، ولا يتم فحص جلسات الويب في المتصفح، ولا تُعدَّل بيانات اعتماد نظام غير مرتبطة."
+    },
+    "page": {
+      "subtitle": "يدعم تسجيل الدخول الرسمي من نفس المصدر، والاستعلام عن الاشتراك والاستخدام، واستبدال بيانات تسجيل الدخول فعليًا ثم إعادة تشغيل Zed.",
+      "current": "الحالي",
+      "tokenSpend": "استهلاك Token",
+      "editPredictions": "توقعات التحرير",
+      "spendLimit": "حد الإنفاق",
+      "billingPeriodEnd": "نهاية دورة الفوترة",
+      "searchPlaceholder": "ابحث باسم GitHub أو الخطة أو العلامات",
+      "empty": "لا توجد حسابات Zed",
+      "unknownStatus": "حالة غير معروفة",
+      "overdueField": "هل توجد متأخرات",
+      "overdueYes": "نعم",
+      "overdueNo": "لا"
+    },
+    "runtime": {
+      "title": "جلسة Zed الحالية",
+      "currentAccount": "الحساب النشط حاليًا: {{account}}",
+      "noCurrentAccount": "لا يوجد حساب Zed نشط حاليًا",
+      "running": "قيد التشغيل",
+      "stopped": "متوقف",
+      "pathMissing": "مسار التشغيل غير مضبوط",
+      "lastPid": "آخر PID",
+      "lastStartedAt": "آخر وقت تشغيل",
+      "loadFailed": "فشل تحميل حالة تشغيل Zed"
+    },
+    "oauth": {
+      "pendingTitle": "تسجيل دخول Zed قيد الإكمال",
+      "pendingDesc": "أكمل التفويض في المتصفح ثم عد إلى هنا لإتمام استيراد الحساب.",
+      "openBrowser": "فتح المتصفح",
+      "complete": "إكمال تسجيل الدخول",
+      "startFailed": "فشل بدء تسجيل دخول Zed",
+      "completeSuccess": "اكتمل تسجيل دخول Zed: {{account}}",
+      "importOnlySuccess": "تمت المصادقة بنجاح. تم استيراد الحساب. لجعل Zed الرسمي يستخدم هذا الحساب، انقر على \"تطبيق وإعادة التشغيل\"."
+    },
+    "actions": {
+      "addAccount": "تسجيل الدخول إلى Zed",
+      "importSuccess": "تم استيراد حسابات Zed بنجاح",
+      "switchSuccess": "تم تبديل حساب Zed وإعادة تشغيله",
+      "deleteConfirm": "هل تريد حذف {{count}} من حسابات Zed؟",
+      "startApp": "تشغيل Zed",
+      "stopApp": "إيقاف Zed",
+      "restartApp": "إعادة تشغيل Zed",
+      "focusApp": "إبراز Zed",
+      "logout": "تسجيل خروج الحساب الحالي",
+      "managePlan": "إدارة الخطة",
+      "applyAndRestart": "تطبيق وإعادة التشغيل",
+      "reapply": "إعادة التطبيق",
+      "exportTitle": "تصدير JSON لحسابات Zed"
+    }
+  },
+  "twoFactorAuth": {
+    "pageTitle": "2FA Query [ar]",
+    "pageDescNew": "Enter or paste a 2FA Base32 secret to instantly generate a token. The system automatically corrects and removes non-standard characters. [ar]",
+    "panelQuery": "Workspace (Query Panel) [ar]",
+    "inputSecretPlaceholder": "Paste 2FA Secret here (e.g. JBSWY3DPEHPK3PXP) [ar]",
+    "inputRemarkPlaceholder": "[Optional] Set a remark name for this secret [ar]",
+    "btnQuery": "Query [ar]",
+    "btnSaveToFavorites": "Save to List [ar]",
+    "refreshInSeconds": "Refresh in {{time}}s [ar]",
+    "emptyQueryData": "No query data yet [ar]",
+    "invalidSecretFormat": "Invalid secret format detected [ar]",
+    "tabSaved": "★ Saved [ar]",
+    "tabHistory": "Recent Queries [ar]",
+    "btnImport": "Import [ar]",
+    "btnExport": "Export [ar]",
+    "btnClear": "Clear [ar]",
+    "tableRemark": "Remark [ar]",
+    "tableSecret": "Secret [ar]",
+    "tableCode": "Code [ar]",
+    "tableAddedTime": "Added Time [ar]",
+    "tableQueryTime": "Query Time [ar]",
+    "tableActions": "Actions [ar]",
+    "emptyHistory": "No query history [ar]",
+    "emptySaved": "No saved 2FA records yet [ar]",
+    "invalidSecretVal": "Invalid Secret [ar]",
+    "actionCopy": "Copy Code [ar]",
+    "actionReload": "Reload into Query Data [ar]",
+    "actionDelete": "Delete [ar]",
+    "confirmDeleteSavedTitle": "Delete Confirmation [ar]",
+    "confirmDeleteSavedMsg": "Are you sure you want to permanently delete \n{{secret}}\n? [ar]",
+    "confirmDeleteSavedFallback": "Are you sure you want to permanently delete this secret? [ar]",
+    "confirmDeleteHistoryTitle": "Delete History [ar]",
+    "confirmDeleteHistoryMsg": "Are you sure you want to delete the query history for \n{{secret}}\n? [ar]",
+    "confirmDeleteHistoryFallback": "Are you sure you want to delete this query history? [ar]",
+    "confirmClearAllTitle": "Clear History [ar]",
+    "confirmClearAllMsg": "Are you sure you want to clear all recent query history? [ar]",
+    "importErrorMsg": "Import failed. Please ensure the file format is a valid exported JSON array. [ar]",
+    "btnImportTitle": "Import Local JSON Backup [ar]",
+    "btnExportTitle": "Export Saved as JSON [ar]"
+  },
+  "mfaVault": {
+    "pageDesc": "احفظ وأدر بأمان رموز استرداد MFA الاحتياطية ومجموعات كلمات المرور والبيانات الحساسة الأخرى. يتم تخزين سجلات MFA محليًا فقط. قد يؤدي الحذف أو مسح ذاكرة التخزين المؤقت أو تغيير/فقدان الجهاز إلى فقدان MFA. يُنصح بالاحتفاظ بنسخة احتياطية والاستيراد منها عند الحاجة.",
+    "manualAdd": "إضافة بيانات اعتماد يدويًا",
+    "add": "إضافة",
+    "credentialList": "قائمة بيانات الاعتماد",
+    "import": "استيراد",
+    "export": "تصدير",
+    "accountName": "اسم الحساب",
+    "dynamicCode": "الرمز الديناميكي",
+    "remark": "ملاحظة",
+    "time": "الوقت",
+    "actions": "إجراءات",
+    "noData": "لا توجد بيانات اعتماد محفوظة",
+    "copyCode": "نسخ الرمز",
+    "delete": "حذف",
+    "invalidSecretVal": "مفتاح غير صالح",
+    "inputAccountPlaceholder": "اسم الحساب *",
+    "inputSecretPlaceholder": "المفتاح / رمز الاسترداد (Secret) *",
+    "inputRemarkPlaceholder": "ملاحظة (اختياري)",
+    "confirmDeleteMsg": "هل تريد بالتأكيد حذف سجل بيانات الاعتماد [{{accountName}}] نهائيًا؟",
+    "confirmDeleteTitle": "تأكيد الحذف",
+    "importErrorMsg": "فشل الاستيراد. تحقق من تنسيق الملف (يجب أن يكون مصفوفة JSON صالحة تحتوي على accountName و secret).",
+    "inputOtpAuthPlaceholder": "otpauth://totp/... أو سر Base32",
+    "otpauthInputHint": "يدعم otpauth://totp/... وسر Base32. يمكن الاستعلام عن كلا التنسيقين وحفظهما في القائمة.",
+    "pasteQrImageHint": "يمكنك أيضًا لصق صورة QR مباشرة في حقل الإدخال.",
+    "uploadQrImage": "رفع صورة QR",
+    "uploadQrImageTitle": "اختر صورة QR وتعرّف عليها تلقائيًا",
+    "recognizing": "جارٍ التعرّف...",
+    "invalidOtpAuthInput": "يرجى إدخال URI صالح من نوع otpauth://totp/... أو سر Base32.",
+    "qrDecodeFailed": "فشل التعرّف على QR. يرجى المحاولة بصورة أوضح.",
+    "qrNotOtpAuth": "تم التعرّف على المحتوى، لكنه ليس URI صالحًا من نوع otpauth://totp/... ولا سر Base32 صالحًا.",
+    "editAccountName": "تعديل اسم الحساب",
+    "saveAccountName": "حفظ اسم الحساب",
+    "cancelEditAccountName": "إلغاء التعديل",
+    "accountNameRequired": "اسم الحساب مطلوب.",
+    "copySecret": "نسخ السر"
+  }
+}

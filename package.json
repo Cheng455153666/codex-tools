@@ -1,45 +1,52 @@
 {
-  "name": "codex-tools",
+  "name": "cockpit-tools",
   "private": true,
-  "version": "1.7.5",
-  "license": "MIT",
-  "homepage": "https://github.com/170-carry/codex-tools",
-  "bugs": {
-    "url": "https://github.com/170-carry/codex-tools/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/170-carry/codex-tools.git"
-  },
+  "version": "0.21.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "prebuild": "npm run typecheck",
+    "build": "npm run sync-version && tsc && vite build",
+    "release:preflight": "node scripts/release/preflight.cjs",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "pretauri": "npm run typecheck",
+    "tauri": "npm run sync-version && tauri",
+    "sync-version": "node scripts/sync-version.js"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2.6.0",
+    "@tauri-apps/plugin-fs": "^2.4.5",
+    "@tauri-apps/plugin-opener": "^2.5.3",
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-updater": "^2.10.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "blueimp-md5": "^2.19.0",
+    "clsx": "^2.1.1",
+    "daisyui": "^5.5.14",
+    "date-fns": "^4.1.0",
+    "i18next": "^25.7.4",
+    "jsqr": "^1.4.0",
+    "lucide-react": "^0.562.0",
+    "otpauth": "^9.5.0",
+    "otplib": "^13.4.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-i18next": "^16.5.3",
+    "tailwind-merge": "^3.4.0",
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@tauri-apps/cli": "^2.10.0",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
-    "eslint": "^9.39.1",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
-    "globals": "^16.5.0",
-    "typescript": "~5.9.3",
-    "typescript-eslint": "^8.48.0",
-    "vite": "^7.3.1"
-  },
-  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531"
+    "@tauri-apps/cli": "^2",
+    "@types/blueimp-md5": "^2.18.2",
+    "@types/otplib": "^7.0.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4"
+  }
 }

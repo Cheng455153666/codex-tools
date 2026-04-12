@@ -1,0 +1,155 @@
+import type { Page } from '../types/navigation';
+import { PLATFORM_PAGE_MAP, type PlatformId } from '../types/platform';
+
+export const EXTERNAL_PROVIDER_IMPORT_EVENT = 'app:provider-import';
+
+export type ExternalProviderImportPayload = {
+  providerId: PlatformId;
+  page: Page;
+  token: string;
+  autoImport: boolean;
+  source?: string | null;
+  rawUrl?: string | null;
+};
+
+type RawExternalProviderImportPayload = {
+  providerId?: unknown;
+  provider?: unknown;
+  platform?: unknown;
+  target?: unknown;
+  page?: unknown;
+  token?: unknown;
+  importToken?: unknown;
+  payload?: unknown;
+  importPayload?: unknown;
+  autoImport?: unknown;
+  autoSubmit?: unknown;
+  source?: unknown;
+  rawUrl?: unknown;
+  url?: unknown;
+};
+
+const IMPORT_TARGET_PAGES: ReadonlySet<Page> = new Set<Page>([
+  'overview',
+  'codex',
+  'github-copilot',
+  'windsurf',
+  'kiro',
+  'cursor',
+  'gemini',
+  'codebuddy',
+  'codebuddy-cn',
+  'qoder',
+  'trae',
+  'workbuddy',
+  'zed',
+]);
+
+const PROVIDER_ALIAS_MAP: Record<string, PlatformId> = {
+  antigravity: 'antigravity',
+  overview: 'antigravity',
+  accounts: 'antigravity',
+  codex: 'codex',
+  zed: 'zed',
+  github_copilot: 'github-copilot',
+  githubcopilot: 'github-copilot',
+  ghcp: 'github-copilot',
+  windsurf: 'windsurf',
+  kiro: 'kiro',
+  cursor: 'cursor',
+  gemini: 'gemini',
+  codebuddy: 'codebuddy',
+  codebuddy_cn: 'codebuddy_cn',
+  codebuddycn: 'codebuddy_cn',
+  qoder: 'qoder',
+  trae: 'trae',
+  workbuddy: 'workbuddy',
+};
+
+let pendingExternalProviderImport: ExternalProviderImportPayload | null = null;
+
+function normalizeAliasKey(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function resolveProviderId(raw: unknown): PlatformId | null {
+  if (typeof raw !== 'string') return null;
+  const key = normalizeAliasKey(raw);
+  if (!key) return null;
+  return PROVIDER_ALIAS_MAP[key] ?? null;
+}
+
+function parseBooleanLike(value: unknown): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value > 0;
+  if (typeof value !== 'string') return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on';
+}
+
+function readString(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  return trimmed ? trimmed : null;
+}
+
+function resolvePage(providerId: PlatformId, rawPage: unknown): Page {
+  const candidate = readString(rawPage);
+  if (candidate && IMPORT_TARGET_PAGES.has(candidate as Page)) {
+    return candidate as Page;
+  }
+  return PLATFORM_PAGE_MAP[providerId];
+}
+
+export function normalizeExternalProviderImportPayload(
+  raw: unknown,
+): ExternalProviderImportPayload | null {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const payload = raw as RawExternalProviderImportPayload;
+  const providerId = resolveProviderId(
+    payload.providerId ?? payload.provider ?? payload.platform ?? payload.target,
+  );
+  if (!providerId) return null;
+
+  const token = readString(
+    payload.token ?? payload.importToken ?? payload.payload ?? payload.importPayload,
+  );
+  if (!token) return null;
+
+  return {
+    providerId,
+    page: resolvePage(providerId, payload.page),
+    token,
+    autoImport: parseBooleanLike(payload.autoImport ?? payload.autoSubmit),
+    source: readString(payload.source),
+    rawUrl: readString(payload.rawUrl ?? payload.url),
+  };
+}
+
+export function queueExternalProviderImport(payload: ExternalProviderImportPayload): void {
+  pendingExternalProviderImport = payload;
+}
+
+export function consumeQueuedExternalProviderImportForPlatform(
+  platformId: PlatformId,
+): ExternalProviderImportPayload | null {
+  if (!pendingExternalProviderImport) return null;
+  if (pendingExternalProviderImport.providerId !== platformId) return null;
+  const payload = pendingExternalProviderImport;
+  pendingExternalProviderImport = null;
+  return payload;
+}
+
+export function dispatchExternalProviderImportEvent(payload: ExternalProviderImportPayload): void {
+  queueExternalProviderImport(payload);
+  window.dispatchEvent(
+    new CustomEvent<ExternalProviderImportPayload>(EXTERNAL_PROVIDER_IMPORT_EVENT, {
+      detail: payload,
+    }),
+  );
+}
