@@ -1,44 +1,75 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+// @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(async () => ({
   plugins: [react()],
+  base: "./",
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (
+              id.includes("/react/") ||
+              id.includes("/react-dom/") ||
+              id.includes("/scheduler/")
+            ) {
+              return "react-vendor";
+            }
+            if (
+              id.includes("/i18next/") ||
+              id.includes("/react-i18next/")
+            ) {
+              return "i18n-vendor";
+            }
+            if (id.includes("/@tauri-apps/")) {
+              return "tauri-vendor";
+            }
+            if (id.includes("/lucide-react/")) {
+              return "ui-vendor";
+            }
+            return "vendor";
+          }
 
-  // prevent vite from obscuring rust errors
+          if (id.includes("/src/i18n/")) {
+            return "i18n-core";
+          }
+
+          if (
+            id.includes("/src/components/UpdateNotification") ||
+            id.includes("/src/components/VersionJumpNotification") ||
+            id.includes("/src/utils/updater")
+          ) {
+            return "update-flow";
+          }
+        },
+      },
+    },
+  },
+
+  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
+  //
+  // 1. prevent Vite from obscuring rust errors
   clearScreen: false,
+  // 2. tauri expects a fixed port, fail if that port is not available
   server: {
-    // make sure this port matches the devUrl port in tauri.conf.json file
-    port: 5173,
-    // Tauri expects a fixed port, fail if that port is not available
+    port: 1420,
     strictPort: true,
-    // if the host Tauri is expecting is set, use it
     host: host || false,
     hmr: host
       ? {
-          protocol: 'ws',
+          protocol: "ws",
           host,
           port: 1421,
         }
       : undefined,
-
     watch: {
-      // tell vite to ignore watching `src-tauri`
-      ignored: ['**/src-tauri/**'],
+      // 3. tell Vite to ignore watching `src-tauri`
+      ignored: ["**/src-tauri/**"],
     },
   },
-  // Env variables starting with the item of `envPrefix` will be exposed in tauri's source code through `import.meta.env`.
-  envPrefix: ['VITE_', 'TAURI_ENV_*'],
-  build: {
-    // Tauri uses Chromium on Windows and WebKit on macOS and Linux
-    target:
-      process.env.TAURI_ENV_PLATFORM == 'windows'
-        ? 'chrome105'
-        : 'safari13',
-    // don't minify for debug builds
-    minify: !process.env.TAURI_ENV_DEBUG ? 'esbuild' : false,
-    // produce sourcemaps for debug builds
-    sourcemap: !!process.env.TAURI_ENV_DEBUG,
-  },
-})
+}));
