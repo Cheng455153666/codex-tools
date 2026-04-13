@@ -20,7 +20,6 @@ const REQUEST_READ_TIMEOUT: Duration = Duration::from_secs(5);
 const AUTH_REFRESH_STALE_THRESHOLD_SECONDS: i64 = 10 * 60;
 const NEXT_AUTH_REFRESH_TRIGGER_LABEL: &str =
     "Next AuthRefresh trigger time (only trigger if access to this page )";
-const REPORT_WEAK_DEFAULT_TOKEN: &str = "change-this-token";
 
 static ACTUAL_REPORT_PORT: OnceLock<RwLock<Option<u16>>> = OnceLock::new();
 static REPORT_REFRESH_STATE: OnceLock<RwLock<ReportRefreshState>> = OnceLock::new();
@@ -337,11 +336,9 @@ pub async fn start_server() {
         super::logger::log_warn("[WebReport] 配置了启用但 token 为空，网页查询服务未启动");
         return;
     }
-    if token == REPORT_WEAK_DEFAULT_TOKEN {
+    if token == "change-this-token" {
         set_actual_port(None);
-        super::logger::log_warn(
-            "[WebReport] 检测到弱默认 token，网页查询服务未启动，请先生成新的 report token",
-        );
+        super::logger::log_warn("[WebReport] 配置了默认弱 token，网页查询服务未启动");
         return;
     }
 

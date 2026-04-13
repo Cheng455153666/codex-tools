@@ -1,25 +1,23 @@
 use serde::{Deserialize, Serialize};
 
-const CLIENT_ID_PLACEHOLDER: &str = "replace-with-google-oauth-client-id";
-const CLIENT_SECRET_PLACEHOLDER: &str = "replace-with-google-oauth-client-secret";
+const DEFAULT_CLIENT_ID: &str = "set-COCKPIT_GOOGLE_OAUTH_CLIENT_ID";
+const DEFAULT_CLIENT_SECRET: &str = "set-COCKPIT_GOOGLE_OAUTH_CLIENT_SECRET";
 const TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
 const USERINFO_URL: &str = "https://www.googleapis.com/oauth2/v2/userinfo";
 const AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
 
-fn client_id() -> String {
+fn oauth_client_id() -> String {
     std::env::var("COCKPIT_GOOGLE_OAUTH_CLIENT_ID")
         .ok()
-        .map(|value| value.trim().to_string())
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| CLIENT_ID_PLACEHOLDER.to_string())
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| DEFAULT_CLIENT_ID.to_string())
 }
 
-fn client_secret() -> String {
+fn oauth_client_secret() -> String {
     std::env::var("COCKPIT_GOOGLE_OAUTH_CLIENT_SECRET")
         .ok()
-        .map(|value| value.trim().to_string())
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| CLIENT_SECRET_PLACEHOLDER.to_string())
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| DEFAULT_CLIENT_SECRET.to_string())
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -62,7 +60,6 @@ impl UserInfo {
 
 /// 生成 OAuth 授权 URL
 pub fn get_auth_url(redirect_uri: &str, state: Option<&str>) -> String {
-    let client_id = client_id();
     let scopes = vec![
         "https://www.googleapis.com/auth/cloud-platform",
         "https://www.googleapis.com/auth/userinfo.email",
@@ -72,6 +69,7 @@ pub fn get_auth_url(redirect_uri: &str, state: Option<&str>) -> String {
     ]
     .join(" ");
 
+    let client_id = oauth_client_id();
     let mut params = vec![
         ("client_id", client_id.as_str()),
         ("redirect_uri", redirect_uri),
@@ -93,9 +91,9 @@ pub fn get_auth_url(redirect_uri: &str, state: Option<&str>) -> String {
 pub async fn exchange_code(code: &str, redirect_uri: &str) -> Result<TokenResponse, String> {
     crate::modules::logger::log_info(&format!("开始 Token 交换, redirect_uri: {}", redirect_uri));
     let client = crate::utils::http::create_client(15);
-    let client_id = client_id();
-    let client_secret = client_secret();
 
+    let client_id = oauth_client_id();
+    let client_secret = oauth_client_secret();
     let params = [
         ("client_id", client_id.as_str()),
         ("client_secret", client_secret.as_str()),
@@ -136,7 +134,7 @@ pub async fn exchange_code(code: &str, redirect_uri: &str) -> Result<TokenRespon
         Ok(token_res)
     } else {
         let error_text = response.text().await.unwrap_or_default();
-        let msg = format!("Token 交换失败 ({}): {}", status, error_text);
+        let msg = format!("Token 交换失败 ({})，body_len={}", status, error_text.len());
         crate::modules::logger::log_error(&msg);
         Err(msg)
     }
@@ -145,9 +143,9 @@ pub async fn exchange_code(code: &str, redirect_uri: &str) -> Result<TokenRespon
 /// 使用 refresh_token 刷新 access_token
 pub async fn refresh_access_token(refresh_token: &str) -> Result<TokenResponse, String> {
     let client = crate::utils::http::create_client(15);
-    let client_id = client_id();
-    let client_secret = client_secret();
 
+    let client_id = oauth_client_id();
+    let client_secret = oauth_client_secret();
     let params = [
         ("client_id", client_id.as_str()),
         ("client_secret", client_secret.as_str()),

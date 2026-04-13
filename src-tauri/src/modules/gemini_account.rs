@@ -439,6 +439,15 @@ fn upsert_account_record(account: GeminiAccount) -> Result<GeminiAccount, String
     Ok(account)
 }
 
+fn persist_quota_query_error(account_id: &str, message: &str) {
+    let Some(mut account) = load_account_file(account_id) else {
+        return;
+    };
+    account.quota_query_last_error = Some(message.to_string());
+    account.quota_query_last_error_at = Some(chrono::Utc::now().timestamp_millis());
+    let _ = upsert_account_record(account);
+}
+
 fn build_account_id(email: &str, auth_id: Option<&str>) -> String {
     let mut seed = email.trim().to_lowercase();
     if let Some(auth_id) = normalize_non_empty(auth_id) {
@@ -512,6 +521,8 @@ pub fn upsert_account(payload: GeminiOAuthCompletePayload) -> Result<GeminiAccou
         gemini_usage_raw: payload.gemini_usage_raw,
         status: payload.status,
         status_reason: payload.status_reason,
+        quota_query_last_error: None,
+        quota_query_last_error_at: None,
         usage_updated_at: existing.as_ref().and_then(|item| item.usage_updated_at),
         created_at,
         last_used: now,
@@ -1245,8 +1256,10 @@ async fn post_code_assist_json_with_retry(
                     .await
                     .unwrap_or_else(|_| "<empty-body>".to_string());
                 return Err(format!(
-                    "请求 Gemini {} 失败: status={}, body={}",
-                    action_name, status, body
+                    "请求 Gemini {} 失败: status={}, body_len={}",
+                    action_name,
+                    status,
+                    body.len()
                 ));
             }
             Err(err) => {
@@ -1271,23 +1284,21 @@ async fn post_code_assist_json_with_retry(
 }
 
 async fn refresh_access_token(refresh_token: &str) -> Result<GoogleTokenRefreshResponse, String> {
+    let client_id = gemini_oauth::gemini_oauth_client_id();
+    let client_secret = gemini_oauth::gemini_oauth_client_secret();
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(20))
         .build()
         .map_err(|e| format!("创建 HTTP 客户端失败: {}", e))?;
 
-    let client_id = gemini_oauth::gemini_oauth_client_id();
-    let client_secret = gemini_oauth::gemini_oauth_client_secret();
-    let refresh_token = refresh_token.to_string();
-
     let response = client
         .post(GOOGLE_TOKEN_ENDPOINT)
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .form(&[
-            ("client_id", client_id),
-            ("client_secret", client_secret),
+            ("client_id", client_id.as_str()),
+            ("client_secret", client_secret.as_str()),
             ("refresh_token", refresh_token),
-            ("grant_type", "refresh_token".to_string()),
+            ("grant_type", "refresh_token"),
         ])
         .send()
         .await
@@ -1300,8 +1311,9 @@ async fn refresh_access_token(refresh_token: &str) -> Result<GoogleTokenRefreshR
             .await
             .unwrap_or_else(|_| "<empty-body>".to_string());
         return Err(format!(
-            "刷新 Gemini access_token 失败: status={}, body={}",
-            status, body
+            "刷新 Gemini access_token 失败: status={}, body_len={}",
+            status,
+            body.len()
         ));
     }
 
@@ -1607,6 +1619,8 @@ async fn refresh_account_token_once(account_id: &str) -> Result<GeminiAccount, S
         match retrieve_user_quota(&account.access_token, project_id).await {
             Ok(quota) => {
                 account.gemini_usage_raw = Some(quota);
+                account.quota_query_last_error = None;
+                account.quota_query_last_error_at = None;
                 account.usage_updated_at = Some(refreshed_at);
             }
             Err(err) => {
@@ -1614,6 +1628,8 @@ async fn refresh_account_token_once(account_id: &str) -> Result<GeminiAccount, S
                     "[Gemini retrieveUserQuota] 刷新配额失败: account_id={}, project_id={}, error={}",
                     account.id, project_id, err
                 ));
+                account.quota_query_last_error = Some(err.clone());
+                account.quota_query_last_error_at = Some(chrono::Utc::now().timestamp_millis());
                 if is_forbidden_error(&err) {
                     account.gemini_usage_raw = None;
                     account.usage_updated_at = None;
@@ -1624,6 +1640,8 @@ async fn refresh_account_token_once(account_id: &str) -> Result<GeminiAccount, S
         }
     } else {
         account.gemini_usage_raw = None;
+        account.quota_query_last_error = None;
+        account.quota_query_last_error_at = None;
         account.usage_updated_at = None;
     }
 
@@ -1636,10 +1654,16 @@ async fn refresh_account_token_once(account_id: &str) -> Result<GeminiAccount, S
 }
 
 pub async fn refresh_account_token(account_id: &str) -> Result<GeminiAccount, String> {
-    crate::modules::refresh_retry::retry_once_with_delay("Gemini Refresh", account_id, || async {
-        refresh_account_token_once(account_id).await
-    })
-    .await
+    let result = crate::modules::refresh_retry::retry_once_with_delay(
+        "Gemini Refresh",
+        account_id,
+        || async { refresh_account_token_once(account_id).await },
+    )
+    .await;
+    if let Err(err) = &result {
+        persist_quota_query_error(account_id, err);
+    }
+    result
 }
 
 pub async fn refresh_all_tokens() -> Result<Vec<(String, Result<GeminiAccount, String>)>, String> {

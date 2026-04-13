@@ -14,8 +14,8 @@ use crate::modules::logger;
 const GEMINI_OAUTH_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
 const GEMINI_OAUTH_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL: &str = "https://www.googleapis.com/oauth2/v2/userinfo";
-const GEMINI_OAUTH_CLIENT_ID_PLACEHOLDER: &str = "replace-with-gemini-google-client-id";
-const GEMINI_OAUTH_CLIENT_SECRET_PLACEHOLDER: &str = "replace-with-gemini-google-client-secret";
+const DEFAULT_GEMINI_OAUTH_CLIENT_ID: &str = "set-COCKPIT_GEMINI_OAUTH_CLIENT_ID";
+const DEFAULT_GEMINI_OAUTH_CLIENT_SECRET: &str = "set-COCKPIT_GEMINI_OAUTH_CLIENT_SECRET";
 const OAUTH_TIMEOUT_SECONDS: i64 = 300;
 const OAUTH_CALLBACK_PATH: &str = "/oauth2callback";
 const OAUTH_POLL_INTERVAL_SECONDS: u64 = 1;
@@ -95,17 +95,15 @@ fn normalize_non_empty(value: Option<&str>) -> Option<String> {
 pub fn gemini_oauth_client_id() -> String {
     std::env::var("COCKPIT_GEMINI_OAUTH_CLIENT_ID")
         .ok()
-        .map(|value| value.trim().to_string())
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| GEMINI_OAUTH_CLIENT_ID_PLACEHOLDER.to_string())
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| DEFAULT_GEMINI_OAUTH_CLIENT_ID.to_string())
 }
 
 pub fn gemini_oauth_client_secret() -> String {
     std::env::var("COCKPIT_GEMINI_OAUTH_CLIENT_SECRET")
         .ok()
-        .map(|value| value.trim().to_string())
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| GEMINI_OAUTH_CLIENT_SECRET_PLACEHOLDER.to_string())
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| DEFAULT_GEMINI_OAUTH_CLIENT_SECRET.to_string())
 }
 
 fn find_available_callback_port() -> Result<u16, String> {
@@ -123,11 +121,10 @@ fn build_auth_url(callback_url: &str, state_token: &str) -> Result<String, Strin
     let mut url = Url::parse(GEMINI_OAUTH_AUTH_URL)
         .map_err(|e| format!("构建 Gemini OAuth URL 失败: {}", e))?;
     let scope = OAUTH_SCOPES.join(" ");
-    let client_id = gemini_oauth_client_id();
 
     url.query_pairs_mut()
         .append_pair("response_type", "code")
-        .append_pair("client_id", &client_id)
+        .append_pair("client_id", gemini_oauth_client_id().as_str())
         .append_pair("redirect_uri", callback_url)
         .append_pair("access_type", "offline")
         .append_pair("scope", &scope)
@@ -405,8 +402,9 @@ async fn exchange_code_for_tokens(
             .await
             .unwrap_or_else(|_| "<empty-body>".to_string());
         return Err(format!(
-            "Google OAuth token 交换失败: status={}, body={}",
-            status, body
+            "Google OAuth token 交换失败: status={}, body_len={}",
+            status,
+            body.len()
         ));
     }
 

@@ -1185,9 +1185,7 @@ export function SettingsPage() {
       setHermesCodexAuthOverwriteOnSwitch(
         config.hermes_codex_auth_overwrite_on_switch ?? false,
       );
-      setHermesGatewayRestartOnSwitch(
-        config.hermes_gateway_restart_on_switch ?? false,
-      );
+      setHermesGatewayRestartOnSwitch(config.hermes_gateway_restart_on_switch ?? false);
       setCodexLaunchOnSwitch(config.codex_launch_on_switch ?? true);
       setAntigravityDualSwitchNoRestartEnabled(
         config.antigravity_dual_switch_no_restart_enabled ?? false

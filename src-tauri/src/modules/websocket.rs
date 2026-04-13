@@ -10,15 +10,11 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
-use tokio_tungstenite::tungstenite::{
-    handshake::server::{
-        ErrorResponse as WsErrorResponse, Request as WsRequest, Response as WsResponse,
-    },
-    http::StatusCode,
-    Message,
-};
+use tokio_tungstenite::tungstenite::handshake::server::{ErrorResponse, Request, Response};
+use tokio_tungstenite::tungstenite::http::StatusCode;
+use tokio_tungstenite::tungstenite::Message;
 
-use super::config::{get_preferred_port, init_server_status, PORT_RANGE};
+use super::config::{get_preferred_port, get_user_config, init_server_status, PORT_RANGE};
 
 /// 消息类型
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -301,29 +297,6 @@ fn is_allowed_remote_client(addr: &SocketAddr) -> bool {
     false
 }
 
-fn is_allowed_ws_origin(request: &WsRequest) -> bool {
-    let Some(origin) = request.headers().get("origin") else {
-        // Native local clients such as editor extensions usually do not send Origin.
-        return true;
-    };
-
-    let Ok(origin) = origin.to_str() else {
-        return false;
-    };
-
-    matches!(
-        origin.trim().to_ascii_lowercase().as_str(),
-        "tauri://localhost" | "http://tauri.localhost" | "https://tauri.localhost"
-    )
-}
-
-fn forbidden_ws_response() -> WsErrorResponse {
-    WsResponse::builder()
-        .status(StatusCode::FORBIDDEN)
-        .body(Some("Forbidden".to_string()))
-        .unwrap_or_else(|_| WsErrorResponse::new(Some("Forbidden".to_string())))
-}
-
 /// 获取全局 WebSocket 服务实例
 pub fn get_server() -> &'static Arc<WsServer> {
     WS_SERVER.get_or_init(|| Arc::new(WsServer::new()))
@@ -455,6 +428,12 @@ pub async fn request_plugin_switch_account(
 
 /// 启动 WebSocket 服务（支持动态端口尝试）
 pub async fn start_server() {
+    let config = get_user_config();
+    if !config.ws_enabled {
+        crate::modules::logger::log_info("[WS] WebSocket 服务未启用，跳过启动");
+        return;
+    }
+
     // 从用户配置获取首选端口
     let preferred_port = get_preferred_port();
 
@@ -518,30 +497,47 @@ pub async fn start_server() {
     }
 }
 
+fn is_allowed_ws_origin(origin: Option<&str>) -> bool {
+    let Some(origin) = origin.map(str::trim).filter(|value| !value.is_empty()) else {
+        return true;
+    };
+    let Ok(url) = url::Url::parse(origin) else {
+        return false;
+    };
+    match url.scheme() {
+        "file" | "vscode-webview" => true,
+        "http" | "https" => matches!(url.host_str(), Some("127.0.0.1" | "localhost" | "::1")),
+        _ => false,
+    }
+}
+
+fn websocket_handshake_callback(
+    request: &Request,
+    response: Response,
+) -> Result<Response, ErrorResponse> {
+    let origin = request
+        .headers()
+        .get("origin")
+        .and_then(|value| value.to_str().ok());
+    if is_allowed_ws_origin(origin) {
+        return Ok(response);
+    }
+
+    let mut error_response = ErrorResponse::new(Some("Forbidden WebSocket origin".to_string()));
+    *error_response.status_mut() = StatusCode::FORBIDDEN;
+    Err(error_response)
+}
+
 /// 处理单个客户端连接
 async fn handle_connection(server: Arc<WsServer>, stream: TcpStream, addr: SocketAddr) {
-    let ws_stream = match tokio_tungstenite::accept_hdr_async(
-        stream,
-        |request: &WsRequest, response: WsResponse| {
-            if is_allowed_ws_origin(request) {
-                Ok(response)
-            } else {
-                crate::modules::logger::log_warn(&format!(
-                    "[WS] 拒绝不可信 Origin 的连接: {}",
-                    addr
-                ));
-                Err(forbidden_ws_response())
+    let ws_stream =
+        match tokio_tungstenite::accept_hdr_async(stream, websocket_handshake_callback).await {
+            Ok(ws) => ws,
+            Err(e) => {
+                crate::modules::logger::log_error(&format!("[WS] 握手失败 {}: {}", addr, e));
+                return;
             }
-        },
-    )
-    .await
-    {
-        Ok(ws) => ws,
-        Err(e) => {
-            crate::modules::logger::log_error(&format!("[WS] 握手失败 {}: {}", addr, e));
-            return;
-        }
-    };
+        };
 
     crate::modules::logger::log_info(&format!("[WS] 新连接: {}", addr));
 
@@ -650,7 +646,7 @@ async fn handle_client_message(
         }
 
         WsMessage::GetAccountsWithTokens { request_id } => {
-            crate::modules::logger::log_warn("[WS] 拒绝获取账号列表(含Token)请求");
+            crate::modules::logger::log_warn("[WS] 已拒绝获取账号 Token 的请求");
 
             let response = WsMessage::ErrorResponse {
                 request_id,
