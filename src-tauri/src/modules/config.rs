@@ -265,6 +265,9 @@ pub struct UserConfig {
     /// Codex secondary_window 自动切号阈值（百分比）
     #[serde(default = "default_codex_auto_switch_secondary_threshold")]
     pub codex_auto_switch_secondary_threshold: i32,
+    /// Codex 自动切号候选账号的 5h 剩余额度最低要求（百分比）
+    #[serde(default = "default_codex_auto_switch_candidate_hourly_threshold")]
+    pub codex_auto_switch_candidate_hourly_threshold: i32,
     /// Codex 自动切号账号范围模式：all_accounts | selected_accounts
     #[serde(default = "default_codex_auto_switch_account_scope_mode")]
     pub codex_auto_switch_account_scope_mode: String,
@@ -623,6 +626,9 @@ fn default_codex_auto_switch_primary_threshold() -> i32 {
 fn default_codex_auto_switch_secondary_threshold() -> i32 {
     20
 }
+fn default_codex_auto_switch_candidate_hourly_threshold() -> i32 {
+    100
+}
 fn default_codex_auto_switch_account_scope_mode() -> String {
     "all_accounts".to_string()
 }
@@ -795,6 +801,8 @@ impl Default for UserConfig {
             codex_auto_switch_enabled: default_codex_auto_switch_enabled(),
             codex_auto_switch_primary_threshold: default_codex_auto_switch_primary_threshold(),
             codex_auto_switch_secondary_threshold: default_codex_auto_switch_secondary_threshold(),
+            codex_auto_switch_candidate_hourly_threshold:
+                default_codex_auto_switch_candidate_hourly_threshold(),
             codex_auto_switch_account_scope_mode: default_codex_auto_switch_account_scope_mode(),
             codex_auto_switch_selected_account_ids: default_codex_auto_switch_selected_account_ids(
             ),
@@ -1280,6 +1288,12 @@ pub fn load_user_config() -> Result<UserConfig, String> {
             obj.insert(
                 "codex_auto_switch_secondary_threshold".to_string(),
                 json!(legacy_auto_switch_threshold),
+            );
+        }
+        if !obj.contains_key("codex_auto_switch_candidate_hourly_threshold") {
+            obj.insert(
+                "codex_auto_switch_candidate_hourly_threshold".to_string(),
+                json!(default_codex_auto_switch_candidate_hourly_threshold()),
             );
         }
         if !obj.contains_key("hermes_codex_auth_overwrite_on_switch") {

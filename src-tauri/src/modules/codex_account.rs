@@ -2529,16 +2529,16 @@ fn extract_codex_tokens_from_value(
 #[cfg(test)]
 mod tests {
     use super::{
-        build_account_storage_id, extract_codex_tokens_from_value, get_accounts_dir,
-        get_accounts_storage_path, get_current_account, list_accounts_checked, load_account,
-        load_account_index, read_api_provider_from_config_toml, read_quick_config_from_config_toml,
-        resolve_api_provider_config, save_account, save_account_index, sync_account_from_auth_dir,
-        validate_api_key_credentials, write_api_provider_to_config_toml,
-        write_quick_config_to_config_toml, ApiProviderConfig, CodexAccountIndex,
-        CodexAccountSummary, CodexAuthFile, CodexAuthTokens, CODEX_AUTO_COMPACT_DEFAULT_LIMIT,
-        CODEX_CONTEXT_WINDOW_1M_VALUE,
+        build_account_storage_id, build_switch_candidate, extract_codex_tokens_from_value,
+        get_accounts_dir, get_accounts_storage_path, get_current_account, list_accounts_checked,
+        load_account, load_account_index, pick_best_candidate, read_api_provider_from_config_toml,
+        read_quick_config_from_config_toml, resolve_api_provider_config, save_account,
+        save_account_index, sync_account_from_auth_dir, validate_api_key_credentials,
+        write_api_provider_to_config_toml, write_quick_config_to_config_toml,
+        ApiProviderConfig, CodexAccountIndex, CodexAccountSummary, CodexAuthFile,
+        CodexAuthTokens, CODEX_AUTO_COMPACT_DEFAULT_LIMIT, CODEX_CONTEXT_WINDOW_1M_VALUE,
     };
-    use crate::models::codex::{CodexAccount, CodexApiProviderMode, CodexTokens};
+    use crate::models::codex::{CodexAccount, CodexApiProviderMode, CodexQuota, CodexTokens};
     use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
     use std::fs;
     use std::sync::{LazyLock, Mutex};
@@ -2697,6 +2697,37 @@ mod tests {
         .expect("write auth file");
     }
 
+    fn account_with_quota(
+        id: &str,
+        email: &str,
+        hourly_percentage: i32,
+        weekly_percentage: i32,
+        hourly_window_present: Option<bool>,
+        weekly_window_present: Option<bool>,
+    ) -> CodexAccount {
+        let mut account = CodexAccount::new(
+            id.to_string(),
+            email.to_string(),
+            CodexTokens {
+                id_token: "id".to_string(),
+                access_token: "access".to_string(),
+                refresh_token: Some("refresh".to_string()),
+            },
+        );
+        account.quota = Some(CodexQuota {
+            hourly_percentage,
+            hourly_reset_time: None,
+            hourly_window_minutes: Some(300),
+            hourly_window_present,
+            weekly_percentage,
+            weekly_reset_time: None,
+            weekly_window_minutes: Some(10_080),
+            weekly_window_present,
+            raw_data: None,
+        });
+        account
+    }
+
     #[test]
     fn extract_tokens_from_flat_codex_json() {
         let value = serde_json::json!({
@@ -2809,6 +2840,90 @@ mod tests {
             persisted.tokens.refresh_token.as_deref(),
             latest_tokens.refresh_token.as_deref()
         );
+    }
+
+    #[test]
+    fn build_switch_candidate_requires_full_five_hour_quota() {
+        let account = account_with_quota(
+            "candidate-partial-hourly",
+            "partial@example.com",
+            99,
+            100,
+            Some(true),
+            Some(true),
+        );
+
+        let candidate = build_switch_candidate(&account, 20, 20, 100);
+
+        assert!(candidate.is_none());
+    }
+
+    #[test]
+    fn build_switch_candidate_accepts_five_hour_quota_at_full_capacity() {
+        let account = account_with_quota(
+            "candidate-full-hourly",
+            "full@example.com",
+            100,
+            65,
+            Some(true),
+            Some(true),
+        );
+
+        let candidate = build_switch_candidate(&account, 20, 20, 100);
+
+        assert!(candidate.is_some());
+    }
+
+    #[test]
+    fn build_switch_candidate_allows_lower_custom_hourly_requirement() {
+        let account = account_with_quota(
+            "candidate-custom-hourly",
+            "custom@example.com",
+            95,
+            80,
+            Some(true),
+            Some(true),
+        );
+
+        let candidate = build_switch_candidate(&account, 20, 20, 95);
+
+        assert!(candidate.is_some());
+    }
+
+    #[test]
+    fn pick_best_candidate_prefers_higher_weekly_when_hourly_is_full_for_both() {
+        let high_weekly = build_switch_candidate(
+            &account_with_quota(
+                "candidate-high-weekly",
+                "high-weekly@example.com",
+                100,
+                90,
+                Some(true),
+                Some(true),
+            ),
+            20,
+            20,
+            100,
+        )
+        .expect("high weekly candidate");
+        let low_weekly = build_switch_candidate(
+            &account_with_quota(
+                "candidate-low-weekly",
+                "low-weekly@example.com",
+                100,
+                70,
+                Some(true),
+                Some(true),
+            ),
+            20,
+            20,
+            100,
+        )
+        .expect("low weekly candidate");
+
+        let picked = pick_best_candidate(vec![low_weekly, high_weekly]).expect("picked candidate");
+
+        assert_eq!(picked.id, "candidate-high-weekly");
     }
 
     #[test]
@@ -3312,6 +3427,10 @@ fn normalize_auto_switch_threshold(raw: i32) -> i32 {
     raw.clamp(0, 100)
 }
 
+fn normalize_auto_switch_candidate_hourly_threshold(raw: i32) -> i32 {
+    raw.clamp(0, 100)
+}
+
 fn normalize_auto_switch_account_scope_mode(raw: &str) -> String {
     let normalized = raw.trim().to_lowercase();
     if normalized == CODEX_AUTO_SWITCH_ACCOUNT_SCOPE_SELECTED {
@@ -3476,6 +3595,8 @@ fn metric_margin_over_threshold(
 #[derive(Debug, Clone)]
 struct CodexSwitchCandidate {
     account: CodexAccount,
+    hourly_percentage: i32,
+    weekly_percentage: i32,
     min_margin: i32,
     min_percentage: i32,
     average_percentage: f64,
@@ -3485,7 +3606,16 @@ fn build_switch_candidate(
     account: &CodexAccount,
     primary_threshold: i32,
     secondary_threshold: i32,
+    candidate_hourly_threshold: i32,
 ) -> Option<CodexSwitchCandidate> {
+    let quota = account.quota.as_ref()?;
+    if quota.hourly_window_present == Some(false) {
+        return None;
+    }
+    if quota.hourly_percentage < candidate_hourly_threshold {
+        return None;
+    }
+
     let metrics = extract_quota_metrics(account);
     if metrics.is_empty() {
         return None;
@@ -3508,6 +3638,8 @@ fn build_switch_candidate(
 
     Some(CodexSwitchCandidate {
         account: account.clone(),
+        hourly_percentage: quota.hourly_percentage.clamp(0, 100),
+        weekly_percentage: quota.weekly_percentage.clamp(0, 100),
         min_margin,
         min_percentage,
         average_percentage,
@@ -3522,6 +3654,13 @@ fn pick_best_candidate(mut candidates: Vec<CodexSwitchCandidate>) -> Option<Code
     candidates.sort_by(|a, b| {
         b.min_margin
             .cmp(&a.min_margin)
+            .then_with(|| {
+                if a.hourly_percentage == 100 && b.hourly_percentage == 100 {
+                    b.weekly_percentage.cmp(&a.weekly_percentage)
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            })
             .then_with(|| b.min_percentage.cmp(&a.min_percentage))
             .then_with(|| {
                 b.average_percentage
@@ -3598,12 +3737,18 @@ fn pick_quota_alert_recommendation(
     current_id: &str,
     primary_threshold: i32,
     secondary_threshold: i32,
+    candidate_hourly_threshold: i32,
 ) -> Option<CodexAccount> {
     let candidates: Vec<CodexSwitchCandidate> = accounts
         .iter()
         .filter(|account| account.id != current_id)
         .filter_map(|account| {
-            build_switch_candidate(account, primary_threshold, secondary_threshold)
+            build_switch_candidate(
+                account,
+                primary_threshold,
+                secondary_threshold,
+                candidate_hourly_threshold,
+            )
         })
         .collect();
 
@@ -3626,6 +3771,9 @@ pub fn pick_auto_switch_target_if_needed() -> Result<Option<CodexAccount>, Strin
             normalize_auto_switch_threshold(cfg.codex_auto_switch_primary_threshold);
         let secondary_threshold =
             normalize_auto_switch_threshold(cfg.codex_auto_switch_secondary_threshold);
+        let candidate_hourly_threshold = normalize_auto_switch_candidate_hourly_threshold(
+            cfg.codex_auto_switch_candidate_hourly_threshold,
+        );
         let account_scope_mode =
             normalize_auto_switch_account_scope_mode(&cfg.codex_auto_switch_account_scope_mode);
 
@@ -3676,7 +3824,12 @@ pub fn pick_auto_switch_target_if_needed() -> Result<Option<CodexAccount>, Strin
             .filter(|account| monitored_account_ids.contains(&account.id))
             .filter(|account| account.id != current_id)
             .filter_map(|account| {
-                build_switch_candidate(account, primary_threshold, secondary_threshold)
+                build_switch_candidate(
+                    account,
+                    primary_threshold,
+                    secondary_threshold,
+                    candidate_hourly_threshold,
+                )
             })
             .collect();
 
@@ -3706,6 +3859,9 @@ pub fn run_quota_alert_if_needed(
         normalize_quota_alert_threshold(cfg.codex_quota_alert_primary_threshold);
     let secondary_threshold =
         normalize_quota_alert_threshold(cfg.codex_quota_alert_secondary_threshold);
+    let candidate_hourly_threshold = normalize_auto_switch_candidate_hourly_threshold(
+        cfg.codex_auto_switch_candidate_hourly_threshold,
+    );
     let accounts = list_accounts();
     let current_id = match resolve_current_account_id(&accounts) {
         Some(id) => id,
@@ -3741,6 +3897,7 @@ pub fn run_quota_alert_if_needed(
         &current_id,
         primary_threshold,
         secondary_threshold,
+        candidate_hourly_threshold,
     );
     let lowest_percentage = low_models.iter().map(|(_, pct)| *pct).min().unwrap_or(0);
     let payload = crate::modules::account::QuotaAlertPayload {

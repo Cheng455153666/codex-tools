@@ -1,5 +1,6 @@
 import AppKit
 import CoreFoundation
+import Darwin
 import Foundation
 
 @_silgen_name("macos_native_menu_dispatch_action")
@@ -13,7 +14,7 @@ private func runNativeMenuControllerSync(
     label: String,
     _ operation: @escaping @MainActor () -> Void
 ) {
-    precondition(Thread.isMainThread, "[NativeMenu] \(label) 必须在主线程执行")
+    precondition(pthread_main_np() == 1, "[NativeMenu] \(label) 必须在主线程执行")
     MainActor.assumeIsolated {
         operation()
     }
@@ -29,7 +30,7 @@ private func runNativeMenuController(
     label: String,
     _ operation: @escaping @MainActor () -> Void
 ) {
-    if Thread.isMainThread {
+    if pthread_main_np() == 1 {
         runNativeMenuControllerSync(label: label, operation)
         return
     }
