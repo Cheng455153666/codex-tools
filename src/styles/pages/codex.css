@@ -4703,6 +4703,100 @@
   text-overflow: ellipsis;
 }
 
+.codex-session-restore-modal {
+  width: min(760px, calc(100vw - 32px));
+}
+
+.codex-session-restore-modal .modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+.codex-session-restore-modal__hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.codex-session-restore-modal__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.codex-session-restore-modal__empty h3,
+.codex-session-restore-modal__empty p {
+  margin: 0;
+}
+
+.codex-session-restore-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.codex-session-restore-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.codex-session-restore-row:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.codex-session-restore-row__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.codex-session-restore-row__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.codex-session-restore-row__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.codex-session-restore-row__meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.codex-session-restore-row__cwd {
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+}
+
 @media (max-width: 860px) {
   .codex-provider-manager-page .codex-quick-config-grid {
     grid-template-columns: 1fr;
@@ -4719,6 +4813,10 @@
 
   .codex-session-folder__row,
   .codex-session-row {
+    align-items: flex-start;
+  }
+
+  .codex-session-restore-row {
     align-items: flex-start;
   }
 }

@@ -39,6 +39,7 @@ import * as codexService from '../services/codexService';
 import { TagEditModal } from '../components/TagEditModal';
 import { ExportJsonModal } from '../components/ExportJsonModal';
 import { ModalErrorMessage } from '../components/ModalErrorMessage';
+import { PaginationControls } from '../components/PaginationControls';
 import { CodexAccountGroupModal, CodexAddToGroupModal } from '../components/CodexAccountGroupModal';
 import {
   type CodexAccountGroup,
@@ -67,6 +68,7 @@ import { CodexModelProviderManager } from '../components/codex/CodexModelProvide
 import { QuickSettingsPopover } from '../components/QuickSettingsPopover';
 import { useProviderAccountsPage } from '../hooks/useProviderAccountsPage';
 import { MultiSelectFilterDropdown, type MultiSelectFilterOption } from '../components/MultiSelectFilterDropdown';
+import { SingleSelectFilterDropdown } from '../components/SingleSelectFilterDropdown';
 import type { CodexAccount } from '../types/codex';
 import {
   CODEX_CODE_REVIEW_QUOTA_VISIBILITY_CHANGED_EVENT,
@@ -91,6 +93,12 @@ import {
   buildValidAccountsFilterOption,
   splitValidityFilterValues,
 } from '../utils/accountValidityFilter';
+import {
+  buildPaginatedGroups,
+  buildPaginationPageSizeStorageKey,
+  isEveryIdSelected,
+  usePagination,
+} from '../hooks/usePagination';
 
 const CODEX_TOKEN_SINGLE_EXAMPLE = `{
   "tokens": {
@@ -1750,6 +1758,16 @@ export function CodexAccountsPage() {
 
   const filteredIds = useMemo(() => filteredAccounts.map((account) => account.id), [filteredAccounts]);
   const exportSelectionCount = getScopedSelectedCount(filteredIds);
+  const pagination = usePagination({
+    items: filteredAccounts,
+    storageKey: buildPaginationPageSizeStorageKey('Codex'),
+  });
+  const paginatedAccounts = pagination.pageItems;
+  const paginatedIds = useMemo(() => paginatedAccounts.map((account) => account.id), [paginatedAccounts]);
+  const isAllPaginatedSelected = useMemo(
+    () => isEveryIdSelected(selected, paginatedIds),
+    [paginatedIds, selected],
+  );
 
   const groupedAccounts = useMemo(() => {
     if (!groupByTag) return [] as Array<[string, typeof filteredAccounts]>;
@@ -1763,6 +1781,11 @@ export function CodexAccountsPage() {
     });
     return Array.from(groups.entries()).sort(([a], [b]) => { if (a === untaggedKey) return 1; if (b === untaggedKey) return -1; return a.localeCompare(b); });
   }, [filteredAccounts, groupByTag, normalizeTag, tagFilter, untaggedKey]);
+
+  const paginatedGroupedAccounts = useMemo(
+    () => buildPaginatedGroups(groupedAccounts, paginatedAccounts),
+    [groupedAccounts, paginatedAccounts],
+  );
 
   useEffect(() => {
     const teamAccountIds = filteredAccounts
@@ -2035,7 +2058,7 @@ export function CodexAccountsPage() {
               <button
                 className="card-action-btn export-btn"
                 onClick={() => handleExportByIds([account.id], resolveSingleExportBaseName(account))}
-                title={t('common.shared.export', '导出')}
+                title={t('common.shared.export.title', '导出')}
               >
                 <Upload size={14} />
               </button>
@@ -2221,7 +2244,7 @@ export function CodexAccountsPage() {
             <button
               className="action-btn"
               onClick={() => handleExportByIds([account.id], resolveSingleExportBaseName(account))}
-              title={t('common.shared.export', '导出')}
+              title={t('common.shared.export.title', '导出')}
             >
               <Upload size={14} />
             </button>
@@ -2265,9 +2288,12 @@ export function CodexAccountsPage() {
               <button type="button" className={`tag-filter-btn ${tagFilter.length > 0 ? 'active' : ''}`} onClick={() => setShowTagFilter((prev) => !prev)} aria-label={t('accounts.filterTags', '标签筛选')}>
                 <Tag size={14} />{tagFilter.length > 0 ? `${t('accounts.filterTagsCount', '标签')}(${tagFilter.length})` : t('accounts.filterTags', '标签筛选')}
               </button>
-              {showTagFilter && (<div className="tag-filter-panel">
+              {showTagFilter && (<div
+                ref={page.tagFilterPanelRef}
+                className={`tag-filter-panel ${page.tagFilterPanelPlacement === 'top' ? 'open-top' : ''}`}
+              >
                 {availableTags.length === 0 ? (<div className="tag-filter-empty">{t('accounts.noAvailableTags', '暂无可用标签')}</div>) : (
-                  <div className="tag-filter-options">{availableTags.map((tag) => (
+                  <div className="tag-filter-options" style={page.tagFilterScrollContainerStyle}>{availableTags.map((tag) => (
                     <label key={tag} className={`tag-filter-option ${tagFilter.includes(tag) ? 'selected' : ''}`}>
                       <input type="checkbox" checked={tagFilter.includes(tag)} onChange={() => toggleTagFilterValue(tag)} /><span className="tag-filter-name">{tag}</span>
                       <button type="button" className="tag-filter-delete" onClick={(e) => { e.preventDefault(); e.stopPropagation(); requestDeleteTag(tag); }} aria-label={t('accounts.deleteTagAria', { tag, defaultValue: '删除标签 {{tag}}' })}><X size={12} /></button>
@@ -2277,15 +2303,19 @@ export function CodexAccountsPage() {
               </div>)}
             </div>
 
-            <div className="sort-select"><ArrowDownWideNarrow size={14} className="sort-icon" />
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label={t('common.shared.sortLabel', '排序')}>
-                <option value="created_at">{t('common.shared.sort.createdAt', '按创建时间')}</option>
-                <option value="weekly">{t('codex.sort.weekly', '按周配额')}</option>
-                <option value="hourly">{t('codex.sort.hourly', '按5小时配额')}</option>
-                <option value="weekly_reset">{t('codex.sort.weeklyReset', '按周配额重置时间')}</option>
-                <option value="hourly_reset">{t('codex.sort.hourlyReset', '按5小时配额重置时间')}</option>
-              </select>
-            </div>
+            <SingleSelectFilterDropdown
+              value={sortBy}
+              options={[
+                { value: 'created_at', label: t('common.shared.sort.createdAt', '按创建时间') },
+                { value: 'weekly', label: t('codex.sort.weekly', '按周配额') },
+                { value: 'hourly', label: t('codex.sort.hourly', '按5小时配额') },
+                { value: 'weekly_reset', label: t('codex.sort.weeklyReset', '按周配额重置时间') },
+                { value: 'hourly_reset', label: t('codex.sort.hourlyReset', '按5小时配额重置时间') },
+              ]}
+              ariaLabel={t('common.shared.sortLabel', '排序')}
+              icon={<ArrowDownWideNarrow size={14} />}
+              onChange={setSortBy}
+            />
             <button className="sort-direction-btn" onClick={() => setSortDirection((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
               title={sortDirection === 'desc' ? t('common.shared.sort.descTooltip', '当前：降序，点击切换为升序') : t('common.shared.sort.ascTooltip', '当前：升序，点击切换为降序')}
               aria-label={t('common.shared.sort.toggleDirection', '切换排序方向')}>{sortDirection === 'desc' ? '⬇' : '⬆'}</button>
@@ -2297,7 +2327,7 @@ export function CodexAccountsPage() {
             <button className="btn btn-secondary icon-only" onClick={togglePrivacyMode} title={privacyModeEnabled ? t('privacy.showSensitive', '显示邮箱') : t('privacy.hideSensitive', '隐藏邮箱')}>
               {privacyModeEnabled ? <EyeOff size={14} /> : <Eye size={14} />}</button>
             <button className="btn btn-secondary export-btn icon-only" onClick={() => void handleExport(filteredIds)} disabled={exporting || filteredIds.length === 0}
-              title={exportSelectionCount > 0 ? `${t('common.shared.export', '导出')} (${exportSelectionCount})` : t('common.shared.export', '导出')}><Upload size={14} /></button>
+              title={exportSelectionCount > 0 ? `${t('common.shared.export.title', '导出')} (${exportSelectionCount})` : t('common.shared.export.title', '导出')}><Upload size={14} /></button>
             {selected.size > 0 && (<>
               <button className="btn btn-secondary icon-only" onClick={() => setShowAddToCodexGroupModal(true)} title={t('codex.groups.addToGroup', '添加至分组')}><FolderPlus size={14} /></button>
               <button className="btn btn-danger icon-only" onClick={handleBatchDelete} title={`${t('common.delete', '删除')} (${selected.size})`}><Trash2 size={14} /></button>
@@ -2321,47 +2351,62 @@ export function CodexAccountsPage() {
         ) : overviewLayoutMode === 'compact' ? (
           groupByTag ? (
             <div className="tag-group-list">
-              {groupedAccounts.map(([gk, ga]) => (
-                <div key={gk} className="tag-group-section">
+              {paginatedGroupedAccounts.map(({ groupKey, items, totalCount }) => (
+                <div key={groupKey} className="tag-group-section">
                   <div className="tag-group-header">
-                    <span className="tag-group-title">{resolveGroupLabel(gk)}</span>
-                    <span className="tag-group-count">{ga.length}</span>
+                    <span className="tag-group-title">{resolveGroupLabel(groupKey)}</span>
+                    <span className="tag-group-count">{totalCount}</span>
                   </div>
-                  <div className="codex-compact-list">{renderCompactRows(ga, gk)}</div>
+                  <div className="codex-compact-list">{renderCompactRows(items, groupKey)}</div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="codex-compact-list">{renderCompactRows(filteredAccounts)}</div>
+            <div className="codex-compact-list">{renderCompactRows(paginatedAccounts)}</div>
           )
         ) : viewMode === 'grid' ? (
         <div className="grid-view-container">
-          {filteredAccounts.length > 0 && (
+          {paginatedAccounts.length > 0 && (
             <div className="grid-view-header" style={{ marginBottom: '12px', paddingLeft: '4px' }}>
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-color)' }}>
-                <input type="checkbox" checked={selected.size === filteredAccounts.length && filteredAccounts.length > 0} onChange={() => toggleSelectAll(filteredAccounts.map((a) => a.id))} />
+                <input type="checkbox" checked={isAllPaginatedSelected} onChange={() => toggleSelectAll(paginatedIds)} />
                 {t('common.selectAll', '全选')}
               </label>
             </div>
           )}
-          {groupByTag ? (<div className="tag-group-list">{groupedAccounts.map(([gk, ga]) => (<div key={gk} className="tag-group-section"><div className="tag-group-header"><span className="tag-group-title">{resolveGroupLabel(gk)}</span><span className="tag-group-count">{ga.length}</span></div>
-            <div className="tag-group-grid codex-accounts-grid">{renderGridCards(ga, gk)}</div></div>))}</div>
-          ) : (<div className="codex-accounts-grid">{renderGridCards(filteredAccounts)}</div>)}
+          {groupByTag ? (<div className="tag-group-list">{paginatedGroupedAccounts.map(({ groupKey, items, totalCount }) => (<div key={groupKey} className="tag-group-section"><div className="tag-group-header"><span className="tag-group-title">{resolveGroupLabel(groupKey)}</span><span className="tag-group-count">{totalCount}</span></div>
+            <div className="tag-group-grid codex-accounts-grid">{renderGridCards(items, groupKey)}</div></div>))}</div>
+          ) : (<div className="codex-accounts-grid">{renderGridCards(paginatedAccounts)}</div>)}
         </div>
       ) : groupByTag ? (
           <div className="account-table-container grouped"><table className="account-table"><thead><tr>
-            <th style={{ width: 40 }}><input type="checkbox" checked={selected.size === filteredAccounts.length && filteredAccounts.length > 0} onChange={() => toggleSelectAll(filteredAccounts.map((a) => a.id))} /></th>
+            <th style={{ width: 40 }}><input type="checkbox" checked={isAllPaginatedSelected} onChange={() => toggleSelectAll(paginatedIds)} /></th>
             <th style={{ width: 260 }}>{t('common.shared.columns.email', '账号')}</th><th style={{ width: 140 }}>{t('common.shared.columns.plan', '订阅')}</th>
             <th>{t('accounts.columns.quota', '配额状态')}</th><th className="sticky-action-header table-action-header">{t('common.shared.columns.actions', '操作')}</th></tr></thead>
-            <tbody>{groupedAccounts.map(([gk, ga]) => (<Fragment key={gk}><tr className="tag-group-row"><td colSpan={5}><div className="tag-group-header"><span className="tag-group-title">{resolveGroupLabel(gk)}</span><span className="tag-group-count">{ga.length}</span></div></td></tr>
-              {renderTableRows(ga, gk)}</Fragment>))}</tbody></table></div>
+            <tbody>{paginatedGroupedAccounts.map(({ groupKey, items, totalCount }) => (<Fragment key={groupKey}><tr className="tag-group-row"><td colSpan={5}><div className="tag-group-header"><span className="tag-group-title">{resolveGroupLabel(groupKey)}</span><span className="tag-group-count">{totalCount}</span></div></td></tr>
+              {renderTableRows(items, groupKey)}</Fragment>))}</tbody></table></div>
         ) : (
           <div className="account-table-container"><table className="account-table"><thead><tr>
-            <th style={{ width: 40 }}><input type="checkbox" checked={selected.size === filteredAccounts.length && filteredAccounts.length > 0} onChange={() => toggleSelectAll(filteredAccounts.map((a) => a.id))} /></th>
+            <th style={{ width: 40 }}><input type="checkbox" checked={isAllPaginatedSelected} onChange={() => toggleSelectAll(paginatedIds)} /></th>
             <th style={{ width: 260 }}>{t('common.shared.columns.email', '账号')}</th><th style={{ width: 140 }}>{t('common.shared.columns.plan', '订阅')}</th>
             <th>{t('accounts.columns.quota', '配额状态')}</th><th className="sticky-action-header table-action-header">{t('common.shared.columns.actions', '操作')}</th></tr></thead>
-            <tbody>{renderTableRows(filteredAccounts)}</tbody></table></div>
+            <tbody>{renderTableRows(paginatedAccounts)}</tbody></table></div>
         )}
+
+        <PaginationControls
+          totalItems={pagination.totalItems}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          pageSize={pagination.pageSize}
+          pageSizeOptions={pagination.pageSizeOptions}
+          rangeStart={pagination.rangeStart}
+          rangeEnd={pagination.rangeEnd}
+          canGoPrevious={pagination.canGoPrevious}
+          canGoNext={pagination.canGoNext}
+          onPageSizeChange={pagination.setPageSize}
+          onPreviousPage={pagination.goToPreviousPage}
+          onNextPage={pagination.goToNextPage}
+        />
 
         {showAddModal && (<div className="modal-overlay" onClick={closeAddModal}><div className="modal-content codex-add-modal" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header"><h2>{t('codex.addModal.title', '添加 Codex 账号')}</h2><button className="modal-close" onClick={closeAddModal} aria-label={t('common.close', '关闭')}><X /></button></div>
@@ -2927,7 +2972,7 @@ export function CodexAccountsPage() {
 
         <ExportJsonModal
           isOpen={showExportModal}
-          title={`${t('common.shared.export', '导出')} JSON`}
+          title={`${t('common.shared.export.title', '导出')} JSON`}
           jsonContent={exportJsonContent}
           hidden={exportJsonHidden}
           copied={exportJsonCopied}

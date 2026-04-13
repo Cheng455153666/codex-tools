@@ -641,13 +641,21 @@ async fn post_seat_management_json(
 
     if !status.is_success() {
         return Err(format!(
-            "请求 Windsurf {} 失败: status={}, body={}",
-            method, status, text
+            "请求 Windsurf {} 失败: status={}, body_len={}",
+            method,
+            status,
+            text.len()
         ));
     }
 
-    serde_json::from_str::<Value>(&text)
-        .map_err(|e| format!("解析 Windsurf {} 响应失败: {} (body={})", method, e, text))
+    serde_json::from_str::<Value>(&text).map_err(|e| {
+        format!(
+            "解析 Windsurf {} 响应失败: {} (body_len={})",
+            method,
+            e,
+            text.len()
+        )
+    })
 }
 
 async fn register_user(firebase_id_token: &str) -> Result<RegisterResult, String> {
@@ -1231,80 +1239,6 @@ pub async fn build_payload_from_token(token: &str) -> Result<WindsurfOAuthComple
     }
 
     Err("Token 格式不支持：请使用 Windsurf API Key 或 Firebase JWT".to_string())
-}
-
-const FIREBASE_API_KEY: &str = "AIzaSyDsOl-1XpT5err0Tcnx8FFod1H8gVGIycY";
-const FIREBASE_SIGN_IN_URL: &str =
-    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword";
-
-/// Firebase email+password login → idToken → RegisterUser → full account payload
-pub async fn build_payload_from_password(
-    email: &str,
-    password: &str,
-) -> Result<WindsurfOAuthCompletePayload, String> {
-    let email = email.trim();
-    if email.is_empty() || password.is_empty() {
-        return Err("邮箱和密码不能为空".to_string());
-    }
-
-    logger::log_info("[Windsurf PasswordLogin] 开始 Firebase 邮箱密码登录");
-
-    // Step 1: Firebase signInWithPassword
-    let url = format!("{}?key={}", FIREBASE_SIGN_IN_URL, FIREBASE_API_KEY);
-    let body = json!({
-        "email": email,
-        "password": password,
-        "returnSecureToken": true
-    });
-
-    let client = reqwest::Client::new();
-    let response = client
-        .post(&url)
-        .header("Content-Type", "application/json")
-        .json(&body)
-        .send()
-        .await
-        .map_err(|e| format!("Firebase 登录请求失败: {}", e))?;
-
-    let status = response.status();
-    let text = response
-        .text()
-        .await
-        .unwrap_or_else(|_| "<no-body>".to_string());
-
-    if !status.is_success() {
-        let error_msg = serde_json::from_str::<Value>(&text)
-            .ok()
-            .and_then(|v| {
-                v.get("error")
-                    .and_then(|e| e.get("message"))
-                    .and_then(Value::as_str)
-                    .map(|s| s.to_string())
-            })
-            .unwrap_or_else(|| text.clone());
-        let friendly = match error_msg.as_str() {
-            "EMAIL_NOT_FOUND" => "邮箱不存在".to_string(),
-            "INVALID_PASSWORD" => "密码错误".to_string(),
-            "INVALID_LOGIN_CREDENTIALS" => "邮箱或密码错误".to_string(),
-            "USER_DISABLED" => "账号已被禁用".to_string(),
-            "TOO_MANY_ATTEMPTS_TRY_LATER" => "尝试次数过多，请稍后再试".to_string(),
-            _ => format!("Firebase 登录失败: {}", error_msg),
-        };
-        return Err(friendly);
-    }
-
-    let firebase_resp: Value =
-        serde_json::from_str(&text).map_err(|e| format!("解析 Firebase 响应失败: {}", e))?;
-
-    let id_token = firebase_resp
-        .get("idToken")
-        .and_then(Value::as_str)
-        .ok_or_else(|| "Firebase 响应缺少 idToken".to_string())?;
-
-    logger::log_info("[Windsurf PasswordLogin] Firebase 登录成功，开始获取账号信息");
-
-    // Step 2: reuse existing flow – RegisterUser + GetPlanStatus etc.
-    build_payload_from_firebase_token(id_token, None).await
 }
 
 pub async fn build_payload_from_local_auth_status(

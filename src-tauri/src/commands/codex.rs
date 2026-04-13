@@ -55,6 +55,19 @@ pub async fn switch_codex_account(
     account_id: String,
 ) -> Result<CodexAccount, String> {
     let _ = codex_account::prepare_account_for_injection(&account_id).await?;
+    let codex_home = codex_account::get_codex_home();
+    let provider_before =
+        crate::modules::codex_session_visibility::read_history_visibility_provider_for_dir(
+            &codex_home,
+        )
+        .map(Some)
+        .unwrap_or_else(|error| {
+            logger::log_warn(&format!(
+                "切号前读取 Codex provider 失败，跳过自动修复预判: {}",
+                error
+            ));
+            None
+        });
 
     // 切换账号（写入 auth.json）
     let account = codex_account::switch_account(&account_id)?;
@@ -72,6 +85,41 @@ pub async fn switch_codex_account(
             "已同步更新 Codex 默认实例绑定账号: {}",
             account_id
         ));
+    }
+
+    let provider_after =
+        crate::modules::codex_session_visibility::read_history_visibility_provider_for_dir(
+            &codex_home,
+        )
+        .map(Some)
+        .unwrap_or_else(|error| {
+            logger::log_warn(&format!(
+                "切号后读取 Codex provider 失败，跳过自动修复可见性: {}",
+                error
+            ));
+            None
+        });
+    let should_repair_visibility = match (provider_before.as_deref(), provider_after.as_deref()) {
+        (Some(before), Some(after)) => before != after,
+        (None, Some(_)) => true,
+        _ => false,
+    };
+    if should_repair_visibility {
+        match crate::modules::codex_session_visibility::repair_session_visibility_across_instances()
+        {
+            Ok(summary) => {
+                logger::log_info(&format!(
+                    "Codex 切号后已自动执行历史会话可见性修复: {}",
+                    summary.message
+                ));
+            }
+            Err(error) => {
+                logger::log_warn(&format!(
+                    "Codex 切号成功，但自动修复历史会话可见性失败，请稍后在会话管理中手动补跑: {}",
+                    error
+                ));
+            }
+        }
     }
 
     let user_config = config::get_user_config();
@@ -127,10 +175,8 @@ pub async fn switch_codex_account(
             Ok(()) => {
                 if user_config.hermes_gateway_restart_on_switch {
                     if let Err(e) = hermes_auth::restart_gateway() {
-                        logger::log_warn(&format!("Hermes gateway 重启失败: {}", e));
+                        logger::log_warn(&format!("Hermes Gateway 重启失败: {}", e));
                     }
-                } else {
-                    logger::log_info("已关闭切换 Codex 后自动执行 hermes gateway restart");
                 }
             }
             Err(e) => {
@@ -138,7 +184,7 @@ pub async fn switch_codex_account(
             }
         }
     } else {
-        logger::log_info("已关闭切换 Codex 时覆盖 Hermes 中的 openai-codex 登录信息");
+        logger::log_info("已关闭切换 Codex 时覆盖 Hermes 登录信息");
     }
 
     if user_config.codex_launch_on_switch {
