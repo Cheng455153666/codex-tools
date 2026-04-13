@@ -166,6 +166,8 @@ pub struct GeneralConfig {
     pub codex_auto_switch_primary_threshold: i32,
     /// Codex secondary_window 自动切号阈值（百分比）
     pub codex_auto_switch_secondary_threshold: i32,
+    /// Codex 自动切号候选账号的 5h 剩余额度最低要求（百分比）
+    pub codex_auto_switch_candidate_hourly_threshold: i32,
     /// Codex 自动切号账号范围模式：all_accounts | selected_accounts
     pub codex_auto_switch_account_scope_mode: String,
     /// Codex 自动切号指定账号（账号 ID）
@@ -731,6 +733,8 @@ pub fn save_network_config(
         codex_auto_switch_enabled: current.codex_auto_switch_enabled,
         codex_auto_switch_primary_threshold: current.codex_auto_switch_primary_threshold,
         codex_auto_switch_secondary_threshold: current.codex_auto_switch_secondary_threshold,
+        codex_auto_switch_candidate_hourly_threshold: current
+            .codex_auto_switch_candidate_hourly_threshold,
         codex_auto_switch_account_scope_mode: current.codex_auto_switch_account_scope_mode,
         codex_auto_switch_selected_account_ids: current.codex_auto_switch_selected_account_ids,
         quota_alert_enabled: current.quota_alert_enabled,
@@ -986,6 +990,8 @@ pub fn get_general_config(app: tauri::AppHandle) -> Result<GeneralConfig, String
         codex_auto_switch_enabled: user_config.codex_auto_switch_enabled,
         codex_auto_switch_primary_threshold: user_config.codex_auto_switch_primary_threshold,
         codex_auto_switch_secondary_threshold: user_config.codex_auto_switch_secondary_threshold,
+        codex_auto_switch_candidate_hourly_threshold: user_config
+            .codex_auto_switch_candidate_hourly_threshold,
         codex_auto_switch_account_scope_mode: user_config.codex_auto_switch_account_scope_mode,
         codex_auto_switch_selected_account_ids: user_config.codex_auto_switch_selected_account_ids,
         quota_alert_enabled: user_config.quota_alert_enabled,
@@ -1102,6 +1108,7 @@ pub fn save_general_config(
     codex_auto_switch_enabled: Option<bool>,
     codex_auto_switch_primary_threshold: Option<i32>,
     codex_auto_switch_secondary_threshold: Option<i32>,
+    codex_auto_switch_candidate_hourly_threshold: Option<i32>,
     codex_auto_switch_account_scope_mode: Option<String>,
     codex_auto_switch_selected_account_ids: Option<Vec<String>>,
     quota_alert_enabled: Option<bool>,
@@ -1321,6 +1328,9 @@ pub fn save_general_config(
             .unwrap_or(current.codex_auto_switch_primary_threshold),
         codex_auto_switch_secondary_threshold: codex_auto_switch_secondary_threshold
             .unwrap_or(current.codex_auto_switch_secondary_threshold),
+        codex_auto_switch_candidate_hourly_threshold: codex_auto_switch_candidate_hourly_threshold
+            .unwrap_or(current.codex_auto_switch_candidate_hourly_threshold)
+            .clamp(0, 100),
         codex_auto_switch_account_scope_mode: normalize_auto_switch_account_scope_mode(
             codex_auto_switch_account_scope_mode
                 .as_deref()

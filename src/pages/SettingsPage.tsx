@@ -132,6 +132,7 @@ interface GeneralConfig {
   codex_auto_switch_enabled?: boolean;
   codex_auto_switch_primary_threshold?: number;
   codex_auto_switch_secondary_threshold?: number;
+  codex_auto_switch_candidate_hourly_threshold?: number;
   codex_auto_switch_account_scope_mode?: string;
   codex_auto_switch_selected_account_ids?: string[];
   quota_alert_enabled: boolean;
@@ -388,6 +389,8 @@ export function SettingsPage() {
     useState<AutoSwitchAccountScopeMode>(AUTO_SWITCH_SCOPE_ALL_ACCOUNTS);
   const [autoSwitchSelectedAccountIds, setAutoSwitchSelectedAccountIds] = useState<string[]>([]);
   const [codexAutoSwitchEnabled, setCodexAutoSwitchEnabled] = useState(false);
+  const [codexAutoSwitchCandidateHourlyThreshold, setCodexAutoSwitchCandidateHourlyThreshold] =
+    useState('100');
   const [codexAutoSwitchAccountScopeMode, setCodexAutoSwitchAccountScopeMode] =
     useState<AutoSwitchAccountScopeMode>(AUTO_SWITCH_SCOPE_ALL_ACCOUNTS);
   const [codexAutoSwitchSelectedAccountIds, setCodexAutoSwitchSelectedAccountIds] = useState<
@@ -705,6 +708,10 @@ export function SettingsPage() {
       ? Math.min(2, Math.max(0.8, parsedUiScale))
       : 1;
     const parsedAutoSwitchThreshold = Number.parseInt(autoSwitchThreshold, 10);
+    const parsedCodexAutoSwitchCandidateHourlyThreshold = Number.parseInt(
+      codexAutoSwitchCandidateHourlyThreshold,
+      10,
+    );
     const parsedQuotaAlertThreshold = Number.parseInt(quotaAlertThreshold, 10);
     const parsedCodexQuotaAlertThreshold = Number.parseInt(codexQuotaAlertThreshold, 10);
     const parsedGhcpQuotaAlertThreshold = Number.parseInt(ghcpQuotaAlertThreshold, 10);
@@ -771,6 +778,12 @@ export function SettingsPage() {
           autoSwitchThreshold: Number.isNaN(parsedAutoSwitchThreshold) ? 20 : parsedAutoSwitchThreshold,
           autoSwitchAccountScopeMode,
           autoSwitchSelectedAccountIds,
+          codexAutoSwitchEnabled,
+          codexAutoSwitchCandidateHourlyThreshold: Number.isNaN(
+            parsedCodexAutoSwitchCandidateHourlyThreshold,
+          )
+            ? 100
+            : parsedCodexAutoSwitchCandidateHourlyThreshold,
           codexAutoSwitchAccountScopeMode,
           codexAutoSwitchSelectedAccountIds,
           quotaAlertEnabled,
@@ -881,6 +894,8 @@ export function SettingsPage() {
     autoSwitchThreshold,
     autoSwitchAccountScopeMode,
     autoSwitchSelectedAccountIds,
+    codexAutoSwitchEnabled,
+    codexAutoSwitchCandidateHourlyThreshold,
     codexAutoSwitchAccountScopeMode,
     codexAutoSwitchSelectedAccountIds,
     quotaAlertEnabled,
@@ -1185,6 +1200,9 @@ export function SettingsPage() {
       );
       setAutoSwitchSelectedAccountIds(config.auto_switch_selected_account_ids ?? []);
       setCodexAutoSwitchEnabled(config.codex_auto_switch_enabled ?? false);
+      setCodexAutoSwitchCandidateHourlyThreshold(
+        String(config.codex_auto_switch_candidate_hourly_threshold ?? 100),
+      );
       setCodexAutoSwitchAccountScopeMode(
         normalizeAutoSwitchAccountScopeMode(config.codex_auto_switch_account_scope_mode),
       );
@@ -2403,6 +2421,51 @@ export function SettingsPage() {
                     />
                     <span className="slider"></span>
                   </label>
+                </div>
+              </div>
+              <div className="settings-row settings-row--align-start">
+                <div className="row-label">
+                  <div className="row-title">
+                    {t(
+                      'settings.general.codexAutoSwitchCandidateHourlyThreshold',
+                      'Codex 自动切号候选 5h 阈值',
+                    )}
+                  </div>
+                  <div className="row-desc">
+                    {t(
+                      'settings.general.codexAutoSwitchCandidateHourlyThresholdDesc',
+                      '候选账号的 5 小时剩余额度至少达到这个百分比，才允许自动切过去。默认 100%，低于说明别处正在使用。',
+                    )}
+                  </div>
+                </div>
+                <div className="row-control">
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    className="settings-select settings-select--input-mode settings-select--with-unit"
+                    value={codexAutoSwitchCandidateHourlyThreshold}
+                    placeholder={t('quickSettings.inputPercent', '输入百分比')}
+                    onChange={(e) =>
+                      setCodexAutoSwitchCandidateHourlyThreshold(
+                        sanitizeNumberInput(e.target.value),
+                      )
+                    }
+                    onBlur={() =>
+                      setCodexAutoSwitchCandidateHourlyThreshold(
+                        normalizeNumberInput(codexAutoSwitchCandidateHourlyThreshold, 0, 100),
+                      )
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        setCodexAutoSwitchCandidateHourlyThreshold(
+                          normalizeNumberInput(codexAutoSwitchCandidateHourlyThreshold, 0, 100),
+                        );
+                      }
+                    }}
+                  />
+                  <span className="settings-inline-unit">%</span>
                 </div>
               </div>
               <div className="settings-row settings-row--align-start">
