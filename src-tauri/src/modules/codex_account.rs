@@ -2531,7 +2531,7 @@ mod tests {
     use super::{
         build_account_storage_id, build_switch_candidate, extract_codex_tokens_from_value,
         get_accounts_dir, get_accounts_storage_path, get_current_account, list_accounts_checked,
-        load_account, load_account_index, read_api_provider_from_config_toml,
+        load_account, load_account_index, pick_best_candidate, read_api_provider_from_config_toml,
         read_quick_config_from_config_toml, resolve_api_provider_config, save_account,
         save_account_index, sync_account_from_auth_dir, validate_api_key_credentials,
         write_api_provider_to_config_toml, write_quick_config_to_config_toml,
@@ -2888,6 +2888,42 @@ mod tests {
         let candidate = build_switch_candidate(&account, 20, 20, 95);
 
         assert!(candidate.is_some());
+    }
+
+    #[test]
+    fn pick_best_candidate_prefers_higher_weekly_when_hourly_is_full_for_both() {
+        let high_weekly = build_switch_candidate(
+            &account_with_quota(
+                "candidate-high-weekly",
+                "high-weekly@example.com",
+                100,
+                90,
+                Some(true),
+                Some(true),
+            ),
+            20,
+            20,
+            100,
+        )
+        .expect("high weekly candidate");
+        let low_weekly = build_switch_candidate(
+            &account_with_quota(
+                "candidate-low-weekly",
+                "low-weekly@example.com",
+                100,
+                70,
+                Some(true),
+                Some(true),
+            ),
+            20,
+            20,
+            100,
+        )
+        .expect("low weekly candidate");
+
+        let picked = pick_best_candidate(vec![low_weekly, high_weekly]).expect("picked candidate");
+
+        assert_eq!(picked.id, "candidate-high-weekly");
     }
 
     #[test]
@@ -3559,6 +3595,8 @@ fn metric_margin_over_threshold(
 #[derive(Debug, Clone)]
 struct CodexSwitchCandidate {
     account: CodexAccount,
+    hourly_percentage: i32,
+    weekly_percentage: i32,
     min_margin: i32,
     min_percentage: i32,
     average_percentage: f64,
@@ -3600,6 +3638,8 @@ fn build_switch_candidate(
 
     Some(CodexSwitchCandidate {
         account: account.clone(),
+        hourly_percentage: quota.hourly_percentage.clamp(0, 100),
+        weekly_percentage: quota.weekly_percentage.clamp(0, 100),
         min_margin,
         min_percentage,
         average_percentage,
@@ -3614,6 +3654,13 @@ fn pick_best_candidate(mut candidates: Vec<CodexSwitchCandidate>) -> Option<Code
     candidates.sort_by(|a, b| {
         b.min_margin
             .cmp(&a.min_margin)
+            .then_with(|| {
+                if a.hourly_percentage == 100 && b.hourly_percentage == 100 {
+                    b.weekly_percentage.cmp(&a.weekly_percentage)
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            })
             .then_with(|| b.min_percentage.cmp(&a.min_percentage))
             .then_with(|| {
                 b.average_percentage
