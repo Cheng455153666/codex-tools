@@ -82,6 +82,8 @@ interface GeneralConfig {
   ghcp_opencode_auth_overwrite_on_switch: boolean;
   ghcp_launch_on_switch: boolean;
   openclaw_auth_overwrite_on_switch: boolean;
+  hermes_codex_auth_overwrite_on_switch: boolean;
+  hermes_gateway_restart_on_switch: boolean;
   codex_launch_on_switch: boolean;
   antigravity_dual_switch_no_restart_enabled: boolean;
   auto_switch_enabled: boolean;
@@ -488,6 +490,8 @@ export function QuickSettingsPopover({ type }: QuickSettingsPopoverProps) {
           ghcpOpencodeAuthOverwriteOnSwitch: merged.ghcp_opencode_auth_overwrite_on_switch,
           ghcpLaunchOnSwitch: merged.ghcp_launch_on_switch,
           openclawAuthOverwriteOnSwitch: merged.openclaw_auth_overwrite_on_switch,
+          hermesCodexAuthOverwriteOnSwitch: merged.hermes_codex_auth_overwrite_on_switch,
+          hermesGatewayRestartOnSwitch: merged.hermes_gateway_restart_on_switch,
           codexLaunchOnSwitch: merged.codex_launch_on_switch,
           antigravityDualSwitchNoRestartEnabled: merged.antigravity_dual_switch_no_restart_enabled,
           autoSwitchEnabled: merged.auto_switch_enabled,
@@ -1567,6 +1571,62 @@ export function QuickSettingsPopover({ type }: QuickSettingsPopoverProps) {
                         type="checkbox"
                         checked={config.codex_launch_on_switch}
                         onChange={(e) => saveConfig({ codex_launch_on_switch: e.target.checked })}
+                      />
+                      <span className="qs-switch-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="qs-row">
+                  <div className="qs-row-label">
+                    <Zap size={15} />
+                    <span>
+                      {t(
+                        'settings.general.hermesCodexAuthOverwrite',
+                        '切换 Codex 时同步 Hermes 登录信息'
+                      )}
+                    </span>
+                  </div>
+                  <div className="qs-row-control">
+                    <label className="qs-switch">
+                      <input
+                        type="checkbox"
+                        checked={config.hermes_codex_auth_overwrite_on_switch}
+                        onChange={(e) =>
+                          saveConfig(
+                            e.target.checked
+                              ? { hermes_codex_auth_overwrite_on_switch: true }
+                              : {
+                                  hermes_codex_auth_overwrite_on_switch: false,
+                                  hermes_gateway_restart_on_switch: false,
+                                }
+                          )
+                        }
+                      />
+                      <span className="qs-switch-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="qs-row">
+                  <div className="qs-row-label">
+                    <Zap size={15} />
+                    <span>
+                      {t(
+                        'settings.general.hermesGatewayRestartOnSwitch',
+                        '切换 Codex 后重启 Hermes Gateway'
+                      )}
+                    </span>
+                  </div>
+                  <div className="qs-row-control">
+                    <label className="qs-switch">
+                      <input
+                        type="checkbox"
+                        checked={config.hermes_gateway_restart_on_switch}
+                        disabled={!config.hermes_codex_auth_overwrite_on_switch}
+                        onChange={(e) =>
+                          saveConfig({ hermes_gateway_restart_on_switch: e.target.checked })
+                        }
                       />
                       <span className="qs-switch-slider"></span>
                     </label>

@@ -123,6 +123,8 @@ interface GeneralConfig {
   opencode_sync_on_switch: boolean;
   opencode_auth_overwrite_on_switch: boolean;
   openclaw_auth_overwrite_on_switch: boolean;
+  hermes_codex_auth_overwrite_on_switch: boolean;
+  hermes_gateway_restart_on_switch: boolean;
   codex_launch_on_switch: boolean;
   antigravity_dual_switch_no_restart_enabled: boolean;
   auto_switch_enabled: boolean;
@@ -381,6 +383,8 @@ export function SettingsPage() {
   const [opencodeSyncOnSwitch, setOpencodeSyncOnSwitch] = useState(false);
   const [opencodeAuthOverwriteOnSwitch, setOpencodeAuthOverwriteOnSwitch] = useState(false);
   const [openclawAuthOverwriteOnSwitch, setOpenclawAuthOverwriteOnSwitch] = useState(false);
+  const [hermesCodexAuthOverwriteOnSwitch, setHermesCodexAuthOverwriteOnSwitch] = useState(false);
+  const [hermesGatewayRestartOnSwitch, setHermesGatewayRestartOnSwitch] = useState(false);
   const [codexLaunchOnSwitch, setCodexLaunchOnSwitch] = useState(true);
   const [antigravityDualSwitchNoRestartEnabled, setAntigravityDualSwitchNoRestartEnabled] = useState(false);
   const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(false);
@@ -772,6 +776,8 @@ export function SettingsPage() {
           opencodeSyncOnSwitch,
           opencodeAuthOverwriteOnSwitch,
           openclawAuthOverwriteOnSwitch,
+          hermesCodexAuthOverwriteOnSwitch,
+          hermesGatewayRestartOnSwitch,
           codexLaunchOnSwitch,
           antigravityDualSwitchNoRestartEnabled,
           autoSwitchEnabled,
@@ -888,6 +894,8 @@ export function SettingsPage() {
     opencodeSyncOnSwitch,
     opencodeAuthOverwriteOnSwitch,
     openclawAuthOverwriteOnSwitch,
+    hermesCodexAuthOverwriteOnSwitch,
+    hermesGatewayRestartOnSwitch,
     codexLaunchOnSwitch,
     antigravityDualSwitchNoRestartEnabled,
     autoSwitchEnabled,
@@ -1189,6 +1197,10 @@ export function SettingsPage() {
       setOpencodeSyncOnSwitch(config.opencode_sync_on_switch ?? false);
       setOpencodeAuthOverwriteOnSwitch(config.opencode_auth_overwrite_on_switch ?? false);
       setOpenclawAuthOverwriteOnSwitch(config.openclaw_auth_overwrite_on_switch ?? false);
+      setHermesCodexAuthOverwriteOnSwitch(
+        config.hermes_codex_auth_overwrite_on_switch ?? false,
+      );
+      setHermesGatewayRestartOnSwitch(config.hermes_gateway_restart_on_switch ?? false);
       setCodexLaunchOnSwitch(config.codex_launch_on_switch ?? true);
       setAntigravityDualSwitchNoRestartEnabled(
         config.antigravity_dual_switch_no_restart_enabled ?? false
@@ -2524,6 +2536,72 @@ export function SettingsPage() {
                       type="checkbox"
                       checked={openclawAuthOverwriteOnSwitch}
                       onChange={(e) => setOpenclawAuthOverwriteOnSwitch(e.target.checked)}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="settings-row">
+                <div className="row-label">
+                  <div className="row-title">
+                    {t(
+                      'settings.general.hermesCodexAuthOverwrite',
+                      '切换 Codex 时同步 Hermes 登录信息',
+                    )}
+                  </div>
+                  <div className="row-desc">
+                    {t(
+                      'settings.general.hermesCodexAuthOverwriteDesc',
+                      '仅更新 ~/.hermes/auth.json 中 openai-codex 的 provider 与 credential_pool',
+                    )}
+                  </div>
+                </div>
+                <div className="row-control">
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={hermesCodexAuthOverwriteOnSwitch}
+                      onChange={(e) => {
+                        const enabled = e.target.checked;
+                        setHermesCodexAuthOverwriteOnSwitch(enabled);
+                        if (!enabled) {
+                          setHermesGatewayRestartOnSwitch(false);
+                        }
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="settings-row">
+                <div className="row-label">
+                  <div className="row-title">
+                    {t(
+                      'settings.general.hermesGatewayRestartOnSwitch',
+                      '切换 Codex 后重启 Hermes Gateway',
+                    )}
+                  </div>
+                  <div className="row-desc">
+                    {hermesCodexAuthOverwriteOnSwitch
+                      ? t(
+                          'settings.general.hermesGatewayRestartOnSwitchDesc',
+                          '在成功更新 ~/.hermes/auth.json 后执行 hermes gateway restart，让 Telegram 网关立即加载新凭据',
+                        )
+                      : t(
+                          'settings.general.hermesGatewayRestartRequiresOverwrite',
+                          '请先开启上面的 Hermes 登录信息同步，此开关才有意义',
+                        )}
+                  </div>
+                </div>
+                <div className="row-control">
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={hermesGatewayRestartOnSwitch}
+                      onChange={(e) => setHermesGatewayRestartOnSwitch(e.target.checked)}
+                      disabled={!hermesCodexAuthOverwriteOnSwitch}
                     />
                     <span className="slider"></span>
                   </label>

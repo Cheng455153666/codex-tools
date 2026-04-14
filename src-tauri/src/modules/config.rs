@@ -226,6 +226,12 @@ pub struct UserConfig {
     /// 切换 Codex 时是否覆盖 OpenClaw 登录信息
     #[serde(default = "default_openclaw_auth_overwrite_on_switch")]
     pub openclaw_auth_overwrite_on_switch: bool,
+    /// 切换 Codex 时是否覆盖 Hermes 中 openai-codex 登录信息
+    #[serde(default = "default_hermes_codex_auth_overwrite_on_switch")]
+    pub hermes_codex_auth_overwrite_on_switch: bool,
+    /// 切换 Codex 且同步 Hermes 后是否执行 hermes gateway restart
+    #[serde(default = "default_hermes_gateway_restart_on_switch")]
+    pub hermes_gateway_restart_on_switch: bool,
     /// 切换 Codex 时是否自动启动/重启 Codex App
     #[serde(default = "default_codex_launch_on_switch")]
     pub codex_launch_on_switch: bool,
@@ -581,6 +587,12 @@ fn default_ghcp_launch_on_switch() -> bool {
 fn default_openclaw_auth_overwrite_on_switch() -> bool {
     false
 }
+fn default_hermes_codex_auth_overwrite_on_switch() -> bool {
+    false
+}
+fn default_hermes_gateway_restart_on_switch() -> bool {
+    false
+}
 fn default_codex_launch_on_switch() -> bool {
     true
 }
@@ -775,6 +787,9 @@ impl Default for UserConfig {
             ),
             ghcp_launch_on_switch: default_ghcp_launch_on_switch(),
             openclaw_auth_overwrite_on_switch: default_openclaw_auth_overwrite_on_switch(),
+            hermes_codex_auth_overwrite_on_switch:
+                default_hermes_codex_auth_overwrite_on_switch(),
+            hermes_gateway_restart_on_switch: default_hermes_gateway_restart_on_switch(),
             codex_launch_on_switch: default_codex_launch_on_switch(),
             antigravity_dual_switch_no_restart_enabled:
                 default_antigravity_dual_switch_no_restart_enabled(),

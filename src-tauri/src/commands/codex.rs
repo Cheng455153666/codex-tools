@@ -2,8 +2,8 @@ use crate::models::codex::{
     CodexAccount, CodexApiProviderMode, CodexQuickConfig, CodexQuota, CodexTokens,
 };
 use crate::modules::{
-    codex_account, codex_oauth, codex_quota, codex_wakeup, codex_wakeup_scheduler, config, logger,
-    openclaw_auth, opencode_auth, process,
+    codex_account, codex_oauth, codex_quota, codex_wakeup, codex_wakeup_scheduler, config,
+    hermes_auth, logger, openclaw_auth, opencode_auth, process,
 };
 use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::AppHandle;
@@ -181,6 +181,25 @@ pub async fn switch_codex_account(
         }
     } else {
         logger::log_info("已关闭切换 Codex 时覆盖 OpenClaw 登录信息");
+    }
+
+    if user_config.hermes_codex_auth_overwrite_on_switch {
+        match hermes_auth::replace_openai_codex_entry_from_codex(&account) {
+            Ok(()) => {
+                if user_config.hermes_gateway_restart_on_switch {
+                    if let Err(e) = hermes_auth::restart_gateway() {
+                        logger::log_warn(&format!("Hermes gateway 重启失败: {}", e));
+                    }
+                } else {
+                    logger::log_info("已关闭切换 Codex 后自动执行 hermes gateway restart");
+                }
+            }
+            Err(e) => {
+                logger::log_warn(&format!("Hermes auth 同步失败: {}", e));
+            }
+        }
+    } else {
+        logger::log_info("已关闭切换 Codex 时覆盖 Hermes 中的 openai-codex 登录信息");
     }
 
     if user_config.codex_launch_on_switch {

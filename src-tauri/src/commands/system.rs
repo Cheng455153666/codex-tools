@@ -144,6 +144,10 @@ pub struct GeneralConfig {
     pub ghcp_launch_on_switch: bool,
     /// 切换 Codex 时是否覆盖 OpenClaw 登录信息
     pub openclaw_auth_overwrite_on_switch: bool,
+    /// 切换 Codex 时是否覆盖 Hermes 中 openai-codex 登录信息
+    pub hermes_codex_auth_overwrite_on_switch: bool,
+    /// 切换 Codex 且同步 Hermes 后是否执行 hermes gateway restart
+    pub hermes_gateway_restart_on_switch: bool,
     /// 切换 Codex 时是否自动启动/重启 Codex App
     pub codex_launch_on_switch: bool,
     /// Antigravity 切号是否启用“本地落盘 + 扩展无感”且不重启
@@ -721,6 +725,8 @@ pub fn save_network_config(
         ghcp_opencode_auth_overwrite_on_switch: current.ghcp_opencode_auth_overwrite_on_switch,
         ghcp_launch_on_switch: current.ghcp_launch_on_switch,
         openclaw_auth_overwrite_on_switch: current.openclaw_auth_overwrite_on_switch,
+        hermes_codex_auth_overwrite_on_switch: current.hermes_codex_auth_overwrite_on_switch,
+        hermes_gateway_restart_on_switch: current.hermes_gateway_restart_on_switch,
         codex_launch_on_switch: current.codex_launch_on_switch,
         antigravity_dual_switch_no_restart_enabled: current
             .antigravity_dual_switch_no_restart_enabled,
@@ -978,6 +984,8 @@ pub fn get_general_config(app: tauri::AppHandle) -> Result<GeneralConfig, String
         ghcp_opencode_auth_overwrite_on_switch: user_config.ghcp_opencode_auth_overwrite_on_switch,
         ghcp_launch_on_switch: user_config.ghcp_launch_on_switch,
         openclaw_auth_overwrite_on_switch: user_config.openclaw_auth_overwrite_on_switch,
+        hermes_codex_auth_overwrite_on_switch: user_config.hermes_codex_auth_overwrite_on_switch,
+        hermes_gateway_restart_on_switch: user_config.hermes_gateway_restart_on_switch,
         codex_launch_on_switch: user_config.codex_launch_on_switch,
         antigravity_dual_switch_no_restart_enabled: user_config
             .antigravity_dual_switch_no_restart_enabled,
@@ -1097,6 +1105,8 @@ pub fn save_general_config(
     ghcp_opencode_auth_overwrite_on_switch: Option<bool>,
     ghcp_launch_on_switch: Option<bool>,
     openclaw_auth_overwrite_on_switch: Option<bool>,
+    hermes_codex_auth_overwrite_on_switch: Option<bool>,
+    hermes_gateway_restart_on_switch: Option<bool>,
     codex_launch_on_switch: bool,
     antigravity_dual_switch_no_restart_enabled: Option<bool>,
     auto_switch_enabled: Option<bool>,
@@ -1225,6 +1235,13 @@ pub fn save_general_config(
     } else {
         false
     };
+    let next_hermes_codex_auth_overwrite_on_switch = hermes_codex_auth_overwrite_on_switch
+        .unwrap_or(current.hermes_codex_auth_overwrite_on_switch);
+    let next_hermes_gateway_restart_on_switch = if next_hermes_codex_auth_overwrite_on_switch {
+        hermes_gateway_restart_on_switch.unwrap_or(current.hermes_gateway_restart_on_switch)
+    } else {
+        false
+    };
     let current_app_auto_launch_enabled = current.app_auto_launch_enabled;
     #[cfg(target_os = "macos")]
     let hide_dock_icon_changed = current.hide_dock_icon != hide_dock_icon_value;
@@ -1301,6 +1318,8 @@ pub fn save_general_config(
         ghcp_launch_on_switch: ghcp_launch_on_switch.unwrap_or(current.ghcp_launch_on_switch),
         openclaw_auth_overwrite_on_switch: openclaw_auth_overwrite_on_switch
             .unwrap_or(current.openclaw_auth_overwrite_on_switch),
+        hermes_codex_auth_overwrite_on_switch: next_hermes_codex_auth_overwrite_on_switch,
+        hermes_gateway_restart_on_switch: next_hermes_gateway_restart_on_switch,
         codex_launch_on_switch,
         antigravity_dual_switch_no_restart_enabled: antigravity_dual_switch_no_restart_enabled
             .unwrap_or(current.antigravity_dual_switch_no_restart_enabled),
