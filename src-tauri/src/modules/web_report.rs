@@ -336,13 +336,18 @@ pub async fn start_server() {
         super::logger::log_warn("[WebReport] 配置了启用但 token 为空，网页查询服务未启动");
         return;
     }
+    if token == "change-this-token" {
+        set_actual_port(None);
+        super::logger::log_warn("[WebReport] 配置了默认弱 token，网页查询服务未启动");
+        return;
+    }
 
     let preferred_port = cfg.report_port;
     let mut port = preferred_port;
     let mut listener = None;
 
     for attempt in 0..PORT_RANGE {
-        let addr = format!("0.0.0.0:{}", port);
+        let addr = format!("127.0.0.1:{}", port);
         match TcpListener::bind(&addr).await {
             Ok(bound) => {
                 listener = Some(bound);
@@ -381,7 +386,7 @@ pub async fn start_server() {
 
     set_actual_port(Some(port));
     super::logger::log_info(&format!(
-        "[WebReport] 网页查询服务已启动: http://0.0.0.0:{}/report?token=***",
+        "[WebReport] 网页查询服务已启动: http://127.0.0.1:{}/report?token=***",
         port
     ));
 

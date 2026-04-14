@@ -1284,6 +1284,8 @@ async fn post_code_assist_json_with_retry(
 }
 
 async fn refresh_access_token(refresh_token: &str) -> Result<GoogleTokenRefreshResponse, String> {
+    let client_id = gemini_oauth::gemini_oauth_client_id();
+    let client_secret = gemini_oauth::gemini_oauth_client_secret();
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(20))
         .build()
@@ -1293,8 +1295,8 @@ async fn refresh_access_token(refresh_token: &str) -> Result<GoogleTokenRefreshR
         .post(GOOGLE_TOKEN_ENDPOINT)
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .form(&[
-            ("client_id", gemini_oauth::gemini_oauth_client_id()),
-            ("client_secret", gemini_oauth::gemini_oauth_client_secret()),
+            ("client_id", client_id.as_str()),
+            ("client_secret", client_secret.as_str()),
             ("refresh_token", refresh_token),
             ("grant_type", "refresh_token"),
         ])
