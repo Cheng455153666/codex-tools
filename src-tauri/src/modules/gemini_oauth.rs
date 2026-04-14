@@ -14,9 +14,8 @@ use crate::modules::logger;
 const GEMINI_OAUTH_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
 const GEMINI_OAUTH_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL: &str = "https://www.googleapis.com/oauth2/v2/userinfo";
-const GEMINI_OAUTH_CLIENT_ID: &str =
-    "681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com";
-const GEMINI_OAUTH_CLIENT_SECRET: &str = "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";
+const DEFAULT_GEMINI_OAUTH_CLIENT_ID: &str = "set-COCKPIT_GEMINI_OAUTH_CLIENT_ID";
+const DEFAULT_GEMINI_OAUTH_CLIENT_SECRET: &str = "set-COCKPIT_GEMINI_OAUTH_CLIENT_SECRET";
 const OAUTH_TIMEOUT_SECONDS: i64 = 300;
 const OAUTH_CALLBACK_PATH: &str = "/oauth2callback";
 const OAUTH_POLL_INTERVAL_SECONDS: u64 = 1;
@@ -93,12 +92,18 @@ fn normalize_non_empty(value: Option<&str>) -> Option<String> {
     })
 }
 
-pub fn gemini_oauth_client_id() -> &'static str {
-    GEMINI_OAUTH_CLIENT_ID
+pub fn gemini_oauth_client_id() -> String {
+    std::env::var("COCKPIT_GEMINI_OAUTH_CLIENT_ID")
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| DEFAULT_GEMINI_OAUTH_CLIENT_ID.to_string())
 }
 
-pub fn gemini_oauth_client_secret() -> &'static str {
-    GEMINI_OAUTH_CLIENT_SECRET
+pub fn gemini_oauth_client_secret() -> String {
+    std::env::var("COCKPIT_GEMINI_OAUTH_CLIENT_SECRET")
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| DEFAULT_GEMINI_OAUTH_CLIENT_SECRET.to_string())
 }
 
 fn find_available_callback_port() -> Result<u16, String> {
@@ -119,7 +124,7 @@ fn build_auth_url(callback_url: &str, state_token: &str) -> Result<String, Strin
 
     url.query_pairs_mut()
         .append_pair("response_type", "code")
-        .append_pair("client_id", gemini_oauth_client_id())
+        .append_pair("client_id", gemini_oauth_client_id().as_str())
         .append_pair("redirect_uri", callback_url)
         .append_pair("access_type", "offline")
         .append_pair("scope", &scope)
@@ -369,6 +374,8 @@ async fn exchange_code_for_tokens(
     code: &str,
     redirect_uri: &str,
 ) -> Result<GoogleTokenResponse, String> {
+    let client_id = gemini_oauth_client_id();
+    let client_secret = gemini_oauth_client_secret();
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(20))
         .build()
@@ -379,8 +386,8 @@ async fn exchange_code_for_tokens(
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .form(&[
             ("code", code),
-            ("client_id", gemini_oauth_client_id()),
-            ("client_secret", gemini_oauth_client_secret()),
+            ("client_id", client_id.as_str()),
+            ("client_secret", client_secret.as_str()),
             ("redirect_uri", redirect_uri),
             ("grant_type", "authorization_code"),
         ])

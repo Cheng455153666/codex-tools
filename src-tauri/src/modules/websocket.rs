@@ -4,13 +4,17 @@
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::net::{IpAddr, SocketAddr};
+#[cfg(target_os = "windows")]
+use std::net::IpAddr;
+use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
+use tokio_tungstenite::tungstenite::handshake::server::{ErrorResponse, Request, Response};
+use tokio_tungstenite::tungstenite::http::StatusCode;
 use tokio_tungstenite::tungstenite::Message;
 
-use super::config::{get_preferred_port, init_server_status, PORT_RANGE};
+use super::config::{get_preferred_port, get_user_config, init_server_status, PORT_RANGE};
 
 /// 消息类型
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -116,14 +120,6 @@ pub enum WsMessage {
         current_account_id: Option<String>,
     },
 
-    /// 账号列表响应（包含 Token）
-    #[serde(rename = "response.accounts_with_tokens")]
-    AccountsWithTokensResponse {
-        request_id: String,
-        accounts: Vec<AccountTokenInfo>,
-        current_account_id: Option<String>,
-    },
-
     /// 当前账号响应
     #[serde(rename = "response.current_account")]
     CurrentAccountResponse {
@@ -167,24 +163,6 @@ pub struct AccountInfo {
     pub last_used: i64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subscription_tier: Option<String>,
-}
-
-/// 账号信息（包含 Token，用于同步）
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AccountTokenInfo {
-    pub id: String,
-    pub email: String,
-    pub name: Option<String>,
-    pub is_current: bool,
-    pub disabled: bool,
-    pub has_fingerprint: bool,
-    pub last_used: i64,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub subscription_tier: Option<String>,
-    pub refresh_token: String,
-    pub access_token: String,
-    pub expires_at: i64,
-    pub project_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -450,6 +428,12 @@ pub async fn request_plugin_switch_account(
 
 /// 启动 WebSocket 服务（支持动态端口尝试）
 pub async fn start_server() {
+    let config = get_user_config();
+    if !config.ws_enabled {
+        crate::modules::logger::log_info("[WS] WebSocket 服务未启用，跳过启动");
+        return;
+    }
+
     // 从用户配置获取首选端口
     let preferred_port = get_preferred_port();
 
@@ -458,7 +442,7 @@ pub async fn start_server() {
     let mut listener = None;
 
     for attempt in 0..PORT_RANGE {
-        let addr = format!("0.0.0.0:{}", port);
+        let addr = format!("127.0.0.1:{}", port);
         match TcpListener::bind(&addr).await {
             Ok(l) => {
                 listener = Some(l);
@@ -513,9 +497,40 @@ pub async fn start_server() {
     }
 }
 
+fn is_allowed_ws_origin(origin: Option<&str>) -> bool {
+    let Some(origin) = origin.map(str::trim).filter(|value| !value.is_empty()) else {
+        return true;
+    };
+    let Ok(url) = url::Url::parse(origin) else {
+        return false;
+    };
+    match url.scheme() {
+        "file" | "vscode-webview" => true,
+        "http" | "https" => matches!(url.host_str(), Some("127.0.0.1" | "localhost" | "::1")),
+        _ => false,
+    }
+}
+
+fn websocket_handshake_callback(
+    request: &Request,
+    response: Response,
+) -> Result<Response, ErrorResponse> {
+    let origin = request
+        .headers()
+        .get("origin")
+        .and_then(|value| value.to_str().ok());
+    if is_allowed_ws_origin(origin) {
+        return Ok(response);
+    }
+
+    let mut error_response = ErrorResponse::new(Some("Forbidden WebSocket origin".to_string()));
+    *error_response.status_mut() = StatusCode::FORBIDDEN;
+    Err(error_response)
+}
+
 /// 处理单个客户端连接
 async fn handle_connection(server: Arc<WsServer>, stream: TcpStream, addr: SocketAddr) {
-    let ws_stream = match tokio_tungstenite::accept_async(stream).await {
+    let ws_stream = match tokio_tungstenite::accept_hdr_async(stream, websocket_handshake_callback).await {
         Ok(ws) => ws,
         Err(e) => {
             crate::modules::logger::log_error(&format!("[WS] 握手失败 {}: {}", addr, e));
@@ -630,18 +645,10 @@ async fn handle_client_message(
         }
 
         WsMessage::GetAccountsWithTokens { request_id } => {
-            crate::modules::logger::log_info("[WS] 收到获取账号列表(含Token)请求");
-
-            let response = match get_accounts_with_tokens_info() {
-                Ok((accounts, current_id)) => WsMessage::AccountsWithTokensResponse {
-                    request_id,
-                    accounts,
-                    current_account_id: current_id,
-                },
-                Err(e) => WsMessage::ErrorResponse {
-                    request_id,
-                    error: e,
-                },
+            crate::modules::logger::log_warn("[WS] 已拒绝获取账号 Token 的请求");
+            let response = WsMessage::ErrorResponse {
+                request_id,
+                error: "出于安全原因，WebSocket 不再提供账号 Token".to_string(),
             };
 
             if let Ok(json) = serde_json::to_string(&response) {
@@ -912,40 +919,6 @@ fn get_accounts_info() -> Result<(Vec<AccountInfo>, Option<String>), String> {
                 has_fingerprint: acc.fingerprint_id.is_some(),
                 last_used: acc.last_used,
                 subscription_tier,
-            }
-        })
-        .collect();
-
-    Ok((account_infos, current_id))
-}
-
-/// 获取账号列表信息（包含 Token）
-fn get_accounts_with_tokens_info() -> Result<(Vec<AccountTokenInfo>, Option<String>), String> {
-    use crate::modules::account;
-
-    let accounts = account::list_accounts()?;
-    let current_id = account::get_current_account_id()?;
-
-    let account_infos: Vec<AccountTokenInfo> = accounts
-        .iter()
-        .map(|acc| {
-            let subscription_tier = acc
-                .quota
-                .as_ref()
-                .and_then(|quota| quota.subscription_tier.clone());
-            AccountTokenInfo {
-                id: acc.id.clone(),
-                email: acc.email.clone(),
-                name: acc.name.clone(),
-                is_current: current_id.as_ref() == Some(&acc.id),
-                disabled: acc.disabled,
-                has_fingerprint: acc.fingerprint_id.is_some(),
-                last_used: acc.last_used,
-                subscription_tier,
-                refresh_token: acc.token.refresh_token.clone(),
-                access_token: acc.token.access_token.clone(),
-                expires_at: acc.token.expiry_timestamp,
-                project_id: acc.token.project_id.clone(),
             }
         })
         .collect();
