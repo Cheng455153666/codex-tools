@@ -920,6 +920,76 @@ fn normalize_optional_ref(value: Option<&str>) -> Option<String> {
     })
 }
 
+fn normalize_auto_renewal_date_value(raw: &str) -> Option<String> {
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    let normalized = trimmed
+        .replace('年', "-")
+        .replace('月', "-")
+        .replace('日', "")
+        .replace('/', "-")
+        .replace('.', "-");
+    let parts: Vec<&str> = normalized
+        .split('-')
+        .map(str::trim)
+        .filter(|part| !part.is_empty())
+        .collect();
+    if parts.len() != 3 {
+        return None;
+    }
+
+    let parsed_year = parts[0].parse::<i32>().ok();
+    let parsed_month = parts[1].parse::<u32>().ok();
+    let parsed_day = parts[2].parse::<u32>().ok();
+
+    match (parsed_year, parsed_month, parsed_day) {
+        (Some(mut year), Some(month), Some(day)) => {
+            if (0..100).contains(&year) {
+                year += 2000;
+            }
+            chrono::NaiveDate::from_ymd_opt(year, month, day)
+                .map(|date| date.format("%Y-%m-%d").to_string())
+        }
+        _ => None,
+    }
+}
+
+fn normalize_auto_renewal_date_input(value: Option<String>) -> Result<Option<String>, String> {
+    let normalized = normalize_optional_value(value);
+    match normalized {
+        Some(raw) => normalize_auto_renewal_date_value(&raw)
+            .ok_or_else(|| "自动续订时间格式无效，请输入如 2026年4月28日".to_string())
+            .map(Some),
+        None => Ok(None),
+    }
+}
+
+fn extract_auto_renewal_date_from_value(value: &serde_json::Value) -> Option<String> {
+    let raw = value
+        .get("auto_renewal_date")
+        .and_then(|item| item.as_str())
+        .or_else(|| value.get("renewal_date").and_then(|item| item.as_str()))
+        .or_else(|| value.get("renewalDate").and_then(|item| item.as_str()))
+        .or_else(|| value.get("autoRenewalDate").and_then(|item| item.as_str()))?;
+
+    normalize_auto_renewal_date_value(raw)
+}
+
+fn apply_import_metadata(
+    account: &mut CodexAccount,
+    source: &serde_json::Value,
+) -> Result<(), String> {
+    let incoming_auto_renewal_date = extract_auto_renewal_date_from_value(source);
+    if incoming_auto_renewal_date != account.auto_renewal_date {
+        account.auto_renewal_date = incoming_auto_renewal_date;
+        save_account(account)?;
+    }
+    Ok(())
+}
+
 fn should_force_refresh_token(message: &str) -> bool {
     let lower = message.to_ascii_lowercase();
     lower.contains("token_invalidated")
@@ -2286,16 +2356,26 @@ fn import_account_struct(account: CodexAccount) -> Result<CodexAccount, String> 
     if account.is_api_key_auth() || account.openai_api_key.is_some() {
         let api_key = normalize_optional_ref(account.openai_api_key.as_deref())
             .ok_or("API Key 账号缺少 OPENAI_API_KEY")?;
-        return upsert_api_key_account(
+        let mut imported = upsert_api_key_account(
             api_key,
             account.api_base_url.clone(),
             Some(account.api_provider_mode),
             account.api_provider_id.clone(),
             account.api_provider_name.clone(),
-        );
+        )?;
+        if imported.auto_renewal_date != account.auto_renewal_date {
+            imported.auto_renewal_date = account.auto_renewal_date.clone();
+            save_account(&imported)?;
+        }
+        return Ok(imported);
     }
 
-    upsert_account(account.tokens)
+    let mut imported = upsert_account(account.tokens)?;
+    if imported.auto_renewal_date != account.auto_renewal_date {
+        imported.auto_renewal_date = account.auto_renewal_date.clone();
+        save_account(&imported)?;
+    }
+    Ok(imported)
 }
 
 /// 从 JSON 字符串导入账号
@@ -2329,7 +2409,10 @@ pub fn import_from_json(json_content: &str) -> Result<Vec<CodexAccount>, String>
                 access_token: tokens.access_token,
                 refresh_token: tokens.refresh_token,
             };
-            let account = upsert_account_with_hints(tokens, account_id_hint, None)?;
+            let mut account = upsert_account_with_hints(tokens, account_id_hint, None)?;
+            let parsed_value: serde_json::Value = serde_json::from_str(json_content)
+                .map_err(|e| format!("JSON 格式错误: {}", e))?;
+            apply_import_metadata(&mut account, &parsed_value)?;
             return Ok(vec![account]);
         }
 
@@ -2376,7 +2459,8 @@ pub fn import_from_json(json_content: &str) -> Result<Vec<CodexAccount>, String>
                 }
 
                 if let Some((tokens, account_id_hint)) = extract_codex_tokens_from_value(&parsed) {
-                    let account = upsert_account_with_hints(tokens, account_id_hint, None)?;
+                    let mut account = upsert_account_with_hints(tokens, account_id_hint, None)?;
+                    apply_import_metadata(&mut account, &parsed)?;
                     return Ok(vec![account]);
                 }
 
@@ -2391,7 +2475,9 @@ pub fn import_from_json(json_content: &str) -> Result<Vec<CodexAccount>, String>
                 for item in items {
                     if let Some((tokens, account_id_hint)) = extract_codex_tokens_from_value(&item)
                     {
-                        result.push(upsert_account_with_hints(tokens, account_id_hint, None)?);
+                        let mut account = upsert_account_with_hints(tokens, account_id_hint, None)?;
+                        apply_import_metadata(&mut account, &item)?;
+                        result.push(account);
                         continue;
                     }
 
@@ -2530,8 +2616,9 @@ fn extract_codex_tokens_from_value(
 mod tests {
     use super::{
         build_account_storage_id, build_switch_candidate, extract_codex_tokens_from_value,
-        get_accounts_dir, get_accounts_storage_path, get_current_account, list_accounts_checked,
-        load_account, load_account_index, pick_best_candidate, read_api_provider_from_config_toml,
+        export_accounts, get_accounts_dir, get_accounts_storage_path, get_current_account,
+        import_from_json, list_accounts_checked, load_account, load_account_index,
+        normalize_auto_renewal_date_value, pick_best_candidate, read_api_provider_from_config_toml,
         read_quick_config_from_config_toml, resolve_api_provider_config, save_account,
         save_account_index, sync_account_from_auth_dir, validate_api_key_credentials,
         write_api_provider_to_config_toml, write_quick_config_to_config_toml,
@@ -2746,6 +2833,65 @@ mod tests {
         assert_eq!(tokens.access_token, "access.jwt.token");
         assert_eq!(tokens.refresh_token.as_deref(), Some("rt_123"));
         assert_eq!(account_id_hint.as_deref(), Some("acc_1"));
+    }
+
+    #[test]
+    fn normalize_auto_renewal_date_supports_common_formats() {
+        assert_eq!(
+            normalize_auto_renewal_date_value("2026年4月28日").as_deref(),
+            Some("2026-04-28")
+        );
+        assert_eq!(
+            normalize_auto_renewal_date_value("2026/4/28").as_deref(),
+            Some("2026-04-28")
+        );
+        assert_eq!(
+            normalize_auto_renewal_date_value("26-4-28").as_deref(),
+            Some("2026-04-28")
+        );
+    }
+
+    #[test]
+    fn import_export_roundtrip_preserves_auto_renewal_date() {
+        let _lock = TEST_ENV_LOCK.lock().unwrap_or_else(|err| err.into_inner());
+        let _guard = TestEnvGuard::new("codex-auto-renewal-roundtrip");
+
+        let tokens = make_codex_tokens(
+            "renewal@example.com",
+            "acc-renewal",
+            "org-renewal",
+            "renewal",
+            "refresh-renewal",
+        );
+        let mut account = CodexAccount::new(
+            build_account_storage_id(
+                "renewal@example.com",
+                Some("acc-renewal"),
+                Some("org-renewal"),
+            ),
+            "renewal@example.com".to_string(),
+            tokens,
+        );
+        account.account_id = Some("acc-renewal".to_string());
+        account.organization_id = Some("org-renewal".to_string());
+        account.auto_renewal_date = Some("2026-04-28".to_string());
+        save_account(&account).expect("save roundtrip account");
+
+        let mut index = CodexAccountIndex::new();
+        index.accounts.push(CodexAccountSummary {
+            id: account.id.clone(),
+            email: account.email.clone(),
+            plan_type: account.plan_type.clone(),
+            created_at: account.created_at,
+            last_used: account.last_used,
+        });
+        save_account_index(&index).expect("save roundtrip index");
+
+        let exported = export_accounts(std::slice::from_ref(&account.id)).expect("export accounts");
+        let imported = import_from_json(&exported).expect("import exported accounts");
+
+        assert_eq!(imported.len(), 1);
+        assert_eq!(imported[0].auto_renewal_date.as_deref(), Some("2026-04-28"));
     }
 
     #[test]
@@ -3173,7 +3319,7 @@ pub fn import_from_files(file_paths: Vec<String>) -> Result<CodexFileImportResul
     ));
 
     // 收集所有候选: (CodexTokens, account_id_hint, label)
-    let mut candidates: Vec<(CodexTokens, Option<String>, String)> = Vec::new();
+    let mut candidates: Vec<(CodexTokens, Option<String>, String, Option<String>)> = Vec::new();
 
     for file_path in &file_paths {
         let path = Path::new(file_path);
@@ -3203,7 +3349,12 @@ pub fn import_from_files(file_paths: Vec<String>) -> Result<CodexFileImportResul
         match &parsed {
             serde_json::Value::Object(_) => {
                 if let Some((tokens, hint)) = extract_codex_tokens_from_value(&parsed) {
-                    candidates.push((tokens, hint, filename_label));
+                    candidates.push((
+                        tokens,
+                        hint,
+                        filename_label,
+                        extract_auto_renewal_date_from_value(&parsed),
+                    ));
                 } else {
                     logger::log_error(&format!("未找到有效 Token {:?}", file_path));
                 }
@@ -3216,7 +3367,12 @@ pub fn import_from_files(file_paths: Vec<String>) -> Result<CodexFileImportResul
                             .and_then(|v| v.as_str())
                             .unwrap_or(&filename_label)
                             .to_string();
-                        candidates.push((tokens, hint, label));
+                        candidates.push((
+                            tokens,
+                            hint,
+                            label,
+                            extract_auto_renewal_date_from_value(item),
+                        ));
                     }
                 }
             }
@@ -3239,7 +3395,9 @@ pub fn import_from_files(file_paths: Vec<String>) -> Result<CodexFileImportResul
     let mut failed: Vec<CodexFileImportFailure> = Vec::new();
     let total = candidates.len();
 
-    for (index, (tokens, account_id_hint, label)) in candidates.into_iter().enumerate() {
+    for (index, (tokens, account_id_hint, label, auto_renewal_date)) in
+        candidates.into_iter().enumerate()
+    {
         // 发送进度事件
         if let Some(app_handle) = crate::get_app_handle() {
             use tauri::Emitter;
@@ -3254,7 +3412,18 @@ pub fn import_from_files(file_paths: Vec<String>) -> Result<CodexFileImportResul
         }
 
         match upsert_account_with_hints(tokens, account_id_hint, None) {
-            Ok(account) => {
+            Ok(mut account) => {
+                if auto_renewal_date != account.auto_renewal_date {
+                    account.auto_renewal_date = auto_renewal_date;
+                    if let Err(e) = save_account(&account) {
+                        logger::log_error(&format!("Codex 保存自动续订时间失败 {}: {}", label, e));
+                        failed.push(CodexFileImportFailure {
+                            email: label,
+                            error: e,
+                        });
+                        continue;
+                    }
+                }
                 logger::log_info(&format!("Codex 导入成功: {}", account.email));
                 imported.push(account);
             }
@@ -3414,6 +3583,19 @@ pub fn update_account_name(account_id: &str, name: String) -> Result<CodexAccoun
     }
 
     account.account_name = normalize_optional_value(Some(name));
+    save_account(&account)?;
+
+    Ok(account)
+}
+
+pub fn update_account_auto_renewal_date(
+    account_id: &str,
+    auto_renewal_date: String,
+) -> Result<CodexAccount, String> {
+    let mut account =
+        load_account(account_id).ok_or_else(|| format!("账号不存在: {}", account_id))?;
+
+    account.auto_renewal_date = normalize_auto_renewal_date_input(Some(auto_renewal_date))?;
     save_account(&account)?;
 
     Ok(account)

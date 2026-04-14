@@ -154,6 +154,16 @@ export async function updateCodexAccountName(accountId: string, name: string): P
   return await invoke('update_codex_account_name', { accountId, name });
 }
 
+export async function updateCodexAccountAutoRenewalDate(
+  accountId: string,
+  autoRenewalDate: string,
+): Promise<CodexAccount> {
+  return await invoke('update_codex_account_auto_renewal_date', {
+    accountId,
+    autoRenewalDate,
+  });
+}
+
 export async function updateCodexApiKeyCredentials(
   accountId: string,
   apiKey: string,

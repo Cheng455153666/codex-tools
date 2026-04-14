@@ -1,5 +1,53 @@
 use serde::{Deserialize, Serialize};
 
+fn normalize_codex_auto_renewal_date_value(raw: &str) -> Option<String> {
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    let normalized = trimmed
+        .replace('年', "-")
+        .replace('月', "-")
+        .replace('日', "")
+        .replace('/', "-")
+        .replace('.', "-");
+    let parts: Vec<&str> = normalized
+        .split('-')
+        .map(str::trim)
+        .filter(|part| !part.is_empty())
+        .collect();
+    if parts.len() != 3 {
+        return Some(trimmed.to_string());
+    }
+
+    let parsed_year = parts[0].parse::<i32>().ok();
+    let parsed_month = parts[1].parse::<u32>().ok();
+    let parsed_day = parts[2].parse::<u32>().ok();
+
+    match (parsed_year, parsed_month, parsed_day) {
+        (Some(mut year), Some(month), Some(day)) => {
+            if (0..100).contains(&year) {
+                year += 2000;
+            }
+            if let Some(date) = chrono::NaiveDate::from_ymd_opt(year, month, day) {
+                Some(date.format("%Y-%m-%d").to_string())
+            } else {
+                Some(trimmed.to_string())
+            }
+        }
+        _ => Some(trimmed.to_string()),
+    }
+}
+
+fn deserialize_codex_auto_renewal_date<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = Option::<String>::deserialize(deserializer)?;
+    Ok(value.and_then(|raw| normalize_codex_auto_renewal_date_value(&raw)))
+}
+
 /// Codex 认证模式
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
@@ -64,6 +112,15 @@ pub struct CodexAccount {
     pub account_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub account_structure: Option<String>,
+    #[serde(
+        default,
+        alias = "renewal_date",
+        alias = "renewalDate",
+        alias = "autoRenewalDate",
+        deserialize_with = "deserialize_codex_auto_renewal_date",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub auto_renewal_date: Option<String>,
     pub tokens: CodexTokens,
     pub quota: Option<CodexQuota>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -228,6 +285,7 @@ impl CodexAccount {
             organization_id: None,
             account_name: None,
             account_structure: None,
+            auto_renewal_date: None,
             tokens,
             quota: None,
             quota_error: None,

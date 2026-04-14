@@ -966,6 +966,22 @@
   white-space: nowrap;
 }
 
+.codex-accounts-page .codex-renewal-subline.high {
+  color: var(--success);
+}
+
+.codex-accounts-page .codex-renewal-subline.medium {
+  color: #f59e0b;
+}
+
+.codex-accounts-page .codex-renewal-subline.low {
+  color: #f97316;
+}
+
+.codex-accounts-page .codex-renewal-subline.critical {
+  color: var(--danger);
+}
+
 .codex-accounts-page .codex-provider-inline-line {
   display: flex;
   align-items: center;

@@ -79,6 +79,10 @@ interface CodexAccountState {
   importFromLocal: () => Promise<CodexAccount>;
   importFromJson: (jsonContent: string) => Promise<CodexAccount[]>;
   updateAccountName: (accountId: string, name: string) => Promise<CodexAccount>;
+  updateAccountAutoRenewalDate: (
+    accountId: string,
+    autoRenewalDate: string,
+  ) => Promise<CodexAccount>;
   updateApiKeyCredentials: (
     accountId: string,
     apiKey: string,
@@ -246,6 +250,16 @@ export const useCodexAccountStore = create<CodexAccountState>((set, get) => ({
 
   updateAccountName: async (accountId: string, name: string) => {
     const account = await codexService.updateCodexAccountName(accountId, name);
+    await get().fetchAccounts();
+    await get().fetchCurrentAccount();
+    return account;
+  },
+
+  updateAccountAutoRenewalDate: async (accountId: string, autoRenewalDate: string) => {
+    const account = await codexService.updateCodexAccountAutoRenewalDate(
+      accountId,
+      autoRenewalDate,
+    );
     await get().fetchAccounts();
     await get().fetchCurrentAccount();
     return account;
