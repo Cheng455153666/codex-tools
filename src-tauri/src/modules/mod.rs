@@ -33,6 +33,7 @@ pub mod gemini_oauth;
 pub mod github_copilot_account;
 pub mod github_copilot_instance;
 pub mod github_copilot_oauth;
+pub mod hermes_auth;
 pub mod group_settings;
 pub mod i18n;
 pub mod import;
