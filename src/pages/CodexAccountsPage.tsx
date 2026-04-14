@@ -180,6 +180,79 @@ function normalizeHttpBaseUrl(value: string): string | null {
   }
 }
 
+function normalizeCodexAutoRenewalDateInput(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const normalized = trimmed
+    .replace(/年/g, '-')
+    .replace(/月/g, '-')
+    .replace(/日/g, '')
+    .replace(/\//g, '-')
+    .replace(/\./g, '-');
+  const parts = normalized
+    .split('-')
+    .map((part: string) => part.trim())
+    .filter(Boolean);
+  if (parts.length !== 3) return null;
+  const parsedYear = Number(parts[0]);
+  const parsedMonth = Number(parts[1]);
+  const parsedDay = Number(parts[2]);
+  if (!Number.isInteger(parsedYear) || !Number.isInteger(parsedMonth) || !Number.isInteger(parsedDay)) {
+    return null;
+  }
+  const year = parsedYear < 100 ? 2000 + parsedYear : parsedYear;
+  const date = new Date(year, parsedMonth - 1, parsedDay);
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getFullYear() !== year ||
+    date.getMonth() !== parsedMonth - 1 ||
+    date.getDate() !== parsedDay
+  ) {
+    return null;
+  }
+  return `${String(year).padStart(4, '0')}-${String(parsedMonth).padStart(2, '0')}-${String(parsedDay).padStart(2, '0')}`;
+}
+
+function parseCodexAutoRenewalDate(value?: string | null): Date | null {
+  const normalized = normalizeCodexAutoRenewalDateInput(value ?? '');
+  if (!normalized) return null;
+  const [year, month, day] = normalized.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatCodexAutoRenewalDate(value?: string | null): string | null {
+  const date = parseCodexAutoRenewalDate(value);
+  if (!date) return null;
+  return `${String(date.getFullYear()).slice(-2)}年${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+type CodexRenewalClass = 'high' | 'medium' | 'low' | 'critical';
+
+function getCodexAutoRenewalClass(value?: string | null): CodexRenewalClass {
+  const date = parseCodexAutoRenewalDate(value);
+  if (!date) return 'high';
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const startOfTarget = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diffDays = Math.floor((startOfTarget.getTime() - startOfToday.getTime()) / 86400000);
+  if (diffDays <= 7) return 'critical';
+  if (diffDays <= 30) return 'low';
+  if (diffDays <= 60) return 'medium';
+  return 'high';
+}
+
+function buildCodexAutoRenewalLine(
+  value?: string | null,
+): { text: string; quotaClass: CodexRenewalClass } | null {
+  const formatted = formatCodexAutoRenewalDate(value);
+  if (!formatted) return null;
+  return {
+    text: `到期时间: ${formatted}`,
+    quotaClass: getCodexAutoRenewalClass(value),
+  };
+}
+
 export function CodexAccountsPage() {
   const [activeTab, setActiveTab] = useState<CodexTab>('overview');
   const untaggedKey = '__untagged__';
@@ -371,6 +444,7 @@ export function CodexAccountsPage() {
     refreshQuota,
     hydrateAccountProfilesIfNeeded,
     updateAccountName,
+    updateAccountAutoRenewalDate,
     updateApiKeyCredentials,
   } = store;
 
@@ -399,6 +473,9 @@ export function CodexAccountsPage() {
   const [editingApiKeyNameId, setEditingApiKeyNameId] = useState<string | null>(null);
   const [editingApiKeyNameValue, setEditingApiKeyNameValue] = useState('');
   const [savingApiKeyNameId, setSavingApiKeyNameId] = useState<string | null>(null);
+  const [editingAutoRenewalDateId, setEditingAutoRenewalDateId] = useState<string | null>(null);
+  const [editingAutoRenewalDateValue, setEditingAutoRenewalDateValue] = useState('');
+  const [savingAutoRenewalDate, setSavingAutoRenewalDate] = useState(false);
   const [editingApiKeyCredentialsId, setEditingApiKeyCredentialsId] = useState<string | null>(null);
   const [editingApiKeyCredentialsValue, setEditingApiKeyCredentialsValue] = useState('');
   const [editingApiBaseUrlCredentialsValue, setEditingApiBaseUrlCredentialsValue] = useState('');
@@ -1341,6 +1418,57 @@ export function CodexAccountsPage() {
     setEditingApiKeyNameValue('');
   }, []);
 
+  const closeAutoRenewalDateModal = useCallback(() => {
+    if (savingAutoRenewalDate) return;
+    setEditingAutoRenewalDateId(null);
+    setEditingAutoRenewalDateValue('');
+  }, [savingAutoRenewalDate]);
+
+  const openAutoRenewalDateModal = useCallback((account: CodexAccount) => {
+    setEditingAutoRenewalDateId(account.id);
+    setEditingAutoRenewalDateValue(account.auto_renewal_date || '');
+  }, []);
+
+  const handleSubmitAutoRenewalDate = useCallback(async () => {
+    const accountId = editingAutoRenewalDateId;
+    if (!accountId) return;
+    const rawValue = editingAutoRenewalDateValue.trim();
+    if (!rawValue) {
+      setMessage({
+        text: '请输入自动续订时间，格式如 2026年4月28日',
+        tone: 'error',
+      });
+      return;
+    }
+    if (!normalizeCodexAutoRenewalDateInput(rawValue)) {
+      setMessage({
+        text: '自动续订时间格式无效，请输入如 2026年4月28日',
+        tone: 'error',
+      });
+      return;
+    }
+
+    setSavingAutoRenewalDate(true);
+    try {
+      await updateAccountAutoRenewalDate(accountId, rawValue);
+      setMessage({ text: '自动续订时间已保存' });
+      closeAutoRenewalDateModal();
+    } catch (e) {
+      setMessage({
+        text: `自动续订时间保存失败: ${String(e)}`,
+        tone: 'error',
+      });
+    } finally {
+      setSavingAutoRenewalDate(false);
+    }
+  }, [
+    closeAutoRenewalDateModal,
+    editingAutoRenewalDateId,
+    editingAutoRenewalDateValue,
+    setMessage,
+    updateAccountAutoRenewalDate,
+  ]);
+
   const handleAccountNameDoubleClick = useCallback((account: CodexAccount) => {
     if (!isCodexApiKeyAccount(account)) return;
     inlineRenameDiscardRef.current = false;
@@ -2089,6 +2217,7 @@ export function CodexAccountsPage() {
       const apiProviderLine = `${t('codex.api.provider.label', '供应商')}：${apiProviderName}`;
       const apiBaseUrlText = (account.api_base_url || '').trim() || '-';
       const apiBaseUrlLine = `${t('codex.api.baseUrl', 'Base URL')}：${apiBaseUrlText}`;
+      const renewalLine = buildCodexAutoRenewalLine(account.auto_renewal_date);
       const accountTags = (account.tags || []).map((tag) => tag.trim()).filter(Boolean);
       const visibleTags = accountTags.slice(0, 2);
       const moreTagCount = Math.max(0, accountTags.length - visibleTags.length);
@@ -2132,6 +2261,16 @@ export function CodexAccountsPage() {
             <div className="account-sub-line">
               <span className="codex-login-subline" title={meta.accountContextText}>
                 Team Name：{meta.accountContextText}
+              </span>
+            </div>
+          )}
+          {renewalLine && (
+            <div className="account-sub-line">
+              <span
+                className={`codex-login-subline codex-renewal-subline ${renewalLine.quotaClass}`}
+                title={renewalLine.text}
+              >
+                {renewalLine.text}
               </span>
             </div>
           )}
@@ -2209,6 +2348,13 @@ export function CodexAccountsPage() {
             <span className="card-date">{formatDate(account.created_at)}</span>
             <div className="card-actions">
               <button className="card-action-btn" onClick={() => openTagModal(account.id)} title={t('accounts.editTags', '编辑标签')}><Tag size={14} /></button>
+              <button
+                className="card-action-btn"
+                onClick={() => openAutoRenewalDateModal(account)}
+                title="编辑自动续订时间"
+              >
+                <Calendar size={14} />
+              </button>
               {isApiKeyAccount && (
                 <button
                   className="card-action-btn"
@@ -2381,6 +2527,7 @@ export function CodexAccountsPage() {
       const apiProviderLine = `${t('codex.api.provider.label', '供应商')}：${apiProviderName}`;
       const apiBaseUrlText = (account.api_base_url || '').trim() || '-';
       const apiBaseUrlLine = `${t('codex.api.baseUrl', 'Base URL')}：${apiBaseUrlText}`;
+      const renewalLine = buildCodexAutoRenewalLine(account.auto_renewal_date);
       return (
         <tr key={groupKey ? `${groupKey}-${account.id}` : account.id} className={isCurrent ? 'current' : ''}>
           <td><input type="checkbox" checked={selected.has(account.id)} onChange={() => toggleSelect(account.id)} /></td>
@@ -2417,6 +2564,16 @@ export function CodexAccountsPage() {
               <div className="account-sub-line codex-account-meta-inline">
                 <span className="codex-login-subline" title={meta.accountContextText}>
                   Team Name：{meta.accountContextText}
+                </span>
+              </div>
+            )}
+            {renewalLine && (
+              <div className="account-sub-line codex-account-meta-inline">
+                <span
+                  className={`codex-login-subline codex-renewal-subline ${renewalLine.quotaClass}`}
+                  title={renewalLine.text}
+                >
+                  {renewalLine.text}
                 </span>
               </div>
             )}
@@ -2498,6 +2655,7 @@ export function CodexAccountsPage() {
           </td>
           <td className="sticky-action-cell table-action-cell"><div className="action-buttons">
             <button className="action-btn" onClick={() => openTagModal(account.id)} title={t('accounts.editTags', '编辑标签')}><Tag size={14} /></button>
+            <button className="action-btn" onClick={() => openAutoRenewalDateModal(account)} title="编辑自动续订时间"><Calendar size={14} /></button>
             {isApiKeyAccount && (
               <button
                 className="action-btn"
@@ -3365,6 +3523,55 @@ export function CodexAccountsPage() {
                     </button>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {editingAutoRenewalDateId && (
+          <div className="modal-overlay" onClick={closeAutoRenewalDateModal}>
+            <div className="modal modal-compact" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>编辑自动续订时间</h2>
+                <button
+                  className="modal-close"
+                  onClick={closeAutoRenewalDateModal}
+                  aria-label={t('common.close', '关闭')}
+                  disabled={savingAutoRenewalDate}
+                >
+                  <X />
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="oauth-link">
+                  <label>自动续订时间</label>
+                  <div className="oauth-url-box oauth-manual-input">
+                    <input
+                      type="text"
+                      value={editingAutoRenewalDateValue}
+                      onChange={(e) => setEditingAutoRenewalDateValue(e.target.value)}
+                      placeholder="2026年4月28日"
+                      disabled={savingAutoRenewalDate}
+                    />
+                  </div>
+                  <p className="section-desc">支持 2026年4月28日、2026-04-28、2026/4/28。</p>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={closeAutoRenewalDateModal}
+                  disabled={savingAutoRenewalDate}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => void handleSubmitAutoRenewalDate()}
+                  disabled={savingAutoRenewalDate || !editingAutoRenewalDateValue.trim()}
+                >
+                  {savingAutoRenewalDate ? t('common.saving', '保存中...') : t('common.save')}
+                </button>
               </div>
             </div>
           </div>

@@ -23,6 +23,7 @@ export interface CodexAccount {
   organization_id?: string;
   account_name?: string;
   account_structure?: string;
+  auto_renewal_date?: string;
   tokens: CodexTokens;
   quota?: CodexQuota;
   quota_error?: CodexQuotaErrorInfo;
